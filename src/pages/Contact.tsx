@@ -53,8 +53,8 @@ const Contact = () => {
     setTimeout(() => {
       formRef.current.style.opacity = '1';
       infoRef.current.style.opacity = '1';
-      formRef.current?.classList.add('animate-fade-in');
-      infoRef.current?.classList.add('animate-fade-in');
+      formRef.current?.classList.add('animate-fade-in-up');
+      infoRef.current?.classList.add('animate-fade-in-up');
     }, 300);
   }, []);
 
@@ -181,13 +181,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground mb-2">Email</h3>
-                    <a href="mailto:info@lff-framework.com" className="text-primary hover:text-primary/80 transition-colors">
-                      info@lff-framework.com
+                    <a href="mailto:info@simplelistening.com" className="text-primary hover:text-primary/80 transition-colors">
+                      info@simplelistening.com
                     </a>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-foreground mb-2">Working Hours</h3>
-                    <p className="text-foreground/70">Monday-Friday: 9:00 AM - 5:00 PM CET</p>
                   </div>
                 </div>
               </div>
@@ -195,8 +191,7 @@ const Contact = () => {
               <div className="glass-card p-8 md:p-10">
                 <h2 className="heading-md mb-6">Book a Consultation</h2>
                 <p className="text-foreground/70 mb-6">
-                  Schedule a personal consultation to discuss how the Lyssna-Förändra-Framework 
-                  can be applied to your specific challenges.
+                  Schedule a personal consultation to discuss how we can approach your specific challenges.
                 </p>
                 <a 
                   href="#" 
