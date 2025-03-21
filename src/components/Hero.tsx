@@ -33,7 +33,7 @@ const Hero = () => {
 
     if (bgPatternRef.current) {
       bgPatternRef.current.style.opacity = '1';
-      bgPatternRef.current.classList.add('animate-blur-in');
+      bgPatternRef.current.classList.add('animate-fade-in');
     }
   }, []);
 
