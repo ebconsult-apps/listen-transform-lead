@@ -47,9 +47,12 @@ const Contact = () => {
 
     // Animate elements on page load
     setTimeout(() => {
+      heroRef.current.style.opacity = '1';
       heroRef.current?.classList.add('animate-fade-in-up');
     }, 100);
     setTimeout(() => {
+      formRef.current.style.opacity = '1';
+      infoRef.current.style.opacity = '1';
       formRef.current?.classList.add('animate-fade-in');
       infoRef.current?.classList.add('animate-fade-in');
     }, 300);
