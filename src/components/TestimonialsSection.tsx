@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
-// Sample testimonials data (placeholders until real testimonials are available)
+// Sample testimonials data
 const testimonials = [
   {
     id: 1,
