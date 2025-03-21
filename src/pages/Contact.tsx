@@ -47,11 +47,11 @@ const Contact = () => {
 
     // Animate elements on page load
     setTimeout(() => {
-      heroRef.current?.classList.add('animate-fade-in');
+      heroRef.current?.classList.add('animate-fade-in-up');
     }, 100);
     setTimeout(() => {
-      formRef.current?.classList.add('animate-fade-in-right');
-      infoRef.current?.classList.add('animate-fade-in');
+      formRef.current?.classList.add('animate-fade-in-up');
+      infoRef.current?.classList.add('animate-fade-in-up');
     }, 300);
   }, []);
 

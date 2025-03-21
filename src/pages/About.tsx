@@ -13,7 +13,7 @@ const About = () => {
 
     // Animate elements on page load
     setTimeout(() => {
-      heroRef.current?.classList.add('animate-fade-in');
+      heroRef.current?.classList.add('animate-fade-in-up');
     }, 100);
     setTimeout(() => {
       contentRef.current?.classList.add('animate-fade-in-up');
