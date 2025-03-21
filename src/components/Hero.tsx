@@ -10,40 +10,29 @@ const Hero = () => {
   const bgPatternRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -10% 0px'
-    };
-
-    const fadeInElements = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (entry.target === titleRef.current) {
-            titleRef.current.classList.add('animate-fade-in');
-            setTimeout(() => {
-              subtitleRef.current?.classList.add('animate-fade-in-up');
-            }, 300);
-            setTimeout(() => {
-              ctaRef.current?.classList.add('animate-fade-in-up');
-            }, 600);
-          }
-          observer.unobserve(entry.target);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(fadeInElements, observerOptions);
-    
+    // Instead of adding animation classes that cause elements to disappear,
+    // let's make elements visible immediately but still animate them in
     if (titleRef.current) {
-      observer.observe(titleRef.current);
+      titleRef.current.style.opacity = '1';
+      titleRef.current.classList.add('animate-fade-in');
     }
+    
+    setTimeout(() => {
+      if (subtitleRef.current) {
+        subtitleRef.current.style.opacity = '1';
+        subtitleRef.current.classList.add('animate-fade-in-up');
+      }
+    }, 300);
+    
+    setTimeout(() => {
+      if (ctaRef.current) {
+        ctaRef.current.style.opacity = '1';
+        ctaRef.current.classList.add('animate-fade-in-up');
+      }
+    }, 600);
 
-    return () => observer.disconnect();
-  }, []);
-
-  // Pattern animation
-  useEffect(() => {
     if (bgPatternRef.current) {
+      bgPatternRef.current.style.opacity = '1';
       bgPatternRef.current.classList.add('animate-blur-in');
     }
   }, []);
@@ -67,22 +56,25 @@ const Hero = () => {
       <div className="section-container relative z-10 flex flex-col items-center text-center">
         <h1 
           ref={titleRef}
-          className="heading-xl opacity-0"
+          className="heading-xl"
+          style={{ opacity: '0' }}
         >
           <span className="text-primary">Listen.</span> Transform. <span className="text-primary">Lead.</span>
         </h1>
         
         <p 
           ref={subtitleRef}
-          className="mt-6 body-lg max-w-2xl opacity-0"
+          className="mt-6 body-lg max-w-2xl"
+          style={{ opacity: '0' }}
         >
           I'm Erik Bohjort, licensed psychologist and guide to transformative change. 
-          Discover how the Lyssna-Förändra-Framework turns genuine listening into strategic action.
+          Discover how the Simple Listening Framework turns genuine listening into strategic action.
         </p>
         
         <div 
           ref={ctaRef}
-          className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center opacity-0"
+          className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center"
+          style={{ opacity: '0' }}
         >
           <Link to="/framework" className="btn-primary">
             Discover the Framework

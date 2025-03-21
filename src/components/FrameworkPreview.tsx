@@ -57,7 +57,7 @@ const FrameworkPreview = () => {
     setActiveStep(id);
   };
 
-  // Animate steps into view when section becomes visible
+  // Fix animation issues by making elements visible immediately
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -66,7 +66,10 @@ const FrameworkPreview = () => {
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          sectionRef.current?.classList.add('animate-fade-in');
+          if (sectionRef.current) {
+            sectionRef.current.style.opacity = '1';
+            sectionRef.current.classList.add('animate-fade-in');
+          }
           observer.unobserve(entry.target);
         }
       });
@@ -92,13 +95,13 @@ const FrameworkPreview = () => {
 
   return (
     <section className="py-24 bg-muted/50" id="framework-preview">
-      <div ref={sectionRef} className="section-container opacity-0">
+      <div ref={sectionRef} className="section-container" style={{ opacity: '0' }}>
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="tag mb-4">The Framework</div>
-          <h2 className="heading-lg mb-6">The Lyssna-Förändra-Framework</h2>
+          <h2 className="heading-lg mb-6">The Simple Listening Framework</h2>
           <p className="body-md">
             Built on the principle that true change begins with genuine listening, 
-            LFF provides a structured approach to transform insights into meaningful action.
+            SLF provides a structured approach to transform insights into meaningful action.
           </p>
         </div>
 

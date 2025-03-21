@@ -14,7 +14,10 @@ const CTASection = () => {
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          sectionRef.current?.classList.add('animate-fade-in');
+          if (sectionRef.current) {
+            sectionRef.current.style.opacity = '1';
+            sectionRef.current.classList.add('animate-fade-in');
+          }
           observer.unobserve(entry.target);
         }
       });
@@ -31,7 +34,7 @@ const CTASection = () => {
 
   return (
     <section className="py-24">
-      <div ref={sectionRef} className="section-container opacity-0">
+      <div ref={sectionRef} className="section-container" style={{ opacity: '0' }}>
         <div className="glass-card p-10 md:p-16 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
@@ -40,7 +43,7 @@ const CTASection = () => {
           <div className="relative z-10 text-center max-w-2xl mx-auto">
             <h2 className="heading-lg mb-6">Ready to Transform Your Approach?</h2>
             <p className="body-md mb-10">
-              Start your journey with the Lyssna-Förändra-Framework today. 
+              Start your journey with the Simple Listening Framework today. 
               Whether you're facing organizational challenges or seeking personal growth, 
               I'm here to guide you through the transformative power of genuine listening.
             </p>
@@ -51,7 +54,7 @@ const CTASection = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
               <Link to="/framework" className="btn-secondary">
-                Learn More About LFF
+                Learn More About SLF
               </Link>
             </div>
           </div>

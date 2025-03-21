@@ -105,19 +105,30 @@ const Framework = () => {
     }
   };
 
-  // Scroll to top on page load
+  // Fix animation issues by making elements visible immediately on page load
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Animate elements on page load
+    // Make elements visible immediately but still animate them
     setTimeout(() => {
-      heroRef.current?.classList.add('animate-fade-in');
+      if (heroRef.current) {
+        heroRef.current.style.opacity = '1';
+        heroRef.current.classList.add('animate-fade-in');
+      }
     }, 100);
+    
     setTimeout(() => {
-      introRef.current?.classList.add('animate-fade-in-up');
+      if (introRef.current) {
+        introRef.current.style.opacity = '1';
+        introRef.current.classList.add('animate-fade-in-up');
+      }
     }, 300);
+    
     setTimeout(() => {
-      stepsRef.current?.classList.add('animate-fade-in');
+      if (stepsRef.current) {
+        stepsRef.current.style.opacity = '1';
+        stepsRef.current.classList.add('animate-fade-in');
+      }
     }, 500);
   }, []);
 
@@ -126,9 +137,9 @@ const Framework = () => {
       {/* Hero Section */}
       <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="section-container">
-          <div ref={heroRef} className="opacity-0">
+          <div ref={heroRef} style={{ opacity: '0' }}>
             <div className="tag mb-4">The Framework</div>
-            <h1 className="heading-xl mb-6">Lyssna-Förändra-Framework</h1>
+            <h1 className="heading-xl mb-6">Simple Listening Framework</h1>
             <p className="body-lg max-w-3xl">
               A structured approach to transform listening into meaningful action.
             </p>
@@ -139,16 +150,16 @@ const Framework = () => {
       {/* Introduction Section */}
       <section className="pb-20">
         <div className="section-container">
-          <div ref={introRef} className="glass-card p-8 md:p-10 max-w-3xl mx-auto opacity-0">
+          <div ref={introRef} className="glass-card p-8 md:p-10 max-w-3xl mx-auto" style={{ opacity: '0' }}>
             <h2 className="heading-md mb-6">The Power of Genuine Listening</h2>
             <p className="body-md mb-4">
-              The Lyssna-Förändra-Framework (LFF) is rooted in one timeless principle: 
+              The Simple Listening Framework (SLF) is rooted in one timeless principle: 
               change begins when we listen deeply and with empathy. By understanding the 
               real issues behind every conversation, we pave the way for transformational change.
             </p>
             <p className="body-md">
               Developed through years of practical application across diverse organizational 
-              settings, LFF provides a structured yet flexible approach to turning insights 
+              settings, SLF provides a structured yet flexible approach to turning insights 
               into action. The seven steps outlined below form a comprehensive methodology 
               that can be applied to virtually any challenge – from high-stakes negotiations 
               to personal growth.
@@ -159,7 +170,7 @@ const Framework = () => {
 
       {/* Steps Section */}
       <section className="pb-24" id="framework-steps">
-        <div ref={stepsRef} className="section-container opacity-0">
+        <div ref={stepsRef} className="section-container" style={{ opacity: '0' }}>
           <h2 className="heading-md text-center mb-12">The Seven Steps</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -259,7 +270,7 @@ const Framework = () => {
           <div className="glass-card p-8 md:p-10 text-center">
             <h2 className="heading-md mb-6">Apply the Framework to Your Challenges</h2>
             <p className="body-md mb-8 max-w-2xl mx-auto">
-              Ready to experience the transformative power of the Lyssna-Förändra-Framework? 
+              Ready to experience the transformative power of the Simple Listening Framework? 
               Let's explore how these principles can be applied to your specific context.
             </p>
             <Link to="/contact" className="btn-primary">

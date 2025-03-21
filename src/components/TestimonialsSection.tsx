@@ -12,7 +12,7 @@ const testimonials = [
   },
   {
     id: 2,
-    quote: "Through his empathetic approach, our team found a new path forward in a challenging market. The Lyssna-Förändra-Framework gave us tools we use daily to improve our communication.",
+    quote: "Through his empathetic approach, our team found a new path forward in a challenging market. The Simple Listening Framework gave us tools we use daily to improve our communication.",
     author: "Head of Innovation",
     company: "Tech Startup"
   },
@@ -37,7 +37,7 @@ const TestimonialsSection = () => {
     setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
-  // Animate section when it becomes visible
+  // Fix animation issues by making elements visible immediately
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -46,7 +46,10 @@ const TestimonialsSection = () => {
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          sectionRef.current?.classList.add('animate-fade-in');
+          if (sectionRef.current) {
+            sectionRef.current.style.opacity = '1';
+            sectionRef.current.classList.add('animate-fade-in');
+          }
           observer.unobserve(entry.target);
         }
       });
@@ -72,7 +75,7 @@ const TestimonialsSection = () => {
 
   return (
     <section className="py-24 bg-gradient-to-b from-muted/30 to-muted/10">
-      <div ref={sectionRef} className="section-container opacity-0">
+      <div ref={sectionRef} className="section-container" style={{ opacity: '0' }}>
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="tag mb-4">Testimonials</div>
           <h2 className="heading-lg mb-6">What Others Say</h2>
