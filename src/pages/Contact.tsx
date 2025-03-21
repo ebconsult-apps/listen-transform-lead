@@ -50,8 +50,8 @@ const Contact = () => {
       heroRef.current?.classList.add('animate-fade-in-up');
     }, 100);
     setTimeout(() => {
-      formRef.current?.classList.add('animate-fade-in-up');
-      infoRef.current?.classList.add('animate-fade-in-up');
+      formRef.current?.classList.add('animate-fade-in');
+      infoRef.current?.classList.add('animate-fade-in');
     }, 300);
   }, []);
 
