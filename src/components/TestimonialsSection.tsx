@@ -37,7 +37,7 @@ const TestimonialsSection = () => {
     setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
-  // Fix animation issues by making elements visible immediately
+  // Modified animation approach to prevent disappearing
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -45,11 +45,12 @@ const TestimonialsSection = () => {
 
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (sectionRef.current) {
-            sectionRef.current.style.opacity = '1';
-            sectionRef.current.classList.add('animate-fade-in');
-          }
+        if (entry.isIntersecting && sectionRef.current) {
+          // Make visible first, then add animation class
+          sectionRef.current.style.opacity = '1';
+          setTimeout(() => {
+            sectionRef.current?.classList.add('animate-fade-in');
+          }, 50);
           observer.unobserve(entry.target);
         }
       });
@@ -64,18 +65,30 @@ const TestimonialsSection = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Animate testimonial transition
+  // Animate testimonial transition without disappearing
   useEffect(() => {
     if (testimonialRef.current) {
-      testimonialRef.current.classList.remove('animate-fade-in');
-      void testimonialRef.current.offsetWidth; // Trigger reflow
-      testimonialRef.current.classList.add('animate-fade-in');
+      // First make new testimonial visible
+      testimonialRef.current.style.opacity = '0.7';
+      
+      // Then animate it in
+      setTimeout(() => {
+        if (testimonialRef.current) {
+          testimonialRef.current.style.opacity = '1';
+          testimonialRef.current.classList.add('animate-fade-in');
+        }
+      }, 50);
+      
+      // Remove animation class after it completes to allow for next animation
+      setTimeout(() => {
+        testimonialRef.current?.classList.remove('animate-fade-in');
+      }, 500);
     }
   }, [activeIndex]);
 
   return (
     <section className="py-24 bg-gradient-to-b from-muted/30 to-muted/10">
-      <div ref={sectionRef} className="section-container" style={{ opacity: '0' }}>
+      <div ref={sectionRef} className="section-container relative" style={{ opacity: '0' }}>
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="tag mb-4">Testimonials</div>
           <h2 className="heading-lg mb-6">What Others Say</h2>

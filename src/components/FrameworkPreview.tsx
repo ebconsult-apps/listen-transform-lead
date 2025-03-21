@@ -57,7 +57,7 @@ const FrameworkPreview = () => {
     setActiveStep(id);
   };
 
-  // Fix animation issues by making elements visible immediately
+  // Modified animation approach to prevent disappearing
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -65,11 +65,15 @@ const FrameworkPreview = () => {
 
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (sectionRef.current) {
-            sectionRef.current.style.opacity = '1';
-            sectionRef.current.classList.add('animate-fade-in');
-          }
+        if (entry.isIntersecting && sectionRef.current) {
+          // First make visible
+          sectionRef.current.style.opacity = '1';
+          
+          // Then add animation class with slight delay
+          setTimeout(() => {
+            sectionRef.current?.classList.add('animate-fade-in');
+          }, 50);
+          
           observer.unobserve(entry.target);
         }
       });

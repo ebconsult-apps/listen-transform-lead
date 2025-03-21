@@ -13,11 +13,15 @@ const CTASection = () => {
 
     const fadeInSection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (sectionRef.current) {
-            sectionRef.current.style.opacity = '1';
-            sectionRef.current.classList.add('animate-fade-in');
-          }
+        if (entry.isIntersecting && sectionRef.current) {
+          // First make visible
+          sectionRef.current.style.opacity = '1';
+          
+          // Then add animation class after a short delay
+          setTimeout(() => {
+            sectionRef.current?.classList.add('animate-fade-in');
+          }, 50);
+          
           observer.unobserve(entry.target);
         }
       });

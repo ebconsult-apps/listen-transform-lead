@@ -38,8 +38,8 @@ const Layout = () => {
             to="/" 
             className="font-display text-2xl font-bold text-foreground flex items-center"
           >
-            <span className="mr-1.5 text-primary">L</span>
-            <span className="mr-1">F</span>
+            <span className="mr-1.5 text-primary">S</span>
+            <span className="mr-1">L</span>
             <span className="mr-1.5 text-primary">F</span>
           </Link>
 
@@ -89,12 +89,12 @@ const Layout = () => {
                 to="/" 
                 className="font-display text-xl font-bold text-foreground flex items-center"
               >
-                <span className="mr-1 text-primary">L</span>
-                <span className="mr-0.5">F</span>
+                <span className="mr-1 text-primary">S</span>
+                <span className="mr-0.5">L</span>
                 <span className="mr-1 text-primary">F</span>
               </Link>
               <p className="mt-2 text-sm text-foreground/60 max-w-md">
-                The Lyssna-Förändra-Framework helps organizations and individuals transform challenges into opportunities through empathetic listening.
+                The Simple Listening Framework helps organizations and individuals transform challenges into opportunities through empathetic listening.
               </p>
             </div>
             
@@ -115,8 +115,8 @@ const Layout = () => {
                 <address className="not-italic text-sm text-foreground/60">
                   <p>Stockholm, Sweden</p>
                   <p className="mt-2">
-                    <a href="mailto:info@lff-framework.com" className="hover:text-foreground transition-colors">
-                      info@lff-framework.com
+                    <a href="mailto:info@slf-framework.com" className="hover:text-foreground transition-colors">
+                      info@slf-framework.com
                     </a>
                   </p>
                 </address>
@@ -125,7 +125,7 @@ const Layout = () => {
           </div>
           
           <div className="mt-12 pt-8 border-t border-foreground/10 flex justify-between items-center text-sm text-foreground/50">
-            <p>© {new Date().getFullYear()} LFF. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} SLF. All rights reserved.</p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="hover:text-foreground transition-colors">Terms</a>
