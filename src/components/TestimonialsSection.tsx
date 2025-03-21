@@ -37,7 +37,7 @@ const TestimonialsSection = () => {
     setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
   };
 
-  // Modified animation approach to prevent disappearing
+  // Improved animation approach to prevent disappearing
   useEffect(() => {
     const observerOptions = {
       threshold: 0.2,
@@ -48,9 +48,12 @@ const TestimonialsSection = () => {
         if (entry.isIntersecting && sectionRef.current) {
           // Make visible first, then add animation class
           sectionRef.current.style.opacity = '1';
+          
+          // Add animation class after a short delay
           setTimeout(() => {
             sectionRef.current?.classList.add('animate-fade-in');
           }, 50);
+          
           observer.unobserve(entry.target);
         }
       });
@@ -65,13 +68,13 @@ const TestimonialsSection = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Animate testimonial transition without disappearing
+  // Ensure testimonial remains visible during transition
   useEffect(() => {
     if (testimonialRef.current) {
-      // First make new testimonial visible
+      // First make testimonial temporarily less visible but not invisible
       testimonialRef.current.style.opacity = '0.7';
       
-      // Then animate it in
+      // Then restore full visibility with animation
       setTimeout(() => {
         if (testimonialRef.current) {
           testimonialRef.current.style.opacity = '1';

@@ -18,12 +18,20 @@ const AboutPreview = () => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           if (entry.target === sectionRef.current) {
-            setTimeout(() => {
-              imageRef.current?.classList.add('animate-fade-in-right');
-            }, 100);
-            setTimeout(() => {
-              contentRef.current?.classList.add('animate-fade-in');
-            }, 300);
+            // Make elements visible immediately, then add animation classes
+            if (imageRef.current) {
+              imageRef.current.style.opacity = '1';
+              setTimeout(() => {
+                imageRef.current?.classList.add('animate-fade-in-right');
+              }, 100);
+            }
+            
+            if (contentRef.current) {
+              contentRef.current.style.opacity = '1';
+              setTimeout(() => {
+                contentRef.current?.classList.add('animate-fade-in');
+              }, 300);
+            }
           }
           observer.unobserve(entry.target);
         }
@@ -44,7 +52,7 @@ const AboutPreview = () => {
       <div className="section-container">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Image Placeholder (Left side) */}
-          <div ref={imageRef} className="opacity-0 order-2 lg:order-1">
+          <div ref={imageRef} className="opacity-0 order-2 lg:order-1" style={{ opacity: '0' }}>
             <div className="relative">
               {/* Main image placeholder */}
               <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-secondary to-accent overflow-hidden relative">
@@ -69,7 +77,7 @@ const AboutPreview = () => {
           </div>
           
           {/* Content (Right side) */}
-          <div ref={contentRef} className="opacity-0 order-1 lg:order-2">
+          <div ref={contentRef} className="opacity-0 order-1 lg:order-2" style={{ opacity: '0' }}>
             <div className="tag mb-4">About</div>
             <h2 className="heading-lg mb-6">Erik Bohjort</h2>
             <p className="body-md mb-6">
