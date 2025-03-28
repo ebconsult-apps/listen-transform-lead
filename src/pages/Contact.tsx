@@ -20,14 +20,26 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
+    // Prepare email data
+    const emailData = {
+      to: "hello@simplelistening.com",
+      from: email,
+      name: name,
+      subject: subject,
+      message: message
+    };
+    
+    // In a real-world scenario, this would call a backend API endpoint
+    console.log("Sending email data:", emailData);
+    
+    // Simulate sending email
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
       
       toast({
-        title: "Message sent successfully!",
-        description: "Thank you for reaching out. I'll get back to you soon.",
+        title: "Message sent!",
+        description: `Your message has been sent to ${emailData.to}. We'll get back to you soon.`,
       });
       
       // Reset form after animation completes
