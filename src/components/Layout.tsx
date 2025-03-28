@@ -118,8 +118,8 @@ const Layout = () => {
                 <address className="not-italic text-sm text-foreground/60">
                   <p>Stockholm, Sweden</p>
                   <p className="mt-2">
-                    <a href="mailto:info@simplelistening.com" className="hover:text-foreground transition-colors">
-                      info@simplelistening.com
+                    <a href="mailto:hello@simplelistening.com" className="hover:text-foreground transition-colors">
+                      hello@simplelistening.com
                     </a>
                   </p>
                 </address>

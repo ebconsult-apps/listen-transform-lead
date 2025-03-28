@@ -12,7 +12,7 @@ const testimonials = [
   },
   {
     id: 2,
-    quote: "Through his thourough and empathetic approach, Erik helped our team find a new path forward with our product strategy.",
+    quote: "Through his thorough and empathetic approach, Erik helped our team find a new path forward with our product strategy.",
     author: "CEO",
     company: "Deep Tech Startup"
   },
