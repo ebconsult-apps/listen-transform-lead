@@ -108,7 +108,7 @@ const About = () => {
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Strategic advisor supporting governmental agencies through complex organizational transformations</span>
+                    <span>Strategic advisor supporting governmental agencies through complex strategical processes</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
