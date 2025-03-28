@@ -18,7 +18,7 @@ const Index = () => {
       <Hero />
       <AboutPreview />
       <FrameworkPreview />
-      <TestimonialsSection />
+      // <TestimonialsSection />
       <CTASection />
     </div>
   );
