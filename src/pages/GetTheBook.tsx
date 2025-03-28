@@ -62,19 +62,7 @@ const GetTheBook = () => {
               </div>
             </div>
             
-            <div className="glass-card p-8 animate-fade-in-right">
-              <div className="aspect-ratio-4/3 bg-muted rounded-lg overflow-hidden relative">
-                <div className="absolute inset-0 flex items-center justify-center bg-primary/5">
-                  <div className="text-center p-8">
-                    <Book size={64} className="mx-auto mb-4 text-primary/60" />
-                    <h3 className="text-xl font-bold mb-2">Book Cover Coming Soon</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Final design in progress
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>
