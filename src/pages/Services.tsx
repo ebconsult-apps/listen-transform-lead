@@ -63,19 +63,29 @@ const Services = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Animate elements on page load
-    setTimeout(() => {
-      heroRef.current?.classList.add('animate-fade-in');
-    }, 100);
-    setTimeout(() => {
-      introRef.current?.classList.add('animate-fade-in-up');
-    }, 300);
+    // Animation fixes - make elements visible first, then animate
+    if (heroRef.current) {
+      heroRef.current.classList.remove('opacity-0');
+      setTimeout(() => {
+        heroRef.current?.classList.add('animate-fade-in');
+      }, 100);
+    }
+    
+    if (introRef.current) {
+      introRef.current.classList.remove('opacity-0');
+      setTimeout(() => {
+        introRef.current?.classList.add('animate-fade-in-up');
+      }, 300);
+    }
     
     // Animate service cards with staggered delay
     serviceRefs.current.forEach((card, index) => {
-      setTimeout(() => {
-        card?.classList.add('animate-fade-in-up');
-      }, 500 + (index * 100));
+      if (card) {
+        card.classList.remove('opacity-0');
+        setTimeout(() => {
+          card?.classList.add('animate-fade-in-up');
+        }, 500 + (index * 100));
+      }
     });
   }, []);
 
@@ -86,9 +96,9 @@ const Services = () => {
         <div className="section-container">
           <div ref={heroRef} className="opacity-0">
             <div className="tag mb-4">Services</div>
-            <h1 className="heading-xl mb-6">How LFF Can Serve You</h1>
+            <h1 className="heading-xl mb-6">How SLF Can Serve You</h1>
             <p className="body-lg max-w-3xl">
-              Tailored applications of the Lyssna-Förändra-Framework to address your specific challenges.
+              Tailored applications of the Simple Listening Framework to address your specific challenges.
             </p>
           </div>
         </div>
@@ -100,15 +110,15 @@ const Services = () => {
           <div ref={introRef} className="glass-card p-8 md:p-10 max-w-3xl mx-auto opacity-0">
             <h2 className="heading-md mb-6">Transformative Applications</h2>
             <p className="body-md mb-4">
-              Whether you are leading a multinational corporation, managing state-level change, 
-              or seeking personal transformation, my consultancy adapts the Lyssna-Förändra-Framework 
+              Whether you are leading a multinational corporation, managing complex change, 
+              or seeking personal transformation, our consultancy adapts the Simple Listening Framework 
               to your unique challenges.
             </p>
             <p className="body-md">
               Each service area applies the same core principles – deep listening, 
               empathetic engagement, and collaborative solution-finding – to different contexts. 
               The result is a tailored approach that addresses your specific needs while 
-              leveraging the proven power of the LFF methodology.
+              leveraging the proven power of the SLF methodology.
             </p>
           </div>
         </div>
@@ -154,14 +164,14 @@ const Services = () => {
       <section className="pb-24">
         <div className="section-container max-w-3xl mx-auto">
           <div className="glass-card p-8 md:p-10">
-            <h2 className="heading-md mb-6">My Approach</h2>
+            <h2 className="heading-md mb-6">Our Approach</h2>
             <p className="body-md mb-6">
               Each engagement begins with a thorough diagnostic process to understand your 
               specific context and challenges. This collaborative assessment forms the foundation 
-              for a tailored application of the Lyssna-Förändra-Framework.
+              for a tailored application of the Simple Listening Framework.
             </p>
             <p className="body-md mb-8">
-              Whether working with individuals, teams, or entire organizations, I emphasize 
+              Whether working with individuals, teams, or entire organizations, we emphasize 
               practical skills development alongside deeper mindset shifts. This dual focus 
               ensures both immediate improvements and sustainable, long-term change.
             </p>

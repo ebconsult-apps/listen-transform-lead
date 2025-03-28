@@ -45,13 +45,20 @@ const ServicesPreview = () => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           if (entry.target === sectionRef.current) {
-            headingRef.current?.classList.add('animate-fade-in');
+            // Make sure the heading is visible first
+            if (headingRef.current) {
+              headingRef.current.classList.remove('opacity-0');
+              headingRef.current.classList.add('animate-fade-in');
+            }
             
-            // Animate cards with staggered delay
+            // Animate cards with staggered delay, ensuring they're visible first
             cardsRef.current.forEach((card, index) => {
-              setTimeout(() => {
-                card?.classList.add('animate-fade-in-up');
-              }, 200 + (index * 100));
+              if (card) {
+                card.classList.remove('opacity-0');
+                setTimeout(() => {
+                  card?.classList.add('animate-fade-in-up');
+                }, 200 + (index * 100));
+              }
             });
           }
           observer.unobserve(entry.target);
@@ -73,10 +80,10 @@ const ServicesPreview = () => {
       <div className="section-container">
         <div ref={headingRef} className="text-center max-w-3xl mx-auto mb-16 opacity-0">
           <div className="tag mb-4">Services</div>
-          <h2 className="heading-lg mb-6">How LFF Can Serve You</h2>
+          <h2 className="heading-lg mb-6">How SLF Can Serve You</h2>
           <p className="body-md">
             Whether you're leading a multinational corporation, managing complex change, 
-            or seeking personal transformation, my consultancy adapts the Lyssna-Förändra-Framework to your unique challenges.
+            or seeking personal transformation, our consultancy adapts the Simple Listening Framework to your unique challenges.
           </p>
         </div>
 
