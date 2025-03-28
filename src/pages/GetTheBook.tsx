@@ -42,9 +42,7 @@ const GetTheBook = () => {
             <div className="space-y-6 animate-fade-in">
               <div className="tag">Coming Soon</div>
               <h1 className="heading-xl">The Simple Listening Framework</h1>
-              <p className="body-lg">
-                Transform your approach to communication and leadership with the definitive guide to the Simple Listening Framework by Erik Normark.
-              </p>
+              <p className="body-lg">Transform your approach to communication and leadership with the definitive guide to the Simple Listening Framework by Erik Bohjort.</p>
               
               <div className="flex items-center space-x-4 pt-4">
                 <div className="bg-primary/10 p-3 rounded-full">
