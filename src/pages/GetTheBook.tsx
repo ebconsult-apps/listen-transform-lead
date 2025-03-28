@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Book, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,34 +7,34 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { useEffect } from "react";
-
 const GetTheBook = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [notifications, setNotifications] = useState(true);
   const [submitted, setSubmitted] = useState(false);
-  
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // In a real app, we would send this data to a backend
-    console.log({ name, email, notifications });
-    
+    console.log({
+      name,
+      email,
+      notifications
+    });
+
     // Show success message
     setSubmitted(true);
     toast({
       title: "Pre-order registered!",
-      description: "Thank you for your interest in our book. We'll notify you when it's available.",
+      description: "Thank you for your interest in our book. We'll notify you when it's available."
     });
   };
-
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-primary/5 to-background">
         <div className="section-container">
@@ -53,7 +52,7 @@ const GetTheBook = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium">Expected Release</p>
-                  <p className="text-lg font-bold">Fall 2024</p>
+                  <p className="text-lg font-bold">Fall 2025</p>
                 </div>
               </div>
               
@@ -162,37 +161,19 @@ const GetTheBook = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {!submitted ? (
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                {!submitted ? <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
-                      <Input 
-                        id="name" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Your name" 
-                        required 
-                      />
+                      <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your.email@example.com" 
-                        required 
-                      />
+                      <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your.email@example.com" required />
                     </div>
                     
                     <div className="flex items-center space-x-2 pt-2">
-                      <Checkbox 
-                        id="notifications" 
-                        checked={notifications} 
-                        onCheckedChange={(checked: boolean) => setNotifications(checked)} 
-                      />
+                      <Checkbox id="notifications" checked={notifications} onCheckedChange={(checked: boolean) => setNotifications(checked)} />
                       <Label htmlFor="notifications" className="text-sm">
                         Send me book updates and related content from SLF
                       </Label>
@@ -201,9 +182,7 @@ const GetTheBook = () => {
                     <Button type="submit" className="w-full">
                       Register Pre-order Interest
                     </Button>
-                  </form>
-                ) : (
-                  <div className="text-center py-8">
+                  </form> : <div className="text-center py-8">
                     <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                       <CheckCircle className="h-6 w-6 text-primary" />
                     </div>
@@ -212,8 +191,7 @@ const GetTheBook = () => {
                       We've recorded your interest in "The Simple Listening Framework" book. 
                       We'll notify you as soon as it becomes available.
                     </p>
-                  </div>
-                )}
+                  </div>}
               </CardContent>
               <CardFooter className="text-sm text-muted-foreground">
                 Your information will be handled according to our privacy policy.
@@ -222,8 +200,6 @@ const GetTheBook = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default GetTheBook;
