@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Book, CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+
 const GetTheBook = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ const GetTheBook = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,6 +37,7 @@ const GetTheBook = () => {
       description: "Thank you for your interest in our book. We'll notify you when it's available."
     });
   };
+
   return <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-primary/5 to-background">
@@ -188,4 +192,5 @@ const GetTheBook = () => {
       </section>
     </div>;
 };
+
 export default GetTheBook;

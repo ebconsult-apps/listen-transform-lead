@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Send } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const Contact = () => {
   const [name, setName] = useState('');
@@ -47,14 +47,18 @@ const Contact = () => {
 
     // Animate elements on page load
     setTimeout(() => {
-      heroRef.current.style.opacity = '1';
-      heroRef.current?.classList.add('animate-fade-in-up');
+      if (heroRef.current) {
+        heroRef.current.style.opacity = '1';
+        heroRef.current?.classList.add('animate-fade-in-up');
+      }
     }, 100);
     setTimeout(() => {
-      formRef.current.style.opacity = '1';
-      infoRef.current.style.opacity = '1';
-      formRef.current?.classList.add('animate-fade-in-up');
-      infoRef.current?.classList.add('animate-fade-in-up');
+      if (formRef.current && infoRef.current) {
+        formRef.current.style.opacity = '1';
+        infoRef.current.style.opacity = '1';
+        formRef.current?.classList.add('animate-fade-in-up');
+        infoRef.current?.classList.add('animate-fade-in-up');
+      }
     }, 300);
   }, []);
 

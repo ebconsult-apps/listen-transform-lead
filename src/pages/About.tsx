@@ -13,10 +13,16 @@ const About = () => {
 
     // Animate elements on page load
     setTimeout(() => {
-      heroRef.current?.classList.add('animate-fade-in-up');
+      if (heroRef.current) {
+        heroRef.current.classList.add('animate-fade-in-up');
+        heroRef.current.style.opacity = '1';
+      }
     }, 100);
     setTimeout(() => {
-      contentRef.current?.classList.add('animate-fade-in-up');
+      if (contentRef.current) {
+        contentRef.current.classList.add('animate-fade-in-up');
+        contentRef.current.style.opacity = '1';
+      }
     }, 300);
   }, []);
 
@@ -57,7 +63,7 @@ const About = () => {
                 <p className="body-md">
                   Throughout my career, I've observed that the most effective leaders and organizations share 
                   one critical skill: the ability to listen deeply and transform what they hear into strategic action. 
-                  This observation led to the development of the Lyssna-Förändra-Framework (LFF).
+                  This observation led to the development of the Simple Listening Framework (SLF).
                 </p>
               </div>
 
@@ -74,7 +80,7 @@ const About = () => {
                   you navigate complexity with clarity and confidence.
                 </p>
                 <p className="body-md">
-                  The Lyssna-Förändra-Framework embodies this philosophy, turning the art of listening into a structured 
+                  The Simple Listening Framework embodies this philosophy, turning the art of listening into a structured 
                   methodology for change that can be applied to virtually any challenge, from high-stakes negotiations to 
                   personal growth.
                 </p>
