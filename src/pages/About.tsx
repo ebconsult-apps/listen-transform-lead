@@ -52,13 +52,14 @@ const About = () => {
                 <h2 className="heading-md mb-6">My Story</h2>
                 <p className="body-md mb-4">
                   My journey into the world of transformative listening began with a simple observation: 
-                  in most challenging situations, people aren't truly heard. This insight has guided my 
-                  professional path from academic psychology to practical application in the most demanding environments.
+                  in most challenging situations, we do not listen enough. This insight has guided my 
+                  professional path from academic and clinical psychology to practical application in the 
+                  most demanding environments.
                 </p>
                 <p className="body-md mb-4">
                   As a licensed psychologist with a passion for solving complex challenges, I've had the privilege 
                   of working with a diverse range of clients – from EU policymakers and global corporations to state 
-                  agencies, banks, and innovative startups.
+                  agencies, banks, and deep tech innovative startups.
                 </p>
                 <p className="body-md">
                   Throughout my career, I've observed that the most effective leaders and organizations share 
@@ -71,8 +72,8 @@ const About = () => {
                 <h2 className="heading-md mb-6">Philosophy & Approach</h2>
                 <p className="body-md mb-4">
                   I believe that genuine transformation – whether personal or organizational – begins with listening. 
-                  Not the passive hearing we often mistake for listening, but an active, engaged process that creates 
-                  space for new insights and possibilities.
+                  Not the passive hearing we often mistake for listening, but an active, engaged process that refines
+                  knowledge and creates new insights, solutions and possibilities.
                 </p>
                 <p className="body-md mb-4">
                   My approach combines rigorous psychological principles with practical business acumen. I see myself 
@@ -91,27 +92,27 @@ const About = () => {
                 <ul className="space-y-4 body-md">
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Licensed Psychologist with specialization in organizational psychology</span>
+                    <span>Licensed Psychologist specialized in behavioral design and psychometric assessments</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Advisor to EU Parliament on policy implementation</span>
+                    <span>Author of commissioned reports informing policy for the EU Parliament</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Consultant to Fortune 500 companies on leadership development</span>
+                    <span>International keynote speaker on psychological design, innovation, and organizational behavior</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Strategic advisor to state agencies on organizational change</span>
+                    <span>Creator of psychometric tools and frameworks used globally</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Mentor to startup founders on team building and communication</span>
+                    <span>Strategic advisor supporting governmental agencies through complex organizational transformations</span>
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Published author on effective listening techniques and their applications</span>
+                    <span>Mentor and advisor to successful tech startups on team development and strategic communication</span>
                   </li>
                 </ul>
               </div>
