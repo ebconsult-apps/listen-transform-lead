@@ -10,36 +10,47 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
   // Form submission handler
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
     // Prepare email data
     const emailData = {
-      to: "hello@simplelistening.com",
-      from: email,
       name: name,
+      email: email,
       subject: subject,
       message: message
     };
     
-    // In a real-world scenario, this would call a backend API endpoint
-    console.log("Sending email data:", emailData);
-    
-    // Simulate sending email
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Send data to PHP script
+      const response = await fetch('/mail-handler.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData)
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to send message.');
+      }
+      
       setIsSubmitted(true);
       
       toast({
         title: "Message sent!",
-        description: `Your message has been sent to ${emailData.to}. We'll get back to you soon.`,
+        description: `Your message has been sent to hello@simplelistening.com. We'll get back to you soon.`,
       });
       
       // Reset form after animation completes
@@ -50,7 +61,17 @@ const Contact = () => {
         setMessage('');
         setIsSubmitted(false);
       }, 2000);
-    }, 1500);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Scroll to top on page load
@@ -97,6 +118,11 @@ const Contact = () => {
             <div ref={formRef} className="opacity-0">
               <div className="glass-card p-8 md:p-10">
                 <h2 className="heading-md mb-6">Send a Message</h2>
+                {error && (
+                  <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+                    {error}
+                  </div>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">

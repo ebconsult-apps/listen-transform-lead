@@ -14,31 +14,61 @@ const GetTheBook = () => {
   const [email, setEmail] = useState("");
   const [notifications, setNotifications] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
-    // In a real app, we would send this data to a backend
-    console.log({
+    const bookInterestData = {
       name,
       email,
       notifications
-    });
+    };
 
-    // Show success message
-    setSubmitted(true);
-    toast({
-      title: "Pre-order registered!",
-      description: "Thank you for your interest in our book. We'll notify you when it's available."
-    });
+    try {
+      // Send data to PHP script
+      const response = await fetch('/book-interest-handler.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookInterestData)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to register your interest.');
+      }
+
+      // Show success message
+      setSubmitted(true);
+      toast({
+        title: "Pre-order registered!",
+        description: "Thank you for your interest in our book. We'll notify you when it's available."
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      toast({
+        title: "Error",
+        description: err instanceof Error ? err.message : 'An unexpected error occurred',
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  return <div className="min-h-screen">
+  return (
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-24 bg-gradient-to-b from-primary/5 to-background">
         <div className="section-container">
@@ -151,28 +181,63 @@ const GetTheBook = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {!submitted ? <form onSubmit={handleSubmit} className="space-y-4">
+                {!submitted ? (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {error && (
+                      <div className="p-4 mb-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+                        {error}
+                      </div>
+                    )}
+                    
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
-                      <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required />
+                      <Input 
+                        id="name" 
+                        value={name} 
+                        onChange={e => setName(e.target.value)}
+                        placeholder="Your name" 
+                        required 
+                      />
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your.email@example.com" required />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={e => setEmail(e.target.value)}
+                        placeholder="your.email@example.com" 
+                        required 
+                      />
                     </div>
                     
                     <div className="flex items-center space-x-2 pt-2">
-                      <Checkbox id="notifications" checked={notifications} onCheckedChange={(checked: boolean) => setNotifications(checked)} />
+                      <Checkbox 
+                        id="notifications" 
+                        checked={notifications} 
+                        onCheckedChange={(checked: boolean) => setNotifications(checked)} 
+                      />
                       <Label htmlFor="notifications" className="text-sm">
                         Send me book updates and related content from SLF
                       </Label>
                     </div>
                     
-                    <Button type="submit" className="w-full">
-                      Register Pre-order Interest
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center">
+                          <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                          Processing...
+                        </div>
+                      ) : "Register Pre-order Interest"}
                     </Button>
-                  </form> : <div className="text-center py-8">
+                  </form>
+                ) : (
+                  <div className="text-center py-8">
                     <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                       <CheckCircle className="h-6 w-6 text-primary" />
                     </div>
@@ -181,7 +246,8 @@ const GetTheBook = () => {
                       We've recorded your interest in "The Simple Listening Framework" book. 
                       We'll notify you as soon as it becomes available.
                     </p>
-                  </div>}
+                  </div>
+                )}
               </CardContent>
               <CardFooter className="text-sm text-muted-foreground">
                 Your information will be handled according to our privacy policy.
@@ -190,7 +256,8 @@ const GetTheBook = () => {
           </div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
 
 export default GetTheBook;
