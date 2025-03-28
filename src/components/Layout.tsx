@@ -60,6 +60,7 @@ const Layout = () => {
                     <NavLink to="/about" className="nav-link">About Erik</NavLink>
                     <NavLink to="/framework" className="nav-link">The Framework</NavLink>
                     <NavLink to="/services" className="nav-link">Services</NavLink>
+                    <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
                     <NavLink to="/contact" className="nav-link">Contact</NavLink>
                   </nav>
                 </div>
@@ -71,6 +72,7 @@ const Layout = () => {
               <NavLink to="/about" className="nav-link">About Erik</NavLink>
               <NavLink to="/framework" className="nav-link">The Framework</NavLink>
               <NavLink to="/services" className="nav-link">Services</NavLink>
+              <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
               <NavLink to="/contact" className="nav-link">Contact</NavLink>
             </nav>
           )}
@@ -106,6 +108,7 @@ const Layout = () => {
                   <li><Link to="/about" className="text-sm text-foreground/60 hover:text-foreground transition-colors">About</Link></li>
                   <li><Link to="/framework" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Framework</Link></li>
                   <li><Link to="/services" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Services</Link></li>
+                  <li><Link to="/get-the-book" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Get the Book</Link></li>
                   <li><Link to="/contact" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Contact</Link></li>
                 </ul>
               </div>
