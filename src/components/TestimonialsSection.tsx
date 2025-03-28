@@ -6,21 +6,21 @@ import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 const testimonials = [
   {
     id: 1,
-    quote: "Erik's guidance transformed our negotiation strategy, resulting in a breakthrough deal that exceeded our expectations. His ability to help us truly listen to all stakeholders changed everything.",
-    author: "Financial Director",
-    company: "Global Banking Institution"
+    quote: "With Erik's guidance, we transformed our HR-data strategy, resulting in a breakthrough deal that exceeded our expectations.",
+    author: "CEO",
+    company: "International Healthcare Provider"
   },
   {
     id: 2,
-    quote: "Through his empathetic approach, our team found a new path forward in a challenging market. The Simple Listening Framework gave us tools we use daily to improve our communication.",
-    author: "Head of Innovation",
-    company: "Tech Startup"
+    quote: "Through his thourough and empathetic approach, Erik helped our team find a new path forward with our product strategy.",
+    author: "CEO",
+    company: "Deep Tech Startup"
   },
   {
     id: 3,
-    quote: "What sets Erik apart is his ability to combine psychological insight with practical business acumen. The framework helped us resolve conflicts that had been holding our organization back for years.",
-    author: "Operations Manager",
-    company: "State Agency"
+    quote: "What sets Erik apart is his ability to combine psychological insight with practical business acumen. Through our project together we created long term solutions for complex sustainability issues, and proved its efficiency.",
+    author: "CCO",
+    company: "Housing Organisation"
   }
 ];
 
