@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -121,11 +120,12 @@ const About = () => {
             {/* Sidebar */}
             <div className="lg:col-span-4">
               <div className="glass-card p-8 mb-8 sticky top-28">
-                <div className="aspect-[3/4] rounded-xl bg-gradient-to-br from-secondary to-accent overflow-hidden relative mb-6">
-                  <div className="absolute inset-0 bg-pattern opacity-10"></div>
-                  <div className="absolute inset-0 flex items-center justify-center text-primary/30 text-lg">
-                    Portrait Image
-                  </div>
+                <div className="aspect-[3/4] rounded-xl overflow-hidden relative mb-6">
+                  <img 
+                    src="/linkedin.png" 
+                    alt="Portrait of Erik Bohjort" 
+                    className="object-cover w-full h-full" 
+                  />
                 </div>
                 
                 <h3 className="text-xl font-bold mb-4">Erik Bohjort</h3>
