@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const sloganRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const bgPatternRef = useRef<HTMLDivElement>(null);
@@ -18,11 +19,18 @@ const Hero = () => {
     }
     
     setTimeout(() => {
+      if (sloganRef.current) {
+        sloganRef.current.style.opacity = '1';
+        sloganRef.current.classList.add('animate-fade-in');
+      }
+    }, 200);
+    
+    setTimeout(() => {
       if (subtitleRef.current) {
         subtitleRef.current.style.opacity = '1';
         subtitleRef.current.classList.add('animate-fade-in-up');
       }
-    }, 300);
+    }, 400);
     
     setTimeout(() => {
       if (ctaRef.current) {
@@ -54,6 +62,14 @@ const Hero = () => {
 
       {/* Content */}
       <div className="section-container relative z-10 flex flex-col items-center text-center">
+        <div
+          ref={sloganRef}
+          className="mb-2 tag text-lg md:text-xl"
+          style={{ opacity: '0' }}
+        >
+          First Listen
+        </div>
+        
         <h1 
           ref={titleRef}
           className="heading-xl"
@@ -68,7 +84,7 @@ const Hero = () => {
           style={{ opacity: '0' }}
         >
           I'm Erik Bohjort, licensed psychologist and guide to transformative change. 
-          Discover how the Simple Listening Framework turns genuine listening into strategic action.
+          Discover how genuine listening becomes the catalyst for meaningful action.
         </p>
         
         <div 
@@ -77,7 +93,7 @@ const Hero = () => {
           style={{ opacity: '0' }}
         >
           <Link to="/framework" className="btn-primary">
-            Discover the Framework
+            Explore the Model
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
           <Link to="/contact" className="btn-secondary">

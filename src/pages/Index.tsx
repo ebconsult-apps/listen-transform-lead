@@ -1,6 +1,6 @@
 
 import Hero from "@/components/Hero";
-import FrameworkPreview from "@/components/FrameworkPreview";
+import LewinModel from "@/components/LewinModel";
 import AboutPreview from "@/components/AboutPreview";
 import ServicesPreview from "@/components/ServicesPreview";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -17,8 +17,7 @@ const Index = () => {
     <div className="min-h-screen">
       <Hero />
       <AboutPreview />
-      <FrameworkPreview />
-      // <TestimonialsSection />
+      <LewinModel />
       <CTASection />
     </div>
   );

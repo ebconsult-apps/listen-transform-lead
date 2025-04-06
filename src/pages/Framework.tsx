@@ -1,61 +1,86 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { MessageCircle, ShieldCheck, HelpCircle, CheckCircle, Compass, Users, Heart, ArrowRight } from "lucide-react";
-const steps = [{
-  id: 1,
-  title: "Prepare Presence and Openness",
-  description: "Set aside distractions and preconceptions to create space for genuine connection.",
-  details: ["Clear your mind of preconceptions and judgments", "Create a distraction-free environment", "Adopt a mindset of genuine curiosity and openness", "Set clear intentions for the conversation"],
-  icon: <MessageCircle className="h-6 w-6" />
-}, {
-  id: 2,
-  title: "Create Trust and Safety",
-  description: "Establish a warm, respectful tone that makes every conversation psychologically safe.",
-  details: ["Use welcoming body language and tone of voice", "Demonstrate respect for all perspectives", "Establish clear boundaries and expectations", "Acknowledge emotions without judgment"],
-  icon: <ShieldCheck className="h-6 w-6" />
-}, {
-  id: 3,
-  title: "Explore with Curious Questions",
-  description: "Ask open, thought-provoking questions to uncover underlying motivations and needs.",
-  details: ["Focus on open-ended rather than yes/no questions", "Ask 'what' and 'how' questions to deepen understanding", "Explore interests rather than positions", "Follow curiosities and unexpected paths when relevant"],
-  icon: <HelpCircle className="h-6 w-6" />
-}, {
-  id: 4,
-  title: "Confirm and Summarize Insights",
-  description: "Reflect back what you've heard to ensure understanding and build mutual trust.",
-  details: ["Paraphrase key points in your own words", "Verify your understanding of emotions and needs", "Summarize patterns and themes you're observing", "Ask if your summary is accurate and complete"],
-  icon: <CheckCircle className="h-6 w-6" />
-}, {
-  id: 5,
-  title: "Deepen and Broaden Perspectives",
-  description: "Engage empathetically to explore emotions and consider broader contexts.",
-  details: ["Explore emotional dimensions of the situation", "Consider the broader context and systemic factors", "Identify unstated assumptions and mental models", "Look for connections between seemingly separate issues"],
-  icon: <Compass className="h-6 w-6" />
-}, {
-  id: 6,
-  title: "Collaborate on Solutions",
-  description: "Work together to transform insights into actionable, practical solutions.",
-  details: ["Co-create options based on shared understanding", "Build on ideas collaboratively rather than critiquing", "Focus on practical, actionable next steps", "Prioritize solutions that address core needs"],
-  icon: <Users className="h-6 w-6" />
-}, {
-  id: 7,
-  title: "Conclude with Gratitude and Follow-Up",
-  description: "Close with appreciation and a clear plan for continued progress and implementation.",
-  details: ["Express genuine appreciation for the conversation", "Summarize key insights and agreed actions", "Establish clear next steps and responsibilities", "Set expectations for follow-up and continued dialogue"],
-  icon: <Heart className="h-6 w-6" />
-}];
+import { ArrowRight, Lock, Unlock, MoveHorizontal, Headphones, MessageCircle, Users, LightbulbIcon } from "lucide-react";
+
+const stages = [
+  {
+    id: "unfreeze",
+    title: "Unfreeze",
+    description: "Create readiness for change by listening deeply to current challenges and building psychological safety.",
+    icon: <Unlock className="h-6 w-6" />,
+    color: "text-blue-500",
+    bgColor: "bg-blue-500",
+    listeningRole: "Active listening creates psychological safety and helps identify the true needs for change.",
+    details: [
+      "Build psychological safety through deep listening",
+      "Understand current state and pain points",
+      "Create readiness and openness for change",
+      "Establish trust through empathetic conversation"
+    ],
+    listeningPractices: [
+      "Ask open-ended questions about current challenges",
+      "Reflect back what you hear without judgment",
+      "Explore emotions and unspoken concerns",
+      "Validate experiences while creating space for new possibilities"
+    ]
+  },
+  {
+    id: "change",
+    title: "Change",
+    description: "Implement the change process by collaboratively exploring new approaches and possibilities.",
+    icon: <MoveHorizontal className="h-6 w-6" />,
+    color: "text-amber-500",
+    bgColor: "bg-amber-500",
+    listeningRole: "Collaborative listening guides the change process and helps adapt to emerging needs.",
+    details: [
+      "Explore options and new possibilities together",
+      "Implement changes with continuous feedback",
+      "Adapt approach based on ongoing listening",
+      "Support through transition with empathy"
+    ],
+    listeningPractices: [
+      "Listen for innovative ideas and emergent solutions",
+      "Create dialogue spaces for collaborative exploration",
+      "Check in regularly on progress and challenges",
+      "Ask questions that expand thinking and possibilities"
+    ]
+  },
+  {
+    id: "refreeze",
+    title: "Refreeze",
+    description: "Solidify the new state by listening for integration challenges and reinforcing positive changes.",
+    icon: <Lock className="h-6 w-6" />,
+    color: "text-green-500",
+    bgColor: "bg-green-500",
+    listeningRole: "Reflective listening helps identify what's working and where adjustments are needed for stability.",
+    details: [
+      "Reinforce and celebrate positive changes",
+      "Identify and address integration challenges",
+      "Establish new norms through collective dialogue",
+      "Create sustainable support systems"
+    ],
+    listeningPractices: [
+      "Listen for signs of reversion to old patterns",
+      "Gather stories of success and positive impact",
+      "Facilitate dialogue about sustaining the change",
+      "Ask questions about what support is needed going forward"
+    ]
+  }
+];
+
 const Framework = () => {
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStage, setActiveStage] = useState("unfreeze");
   const heroRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
-  const stepsRef = useRef<HTMLDivElement>(null);
+  const stagesRef = useRef<HTMLDivElement>(null);
 
-  // Handle step selection
-  const handleStepClick = (id: number) => {
-    setActiveStep(id);
-    // Smooth scroll to steps section on mobile
+  // Handle stage selection
+  const handleStageClick = (id: string) => {
+    setActiveStage(id);
+    // Smooth scroll to stages section on mobile
     if (window.innerWidth < 768) {
-      stepsRef.current?.scrollIntoView({
+      stagesRef.current?.scrollIntoView({
         behavior: 'smooth'
       });
     }
@@ -79,23 +104,26 @@ const Framework = () => {
       }
     }, 300);
     setTimeout(() => {
-      if (stepsRef.current) {
-        stepsRef.current.style.opacity = '1';
-        stepsRef.current.classList.add('animate-fade-in');
+      if (stagesRef.current) {
+        stagesRef.current.style.opacity = '1';
+        stagesRef.current.classList.add('animate-fade-in');
       }
     }, 500);
   }, []);
-  return <div className="min-h-screen">
+
+  // Find the current stage object
+  const currentStage = stages.find(stage => stage.id === activeStage) || stages[0];
+
+  return (
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="section-container">
-          <div ref={heroRef} style={{
-          opacity: '0'
-        }}>
-            <div className="tag mb-4">The Framework</div>
-            <h1 className="heading-xl mb-6">The Simple Listening Framework</h1>
+          <div ref={heroRef} style={{ opacity: '0' }}>
+            <div className="tag mb-4">First Listen</div>
+            <h1 className="heading-xl mb-6">Lewin's Change Model</h1>
             <p className="body-lg max-w-3xl">
-              A structured approach to transform listening into meaningful action.
+              A simple, powerful approach that positions listening as the catalyst for transformative change.
             </p>
           </div>
         </div>
@@ -104,89 +132,166 @@ const Framework = () => {
       {/* Introduction Section */}
       <section className="pb-20">
         <div className="section-container">
-          <div ref={introRef} className="glass-card p-8 md:p-10 max-w-3xl mx-auto" style={{
-          opacity: '0'
-        }}>
-            <h2 className="heading-md mb-6">The Power of Genuine Listening</h2>
+          <div ref={introRef} className="glass-card p-8 md:p-10 max-w-3xl mx-auto" style={{ opacity: '0' }}>
+            <h2 className="heading-md mb-6">The Power of Listening in Change</h2>
             <p className="body-md mb-4">
-              The Simple Listening Framework (SLF) is rooted in one timeless principle: 
-              change begins when we listen deeply and with empathy. By understanding the 
-              real issues behind every conversation, we pave the way for transformational change.
+              Kurt Lewin's three-stage model (Unfreeze-Change-Refreeze) has guided successful organizational 
+              and personal transformations for decades. What makes this model particularly powerful is 
+              understanding that <strong>listening</strong> serves as the critical catalyst at each stage.
             </p>
             <p className="body-md">
-              Developed through years of practical application across diverse organizational 
-              settings, SLF provides a structured yet flexible approach to turning insights 
-              into action. The seven steps outlined below form a comprehensive methodology 
-              that can be applied to virtually any challenge – from high-stakes negotiations 
-              to personal growth.
+              By positioning <strong>listening first</strong> in the change process, we create the psychological 
+              safety necessary for meaningful transformation. When we truly listen, we uncover the real 
+              challenges, co-create more effective solutions, and establish the support needed to sustain 
+              positive change.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Steps Section */}
+      {/* Stages Section */}
       <section className="pb-24" id="framework-steps">
-        <div ref={stepsRef} className="section-container" style={{
-        opacity: '0'
-      }}>
-          <h2 className="heading-md text-center mb-12">The Seven Steps</h2>
+        <div ref={stagesRef} className="section-container" style={{ opacity: '0' }}>
+          <h2 className="heading-md text-center mb-12">The Three Stages</h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left side - Step List */}
+            {/* Left side - Stage List */}
             <div className="lg:col-span-1 space-y-3">
-              {steps.map(step => <button key={step.id} className={`w-full text-left p-4 rounded-lg transition-all duration-300 flex items-start gap-4 ${activeStep === step.id ? "glass-card shadow-md" : "hover:bg-white/50"}`} onClick={() => handleStepClick(step.id)}>
-                  <div className={`flex-shrink-0 p-2 rounded-full ${activeStep === step.id ? "bg-primary text-white" : "bg-secondary text-primary"}`}>
-                    {step.icon}
+              {stages.map(stage => (
+                <button
+                  key={stage.id}
+                  className={`w-full text-left p-4 rounded-lg transition-all duration-300 flex items-start gap-4 ${
+                    activeStage === stage.id ? "glass-card shadow-md" : "hover:bg-white/50"
+                  }`}
+                  onClick={() => handleStageClick(stage.id)}
+                >
+                  <div className={`flex-shrink-0 p-2 rounded-full ${
+                    activeStage === stage.id 
+                      ? `${stage.bgColor} text-white` 
+                      : "bg-secondary text-foreground"
+                  }`}>
+                    {stage.icon}
                   </div>
                   <div>
-                    <h3 className={`font-medium ${activeStep === step.id ? "text-primary" : "text-foreground"}`}>
-                      {step.title}
+                    <h3 className={`font-medium ${
+                      activeStage === stage.id ? stage.color : "text-foreground"
+                    }`}>
+                      {stage.title}
                     </h3>
-                    {activeStep === step.id && <p className="mt-1 text-sm text-foreground/70 animate-fade-in">
-                        {step.description}
-                      </p>}
+                    {activeStage === stage.id && (
+                      <p className="mt-1 text-sm text-foreground/70 animate-fade-in">
+                        {stage.description}
+                      </p>
+                    )}
                   </div>
-                </button>)}
+                </button>
+              ))}
             </div>
 
-            {/* Right side - Detailed Step Info */}
+            {/* Right side - Detailed Stage Info */}
             <div className="lg:col-span-2 glass-card p-8 md:p-10">
               <div className="mb-8">
-                <span className="inline-block bg-primary/10 text-primary rounded-full px-3 py-1 text-sm font-medium mb-4">
-                  Step {activeStep} of 7
-                </span>
-                <h3 className="text-2xl font-bold text-foreground mb-4">
-                  {steps[activeStep - 1].title}
+                <div className="flex justify-between items-center mb-6">
+                  <span className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${
+                    activeStage === "unfreeze" ? "bg-blue-100 text-blue-600" :
+                    activeStage === "change" ? "bg-amber-100 text-amber-600" :
+                    "bg-green-100 text-green-600"
+                  }`}>
+                    {currentStage.title} Stage
+                  </span>
+                  
+                  <div className="flex items-center gap-2">
+                    <Headphones className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">Listening Role</span>
+                  </div>
+                </div>
+                
+                <h3 className={`text-2xl font-bold mb-4 ${
+                  activeStage === "unfreeze" ? "text-blue-500" :
+                  activeStage === "change" ? "text-amber-500" :
+                  "text-green-500"
+                }`}>
+                  {currentStage.title}
                 </h3>
-                <p className="text-lg text-foreground/80 mb-8 leading-relaxed">
-                  {steps[activeStep - 1].description}
-                </p>
+                
+                <div className="mb-6 flex items-start gap-3">
+                  <MessageCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                  <p className="text-lg text-foreground/80 leading-relaxed">
+                    {currentStage.listeningRole}
+                  </p>
+                </div>
 
-                <div className="bg-muted/50 rounded-xl p-6">
-                  <h4 className="font-medium mb-4">Key Elements:</h4>
-                  <ul className="space-y-3">
-                    {steps[activeStep - 1].details.map((detail, idx) => <li key={idx} className="flex items-start">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                        <span className="text-foreground/80">{detail}</span>
-                      </li>)}
-                  </ul>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="bg-white/50 p-6 rounded-xl">
+                    <h4 className="flex items-center gap-2 font-medium mb-4">
+                      <Users className="h-5 w-5 text-foreground/70" />
+                      <span>Key Activities:</span>
+                    </h4>
+                    <ul className="space-y-3">
+                      {currentStage.details.map((detail, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <div className={`h-1.5 w-1.5 rounded-full mt-2 mr-3 flex-shrink-0 ${
+                            activeStage === "unfreeze" ? "bg-blue-500" :
+                            activeStage === "change" ? "bg-amber-500" :
+                            "bg-green-500"
+                          }`}></div>
+                          <span className="text-foreground/80">{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-white/50 p-6 rounded-xl">
+                    <h4 className="flex items-center gap-2 font-medium mb-4">
+                      <LightbulbIcon className="h-5 w-5 text-foreground/70" />
+                      <span>Listening Practices:</span>
+                    </h4>
+                    <ul className="space-y-3">
+                      {currentStage.listeningPractices.map((practice, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <div className={`h-1.5 w-1.5 rounded-full mt-2 mr-3 flex-shrink-0 ${
+                            activeStage === "unfreeze" ? "bg-blue-500" :
+                            activeStage === "change" ? "bg-amber-500" :
+                            "bg-green-500"
+                          }`}></div>
+                          <span className="text-foreground/80">{practice}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
 
               <div className="mb-8">
                 <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
-                  <div className="absolute left-0 top-0 h-full bg-primary transition-all duration-500" style={{
-                  width: `${activeStep / steps.length * 100}%`
-                }}></div>
+                  <div className={`absolute left-0 top-0 h-full transition-all duration-500 ${
+                    activeStage === "unfreeze" ? "bg-blue-500" :
+                    activeStage === "change" ? "bg-amber-500" :
+                    "bg-green-500"
+                  }`} style={{
+                    width: `${activeStage === "unfreeze" ? 33 : activeStage === "change" ? 66 : 100}%`
+                  }}></div>
                 </div>
               </div>
 
               <div className="flex justify-between items-center">
-                <button onClick={() => setActiveStep(prev => prev === 1 ? steps.length : prev - 1)} className="text-foreground/70 hover:text-foreground transition-colors">
-                  Previous Step
+                <button 
+                  onClick={() => setActiveStage(prev => 
+                    prev === "unfreeze" ? "refreeze" : 
+                    prev === "change" ? "unfreeze" : "change"
+                  )} 
+                  className="text-foreground/70 hover:text-foreground transition-colors"
+                >
+                  Previous Stage
                 </button>
-                <button onClick={() => setActiveStep(prev => prev === steps.length ? 1 : prev + 1)} className="text-primary hover:text-primary/80 font-medium transition-colors flex items-center">
-                  Next Step
+                <button 
+                  onClick={() => setActiveStage(prev => 
+                    prev === "unfreeze" ? "change" : 
+                    prev === "change" ? "refreeze" : "unfreeze"
+                  )} 
+                  className="text-primary hover:text-primary/80 font-medium transition-colors flex items-center"
+                >
+                  Next Stage
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </button>
               </div>
@@ -199,10 +304,10 @@ const Framework = () => {
       <section className="pb-24">
         <div className="section-container">
           <div className="glass-card p-8 md:p-10 text-center">
-            <h2 className="heading-md mb-6">Apply the Framework to Your Challenges</h2>
+            <h2 className="heading-md mb-6">Apply the Model to Your Challenges</h2>
             <p className="body-md mb-8 max-w-2xl mx-auto">
-              Ready to experience the transformative power of the Simple Listening Framework? 
-              Let's explore how these principles can be applied to your specific context.
+              Ready to experience how the power of listening can transform your organization or personal journey? 
+              Let's explore how Lewin's model can be applied to your specific context.
             </p>
             <Link to="/contact" className="btn-primary">
               Book a Consultation
@@ -211,6 +316,8 @@ const Framework = () => {
           </div>
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default Framework;
