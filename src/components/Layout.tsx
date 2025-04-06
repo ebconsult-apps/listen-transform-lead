@@ -58,7 +58,7 @@ const Layout = () => {
                   <nav className="flex flex-col space-y-3">
                     <NavLink to="/" className="nav-link">Home</NavLink>
                     <NavLink to="/about" className="nav-link">About Erik</NavLink>
-                    <NavLink to="/framework" className="nav-link">The Framework</NavLink>
+                    <NavLink to="/resources" className="nav-link">Resources</NavLink>
                     <NavLink to="/services" className="nav-link">Services</NavLink>
                     <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
                     <NavLink to="/contact" className="nav-link">Contact</NavLink>
@@ -70,7 +70,7 @@ const Layout = () => {
             <nav className="flex items-center space-x-1">
               <NavLink to="/" className="nav-link">Home</NavLink>
               <NavLink to="/about" className="nav-link">About Erik</NavLink>
-              <NavLink to="/framework" className="nav-link">The Framework</NavLink>
+              <NavLink to="/resources" className="nav-link">Resources</NavLink>
               <NavLink to="/services" className="nav-link">Services</NavLink>
               <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
               <NavLink to="/contact" className="nav-link">Contact</NavLink>
@@ -106,7 +106,7 @@ const Layout = () => {
                 <ul className="space-y-2">
                   <li><Link to="/" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Home</Link></li>
                   <li><Link to="/about" className="text-sm text-foreground/60 hover:text-foreground transition-colors">About</Link></li>
-                  <li><Link to="/framework" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Framework</Link></li>
+                  <li><Link to="/resources" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Resources</Link></li>
                   <li><Link to="/services" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Services</Link></li>
                   <li><Link to="/get-the-book" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Get the Book</Link></li>
                   <li><Link to="/contact" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Contact</Link></li>

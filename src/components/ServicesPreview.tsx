@@ -1,32 +1,32 @@
 
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Briefcase, Users, Lightbulb, Heart, ArrowRight } from "lucide-react";
+import { Briefcase, Lightbulb, ArrowRight, Target, Network, FlaskConical } from "lucide-react";
 
 const services = [
   {
     id: 1,
-    icon: <Briefcase className="h-6 w-6" />,
-    title: "Business Consulting & Leadership",
-    description: "Help leaders navigate change through strategic communication and deep listening."
+    icon: <Target className="h-6 w-6" />,
+    title: "Clarity of Objectives",
+    description: "Establish clear, measurable objectives and key results for organizational change."
   },
   {
     id: 2,
-    icon: <Users className="h-6 w-6" />,
-    title: "Negotiation & Conflict Resolution",
-    description: "Transform complex conflicts into opportunities for growth and understanding."
+    icon: <Network className="h-6 w-6" />,
+    title: "Leverage through Systems Mapping",
+    description: "Identify key leverage points in complex organizational systems for maximum impact."
   },
   {
     id: 3,
-    icon: <Lightbulb className="h-6 w-6" />,
-    title: "Product Innovation & Design Thinking",
-    description: "Leverage empathetic listening for breakthrough innovation and product development."
+    icon: <FlaskConical className="h-6 w-6" />,
+    title: "Experimentation & Prototyping",
+    description: "Rapidly test interventions to validate effectiveness before scaling."
   },
   {
     id: 4,
-    icon: <Heart className="h-6 w-6" />,
-    title: "Personal Coaching & Relationships",
-    description: "Transform personal challenges into opportunities for meaningful growth."
+    icon: <Briefcase className="h-6 w-6" />,
+    title: "Business Consulting",
+    description: "Apply the CLEAR framework to your specific organizational challenges."
   }
 ];
 
@@ -80,10 +80,10 @@ const ServicesPreview = () => {
       <div className="section-container">
         <div ref={headingRef} className="text-center max-w-3xl mx-auto mb-16 opacity-0">
           <div className="tag mb-4">Services</div>
-          <h2 className="heading-lg mb-6">How SLF Can Serve You</h2>
+          <h2 className="heading-lg mb-6">The CLEAR Change Framework</h2>
           <p className="body-md">
-            Whether you're leading a multinational corporation, managing complex change, 
-            or seeking personal transformation, our consultancy adapts the Simple Listening Framework to your unique challenges.
+            A systematic approach to organizational change that drives measurable results through 
+            clarity, systems thinking, experimentation, analysis, and refinement.
           </p>
         </div>
 
@@ -116,7 +116,7 @@ const ServicesPreview = () => {
         
         <div className="mt-16 text-center">
           <Link to="/services" className="btn-primary">
-            Explore All Services
+            Explore Our Approach
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>
