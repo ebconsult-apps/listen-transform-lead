@@ -121,10 +121,10 @@ const About = () => {
             <div className="lg:col-span-4">
               <div className="glass-card p-8 mb-8 sticky top-28">
                 <div className="aspect-[3/4] rounded-xl overflow-hidden relative mb-6">
-                  <img 
-                    src="/linkedin.png" 
-                    alt="Portrait of Erik Bohjort" 
-                    className="object-cover w-full h-full" 
+                  <img
+                    src="/erik-portrait.jpg"
+                    alt="Portrait of Erik Bohjort"
+                    className="object-cover w-full h-full"
                   />
                 </div>
                 

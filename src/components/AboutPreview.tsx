@@ -55,10 +55,10 @@ const AboutPreview = () => {
             <div className="relative">
               {/* Main image replaced with bw.png */}
               <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
-                <img 
-                  src="/bw.png" 
-                  alt="Portrait Image" 
-                  className="object-cover w-full h-full" 
+                <img
+                  src="/erik-portrait.jpg"
+                  alt="Portrait of Erik Bohjort"
+                  className="object-cover w-full h-full"
                 />
               </div>
               

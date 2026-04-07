@@ -1,12 +1,12 @@
-name: Deploy React to GitHub Pages
+name: Build and Deploy to Hostup
 
 on:
   push:
     branches:
-      - main  # or the branch you're pushing your source code to
+      - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,8 +22,28 @@ jobs:
           npm install
           npm run build
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist  # <-- change to build if using CRA
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H pi.hostup.se >> ~/.ssh/known_hosts
+
+      - name: Deploy site to clear-framework.com
+        run: |
+          rsync -avz --delete \
+            --exclude='book-interest-handler.php' \
+            --exclude='mail-handler.php' \
+            --exclude='book_interests.csv' \
+            dist/ dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
+
+      - name: Deploy redirect for simplelistening.com
+        run: |
+          echo '<IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteCond %{HTTP_HOST} ^(www\.)?simplelistening\.com$ [NC]
+            RewriteRule ^(.*)$ https://clear-framework.com/$1 [R=301,L]
+          </IfModule>' | ssh dwdda@pi.hostup.se 'cat > /home/dwdda/public_html/.htaccess'

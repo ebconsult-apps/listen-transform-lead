@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Book, CheckCircle, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,8 +52,8 @@ const GetTheBook = () => {
       // Show success message
       setSubmitted(true);
       toast({
-        title: "Pre-order registered!",
-        description: "Thank you for your interest in our book. We'll notify you when it's available."
+        title: "Interest registered!",
+        description: "Thank you for your interest. We'll notify you when the book becomes available."
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -77,20 +77,10 @@ const GetTheBook = () => {
               <div className="tag">Coming Soon</div>
               <h1 className="heading-xl">The Simple Listening Framework</h1>
               <p className="body-lg">Transform your approach to communication and leadership with the definitive guide to the Simple Listening Framework by Erik Bohjort.</p>
-              
-              <div className="flex items-center space-x-4 pt-4">
-                <div className="bg-primary/10 p-3 rounded-full">
-                  <Book size={24} className="text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Expected Release</p>
-                  <p className="text-lg font-bold">Fall 2025</p>
-                </div>
-              </div>
-              
+
               <div className="pt-6">
-                <a href="#pre-order" className="btn-primary">
-                  Pre-order Now
+                <a href="#register-interest" className="btn-primary">
+                  Register Your Interest
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </div>
@@ -160,24 +150,24 @@ const GetTheBook = () => {
         </div>
       </section>
 
-      {/* Pre-order Section */}
-      <section id="pre-order" className="py-24 bg-muted">
+      {/* Register Interest Section */}
+      <section id="register-interest" className="py-24 bg-muted">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center mb-12">
-            <div className="tag mb-4">Pre-order</div>
-            <h2 className="heading-lg mb-6">Reserve Your Copy Today</h2>
+            <div className="tag mb-4">Stay Updated</div>
+            <h2 className="heading-lg mb-6">Register Your Interest</h2>
             <p className="body-md max-w-2xl mx-auto">
-              Be among the first to receive "The Simple Listening Framework" when it launches. 
-              Register your interest now and we'll notify you as soon as the book is available.
+              Be among the first to know when "The Simple Listening Framework" becomes available.
+              Sign up below and we'll keep you in the loop.
             </p>
           </div>
           
           <div className="max-w-md mx-auto">
             <Card>
               <CardHeader>
-                <CardTitle>Pre-order Registration</CardTitle>
+                <CardTitle>Register Your Interest</CardTitle>
                 <CardDescription>
-                  Fill out this form to be notified when the book is available for purchase.
+                  Fill out this form to be notified when the book becomes available.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -233,7 +223,7 @@ const GetTheBook = () => {
                           <div className="h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                           Processing...
                         </div>
-                      ) : "Register Pre-order Interest"}
+                      ) : "Register Interest"}
                     </Button>
                   </form>
                 ) : (
@@ -243,8 +233,8 @@ const GetTheBook = () => {
                     </div>
                     <h3 className="text-xl font-bold mb-2">Thank You!</h3>
                     <p className="text-muted-foreground">
-                      We've recorded your interest in "The Simple Listening Framework" book. 
-                      We'll notify you as soon as it becomes available.
+                      We've recorded your interest in "The Simple Listening Framework."
+                      We'll be in touch when the book becomes available.
                     </p>
                   </div>
                 )}
