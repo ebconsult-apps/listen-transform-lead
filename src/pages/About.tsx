@@ -49,8 +49,8 @@ const About = () => {
             <div className="tag mb-4">About</div>
             <h1 className="heading-xl mb-6">Erik Bohjort</h1>
             <p className="body-lg max-w-3xl">
-              Licensed psychologist and guide to transformative change,
-              helping organizations and individuals turn listening into action.
+              Licensed psychologist, founder of EB Consulting, and creator of the CLEAR Change Framework.
+              Leading a team of consultants who help organizations turn insight into lasting transformation.
             </p>
           </div>
         </div>
@@ -98,6 +98,22 @@ const About = () => {
                   The CLEAR Change Framework embodies this philosophy, turning the art of listening into a structured
                   methodology for change that can be applied to virtually any challenge, from high-stakes negotiations to
                   personal growth.
+                </p>
+              </div>
+
+              <div className="glass-card p-8 md:p-10 mb-10">
+                <h2 className="heading-md mb-6">The Team</h2>
+                <p className="body-md mb-4">
+                  While Erik leads every engagement personally, he works with a curated network of
+                  senior consultants — each bringing deep expertise in their domain. This means we can
+                  scale to match your organization's needs without sacrificing quality or the personal
+                  touch that defines our work.
+                </p>
+                <p className="body-md">
+                  Our consultants are selected for their combination of practical experience and
+                  analytical rigor. Whether your challenge spans multiple countries, requires industry-specific
+                  knowledge, or demands parallel workstreams, the team behind the CLEAR framework
+                  has the capacity to deliver.
                 </p>
               </div>
 

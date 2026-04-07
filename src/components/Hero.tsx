@@ -83,7 +83,7 @@ const Hero = () => {
           className="mt-6 body-lg max-w-2xl"
           style={{ opacity: '0' }}
         >
-          A psychology-backed, five-step approach to organizational transformation. Combining behavioral science, systems thinking, and iterative experimentation to drive lasting change.
+          Founded by licensed psychologist Erik Bohjort, our team of consultants helps organizations drive lasting transformation through behavioral science, systems thinking, and iterative experimentation.
         </p>
         
         <div 

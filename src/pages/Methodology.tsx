@@ -149,8 +149,9 @@ const Methodology = () => {
               Unfreeze-Change-Refreeze model, with listening as the catalyst at every stage.
             </p>
             <p className="body-md">
-              Created by Erik Bohjort, Licensed Psychologist, CLEAR bridges the gap between
-              academic research and practical organizational needs.
+              Created by Erik Bohjort, Licensed Psychologist, and delivered by a team of
+              senior consultants, CLEAR bridges the gap between academic research and
+              practical organizational needs.
             </p>
           </section>
 

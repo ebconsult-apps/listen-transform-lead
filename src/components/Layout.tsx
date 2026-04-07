@@ -94,7 +94,7 @@ const Layout = () => {
                 <span className="text-primary">C</span>LEAR
               </Link>
               <p className="mt-2 text-sm text-foreground/60 max-w-md">
-                The CLEAR Change Framework helps organizations drive lasting transformation through behavioral science, systems thinking, and iterative experimentation.
+                Founded by licensed psychologist Erik Bohjort. Our team of consultants helps organizations drive lasting transformation through the CLEAR Change Framework.
               </p>
             </div>
             

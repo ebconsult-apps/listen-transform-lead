@@ -38,9 +38,10 @@ const Services = () => {
           <div className="tag mb-4">Services</div>
           <h1 className="heading-xl mb-6">How We Work Together</h1>
           <p className="body-lg max-w-3xl">
-            Every engagement is built on the <Link to="/methodology" className="text-primary hover:text-primary/80 font-medium">CLEAR Change Framework</Link> —
-            a psychology-backed methodology for organizational transformation.
-            The format depends on where you are and what you need.
+            Every engagement is built on the <Link to="/methodology" className="text-primary hover:text-primary/80 font-medium">CLEAR Change Framework</Link> and
+            led by founder Erik Bohjort. Depending on scope, our team of senior consultants
+            can scale to match your organization's needs — from a focused diagnostic to a
+            multi-country transformation program.
           </p>
         </div>
       </section>
