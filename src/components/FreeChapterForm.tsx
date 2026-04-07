@@ -39,7 +39,7 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
       setSubmitted(true);
       toast({
         title: "Chapter on its way!",
-        description: "Check your inbox for a free chapter of The Simple Listening Framework.",
+        description: "Check your inbox for a free chapter of The CLEAR Change Framework.",
       });
       onSuccess?.();
     } catch (err) {
@@ -62,7 +62,7 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
         </div>
         <h3 className="text-xl font-bold mb-2">Thank You!</h3>
         <p className="text-muted-foreground">
-          A free chapter of "The Simple Listening Framework" is on its way to your inbox.
+          A free chapter of "The CLEAR Change Framework" is on its way to your inbox.
         </p>
       </div>
     );

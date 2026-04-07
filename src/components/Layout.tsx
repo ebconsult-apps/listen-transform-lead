@@ -29,7 +29,7 @@ const Layout = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "py-3 bg-white/80 backdrop-blur-lg shadow-sm"
+            ? "py-3 bg-white/95 shadow-sm"
             : "py-5 bg-transparent"
         }`}
       >

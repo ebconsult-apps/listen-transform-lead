@@ -71,7 +71,7 @@ const BookPreview = () => {
                 </div>
               </div>
 
-              <h2 className="heading-lg mb-2">The Simple Listening Framework</h2>
+              <h2 className="heading-lg mb-2">The CLEAR Change Framework</h2>
               <p className="text-lg text-primary/80 font-medium mb-6">
                 By Erik Bohjort
               </p>
@@ -124,7 +124,7 @@ const BookPreview = () => {
             <h3 className="heading-md mb-2">Get a Free Chapter</h3>
             <p className="text-sm text-muted-foreground mb-6">
               Enter your details below and we'll send you a free chapter of
-              The Simple Listening Framework.
+              The CLEAR Change Framework.
             </p>
 
             <FreeChapterForm onSuccess={() => {}} />

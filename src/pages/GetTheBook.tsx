@@ -73,13 +73,13 @@ const GetTheBook = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="The Simple Listening Framework Book | Erik Bohjort"
-        description="Discover how genuine, structured listening can unlock organizational transformation. The Simple Listening Framework by Erik Bohjort gives leaders a practical blueprint for turning listening into strategic action."
+        title="The CLEAR Change Framework Book | Erik Bohjort"
+        description="Discover how genuine, structured listening can unlock organizational transformation. The CLEAR Change Framework by Erik Bohjort gives leaders a practical blueprint for turning listening into strategic action."
         path="/get-the-book"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Book",
-          "name": "The Simple Listening Framework",
+          "name": "The CLEAR Change Framework",
           "author": { "@type": "Person", "name": "Erik Bohjort" },
           "bookFormat": "EBook",
           "bookEdition": "First Edition",
@@ -93,7 +93,7 @@ const GetTheBook = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in">
               <div className="tag">Coming Soon</div>
-              <h1 className="heading-xl">The Simple Listening Framework</h1>
+              <h1 className="heading-xl">The CLEAR Change Framework</h1>
               <p className="body-lg">
                 Most change initiatives fail not because of bad strategy, but because leaders stop listening too soon.
                 This book gives you a proven, psychology-backed framework for turning genuine listening into the catalyst
@@ -276,7 +276,7 @@ const GetTheBook = () => {
             <h2 className="heading-lg mb-6">Be the First to Know</h2>
             <p className="body-md max-w-2xl mx-auto">
               Pre-register for launch updates and be among the first to get your copy
-              of "The Simple Listening Framework" when it releases.
+              of "The CLEAR Change Framework" when it releases.
             </p>
           </div>
 
@@ -327,7 +327,7 @@ const GetTheBook = () => {
                         onCheckedChange={(checked: boolean) => setNotifications(checked)}
                       />
                       <Label htmlFor="notifications" className="text-sm">
-                        Send me book updates and related content from SLF
+                        Send me book updates and related content from CLEAR Change Framework
                       </Label>
                     </div>
 
@@ -351,7 +351,7 @@ const GetTheBook = () => {
                     </div>
                     <h3 className="text-xl font-bold mb-2">You're on the List!</h3>
                     <p className="text-muted-foreground">
-                      We'll notify you as soon as "The Simple Listening Framework" is available,
+                      We'll notify you as soon as "The CLEAR Change Framework" is available,
                       along with any early-bird offers.
                     </p>
                   </div>

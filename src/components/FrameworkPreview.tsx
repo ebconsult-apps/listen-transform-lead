@@ -102,10 +102,10 @@ const FrameworkPreview = () => {
       <div ref={sectionRef} className="section-container" style={{ opacity: '0' }}>
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="tag mb-4">The Framework</div>
-          <h2 className="heading-lg mb-6">The Simple Listening Framework</h2>
+          <h2 className="heading-lg mb-6">The CLEAR Change Framework</h2>
           <p className="body-md">
             Built on the principle that true change begins with genuine listening, 
-            SLF provides a structured approach to transform insights into meaningful action.
+            The CLEAR framework provides a structured approach to transform insights into meaningful action.
           </p>
         </div>
 
