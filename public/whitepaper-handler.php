@@ -63,7 +63,7 @@ if (!array_key_exists($whitepaper_id, $whitepaper_map)) {
 $pdf_url = $whitepaper_map[$whitepaper_id];
 
 // Prepare email headers
-$to = "hello@simplelistening.com";
+$to = "erik@eb-consulting.se";
 $headers = "From: $email" . "\r\n" .
     "Reply-To: $email" . "\r\n" .
     "X-Mailer: PHP/" . phpversion() . "\r\n" .

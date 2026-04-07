@@ -62,7 +62,7 @@ if ($totalScore <= 12) {
 }
 
 // Send notification email
-$to = "hello@simplelistening.com";
+$to = "erik@eb-consulting.se";
 $headers = "From: $email\r\n" .
     "Reply-To: $email\r\n" .
     "MIME-Version: 1.0\r\n" .

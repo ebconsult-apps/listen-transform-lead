@@ -52,7 +52,7 @@ const Contact = () => {
       
       toast({
         title: "Message sent!",
-        description: `Your message has been sent to hello@simplelistening.com. We'll get back to you soon.`,
+        description: `Your message has been sent to erik@eb-consulting.se. We'll get back to you soon.`,
       });
       
       // Reset form after animation completes
@@ -230,8 +230,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-foreground mb-2">Email</h3>
-                    <a href="mailto:hello@simplelistening.com" className="text-primary hover:text-primary/80 transition-colors">
-                      hello@simplelistening.com
+                    <a href="mailto:erik@eb-consulting.se" className="text-primary hover:text-primary/80 transition-colors">
+                      erik@eb-consulting.se
                     </a>
                   </div>
                 </div>

@@ -32,10 +32,10 @@ const CalendlyEmbed = () => {
         <Mail className="h-4 w-4" />
         <span>Or email directly:</span>
         <a
-          href="mailto:hello@simplelistening.com"
+          href="mailto:erik@eb-consulting.se"
           className="text-primary hover:text-primary/80 transition-colors"
         >
-          hello@simplelistening.com
+          erik@eb-consulting.se
         </a>
       </div>
     </div>

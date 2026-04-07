@@ -126,10 +126,6 @@ const About = () => {
                   </li>
                   <li className="flex items-start">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
-                    <span>Author of commissioned reports informing policy for the EU Parliament</span>
-                  </li>
-                  <li className="flex items-start">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-3 flex-shrink-0"></div>
                     <span>International keynote speaker on psychological design, innovation, and organizational behavior</span>
                   </li>
                   <li className="flex items-start">

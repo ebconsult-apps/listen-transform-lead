@@ -55,7 +55,7 @@ fputcsv($file_handle, [$name, $email, date("Y-m-d H:i:s")]);
 fclose($file_handle);
 
 // Prepare notification email
-$to = "hello@simplelistening.com";
+$to = "erik@eb-consulting.se";
 $headers = "From: $email" . "\r\n" .
     "Reply-To: $email" . "\r\n" .
     "X-Mailer: PHP/" . phpversion() . "\r\n" .

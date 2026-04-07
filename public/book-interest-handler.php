@@ -35,7 +35,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Prepare email headers
-$to = "hello@simplelistening.com";
+$to = "erik@eb-consulting.se";
 $headers = "From: $email" . "\r\n" .
     "Reply-To: $email" . "\r\n" .
     "X-Mailer: PHP/" . phpversion() . "\r\n" .
