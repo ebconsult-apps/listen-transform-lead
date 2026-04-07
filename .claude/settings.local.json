@@ -142,7 +142,13 @@
       "Bash(python3 -c \"from PIL import Image; print\\(''OK''\\)\")",
       "Bash(python3:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(where cpanel:*)",
+      "Bash(where whm:*)",
+      "Bash(curl -s --head https://pi.hostup.se:2083)",
+      "Bash(npm ls:*)",
+      "WebFetch(domain:clear-framework.com)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }
