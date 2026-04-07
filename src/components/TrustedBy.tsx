@@ -1,11 +1,45 @@
 import { useEffect, useRef } from "react";
 
-const logoFiles = Array.from({ length: 38 }, (_, i) => {
-  const num = String(i + 1).padStart(2, "0");
-  const pngNums = [1, 5, 11, 18, 22, 34, 35, 36, 38];
-  const ext = pngNums.includes(i + 1) ? "png" : "svg";
-  return `/logos/logo-${num}.${ext}`;
-});
+// Shuffled order, logo-31 (removed) excluded
+const logos: { src: string; tall?: boolean }[] = [
+  { src: "/logos/logo-17.svg" },
+  { src: "/logos/logo-05.png" },
+  { src: "/logos/logo-33.svg" },
+  { src: "/logos/logo-09.svg" },
+  { src: "/logos/logo-22.png" },
+  { src: "/logos/logo-14.svg" },
+  { src: "/logos/logo-38.png" },
+  { src: "/logos/logo-02.svg" },
+  { src: "/logos/logo-28.svg", tall: true },
+  { src: "/logos/logo-25.svg" },
+  { src: "/logos/logo-36.png" },
+  { src: "/logos/logo-07.svg" },
+  { src: "/logos/logo-20.svg" },
+  { src: "/logos/logo-01.png" },
+  { src: "/logos/logo-34.png" },
+  { src: "/logos/logo-12.svg" },
+  { src: "/logos/logo-30.svg" },
+  { src: "/logos/logo-04.svg" },
+  { src: "/logos/logo-18.png" },
+  { src: "/logos/logo-37.svg" },
+  { src: "/logos/logo-11.png" },
+  { src: "/logos/logo-26.svg" },
+  { src: "/logos/logo-08.svg" },
+  { src: "/logos/logo-35.png" },
+  { src: "/logos/logo-15.svg" },
+  { src: "/logos/logo-03.svg" },
+  { src: "/logos/logo-21.svg" },
+  { src: "/logos/logo-10.svg" },
+  { src: "/logos/logo-29.svg" },
+  { src: "/logos/logo-06.svg" },
+  { src: "/logos/logo-23.svg" },
+  { src: "/logos/logo-16.svg" },
+  { src: "/logos/logo-32.svg" },
+  { src: "/logos/logo-13.svg" },
+  { src: "/logos/logo-19.svg" },
+  { src: "/logos/logo-24.svg" },
+  { src: "/logos/logo-27.svg" },
+];
 
 const TrustedBy = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -39,13 +73,15 @@ const TrustedBy = () => {
             Trusted by leading organizations
           </p>
           <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-8">
-            {logoFiles.map((src, i) => (
+            {logos.map((logo, i) => (
               <img
                 key={i}
-                src={src}
+                src={logo.src}
                 alt=""
                 aria-hidden="true"
-                className="h-8 md:h-10 w-auto object-contain grayscale opacity-40 hover:opacity-70 transition-opacity duration-300"
+                className={`w-auto object-contain grayscale opacity-40 ${
+                  logo.tall ? "h-12 md:h-16" : "h-7 md:h-9"
+                }`}
                 loading="lazy"
               />
             ))}
