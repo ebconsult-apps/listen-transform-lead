@@ -37,7 +37,13 @@ jobs:
           rsync -avz --delete \
             --exclude='book-interest-handler.php' \
             --exclude='mail-handler.php' \
+            --exclude='whitepaper-handler.php' \
+            --exclude='lead-handler.php' \
             --exclude='book_interests.csv' \
+            --exclude='whitepaper_leads.csv' \
+            --exclude='qualified_leads.csv' \
+            --exclude='book-chapter-handler.php' \
+            --exclude='chapter_requests.csv' \
             dist/ dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
 
       - name: Deploy redirect for simplelistening.com

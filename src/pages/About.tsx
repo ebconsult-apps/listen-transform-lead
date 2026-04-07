@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 
 const About = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -27,6 +28,20 @@ const About = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="About Erik Bohjort | Licensed Psychologist & Change Consultant"
+        description="Erik Bohjort is a licensed psychologist, behavioral design specialist, and creator of the CLEAR Change Framework. International keynote speaker and EU Parliament advisor."
+        path="/about"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Erik Bohjort",
+          "jobTitle": "Licensed Psychologist & Change Consultant",
+          "description": "Creator of the CLEAR Change Framework. Licensed psychologist specializing in organizational transformation.",
+          "url": "https://clear-framework.com/about",
+          "knowsAbout": ["Organizational Change", "Behavioral Design", "Systems Thinking", "Psychometric Assessment"]
+        }}
+      />
       {/* Hero Section */}
       <section className="pt-12 pb-24 sm:pt-16 sm:pb-32">
         <div className="section-container">
@@ -141,6 +156,23 @@ const About = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="pb-24">
+        <div className="section-container max-w-3xl mx-auto">
+          <div className="glass-card p-8 md:p-10 text-center bg-primary/5">
+            <h2 className="heading-md mb-6">Ready to Transform Your Organization?</h2>
+            <p className="body-md mb-8 max-w-2xl mx-auto">
+              Whether you're navigating complex change or looking to build a more adaptive
+              organization, let's explore how the CLEAR framework can help.
+            </p>
+            <Link to="/contact" className="btn-primary">
+              Start a Conversation
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>

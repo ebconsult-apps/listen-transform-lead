@@ -1,7 +1,9 @@
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Send } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import SEO from "@/components/SEO";
+import CalendlyEmbed from "@/components/CalendlyEmbed";
 
 const Contact = () => {
   const [name, setName] = useState('');
@@ -97,6 +99,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Contact Erik Bohjort | Book a Consultation"
+        description="Get in touch to discuss how the CLEAR Change Framework can help your organization. Book a discovery call with licensed psychologist Erik Bohjort."
+        path="/contact"
+      />
       {/* Hero Section */}
       <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="section-container">
@@ -230,26 +237,7 @@ const Contact = () => {
                 </div>
               </div>
               
-              <div className="glass-card p-8 md:p-10">
-                <h2 className="heading-md mb-6">Book a Consultation</h2>
-                <p className="text-foreground/70 mb-6">
-                  Schedule a personal consultation to discuss how we can approach your specific challenges.
-                </p>
-                <a 
-                  href="#" 
-                  className="btn-primary w-full justify-center inline-flex"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toast({
-                      title: "Scheduling system coming soon!",
-                      description: "Please use the contact form for now.",
-                    });
-                  }}
-                >
-                  Schedule a Call
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
-              </div>
+              <CalendlyEmbed />
             </div>
           </div>
         </div>

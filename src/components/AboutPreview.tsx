@@ -65,14 +65,6 @@ const AboutPreview = () => {
               {/* Decorative elements */}
               <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-primary/5 rounded-full blur-2xl"></div>
               <div className="absolute -top-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
-              
-              {/* Floating card */}
-              <div className="absolute -bottom-8 -right-8 glass-card p-4 rounded-xl shadow-lg max-w-[200px]">
-                <p className="text-sm text-foreground/80 italic">
-                  "Erik's approach transformed how our organization handles communication challenges."
-                </p>
-                <p className="mt-2 text-xs text-primary font-medium">— Client Testimonial</p>
-              </div>
             </div>
           </div>
           

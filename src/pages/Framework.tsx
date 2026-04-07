@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Lock, Unlock, MoveHorizontal, Headphones, MessageCircle, Users, LightbulbIcon } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const stages = [
   {
@@ -116,6 +117,11 @@ const Framework = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Lewin's Change Model & The Power of Listening | CLEAR Framework"
+        description="Discover how Lewin's Unfreeze-Change-Refreeze model, enhanced with the power of listening, forms the foundation of the CLEAR Change Framework."
+        path="/framework"
+      />
       {/* Hero Section */}
       <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="section-container">

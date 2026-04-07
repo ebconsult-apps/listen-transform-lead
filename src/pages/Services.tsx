@@ -1,7 +1,8 @@
 
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Briefcase, Lightbulb, ArrowRight, CheckCircle, Target, Network, FlaskConical, LineChart, RefreshCw } from "lucide-react";
+import { Briefcase, Lightbulb, ArrowRight, CheckCircle, Target, Network, FlaskConical, LineChart, RefreshCw, Search, Layers, UserCircle, Mic } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const clearSteps = [
   {
@@ -136,6 +137,24 @@ const Services = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="CLEAR Change Framework Services | Organizational Transformation"
+        description="Transform your organization with the CLEAR Change Framework. Five-step methodology combining systems thinking, behavioral science, and iterative experimentation for lasting change."
+        path="/services"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "CLEAR Change Framework Services",
+          "description": "Organizational transformation consulting using the CLEAR Change Framework",
+          "provider": {
+            "@type": "ProfessionalService",
+            "name": "EB Consulting",
+            "founder": { "@type": "Person", "name": "Erik Bohjort" }
+          },
+          "serviceType": ["Organizational Change Management", "Leadership Development", "Systems Thinking Consulting"],
+          "url": "https://clear-framework.com/services"
+        }}
+      />
       {/* Hero Section */}
       <section className="pt-12 pb-16 sm:pt-16 sm:pb-24">
         <div className="section-container">
@@ -246,6 +265,94 @@ const Services = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How We Work Together */}
+      <section className="pb-24">
+        <div className="section-container">
+          <h2 className="heading-md text-center mb-4">How We Work Together</h2>
+          <p className="body-md text-center max-w-2xl mx-auto mb-12">
+            Every organization is different. Choose the engagement format that fits your needs and timeline.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Diagnostic Workshop */}
+            <div className="glass-card p-8 md:p-10 flex flex-col">
+              <div className="bg-primary/10 p-3 rounded-full w-fit mb-5">
+                <Search className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex items-baseline gap-3 mb-2">
+                <h3 className="text-xl font-bold">Diagnostic Workshop</h3>
+                <span className="text-sm text-foreground/50 font-medium">1-2 days</span>
+              </div>
+              <p className="text-foreground/70 mb-6 flex-grow">
+                A focused deep-dive into your organization's challenges. We map your system dynamics,
+                identify leverage points, and create an actionable roadmap for change.
+              </p>
+              <Link to="/contact" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                Get in Touch
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+
+            {/* CLEAR Implementation Program */}
+            <div className="glass-card p-8 md:p-10 flex flex-col">
+              <div className="bg-primary/10 p-3 rounded-full w-fit mb-5">
+                <Layers className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex items-baseline gap-3 mb-2">
+                <h3 className="text-xl font-bold">CLEAR Implementation Program</h3>
+                <span className="text-sm text-foreground/50 font-medium">3-6 months</span>
+              </div>
+              <p className="text-foreground/70 mb-6 flex-grow">
+                A comprehensive transformation engagement. Multiple CLEAR cycles with hands-on
+                facilitation, from initial clarity through scaled refinement.
+              </p>
+              <Link to="/contact" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                Get in Touch
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+
+            {/* Executive Coaching & Advisory */}
+            <div className="glass-card p-8 md:p-10 flex flex-col">
+              <div className="bg-primary/10 p-3 rounded-full w-fit mb-5">
+                <UserCircle className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex items-baseline gap-3 mb-2">
+                <h3 className="text-xl font-bold">Executive Coaching & Advisory</h3>
+                <span className="text-sm text-foreground/50 font-medium">Ongoing</span>
+              </div>
+              <p className="text-foreground/70 mb-6 flex-grow">
+                Ongoing strategic guidance for leaders navigating complex change. Regular sessions
+                combining psychological insight with systems thinking.
+              </p>
+              <Link to="/contact" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                Get in Touch
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+
+            {/* Keynote Speaking & Training */}
+            <div className="glass-card p-8 md:p-10 flex flex-col">
+              <div className="bg-primary/10 p-3 rounded-full w-fit mb-5">
+                <Mic className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex items-baseline gap-3 mb-2">
+                <h3 className="text-xl font-bold">Keynote Speaking & Training</h3>
+                <span className="text-sm text-foreground/50 font-medium">Event-based</span>
+              </div>
+              <p className="text-foreground/70 mb-6 flex-grow">
+                Inspiring keynotes and interactive workshops on organizational change, listening,
+                behavioral design, and the CLEAR framework.
+              </p>
+              <Link to="/contact" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                Get in Touch
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
