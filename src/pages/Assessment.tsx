@@ -48,15 +48,15 @@ const Assessment = () => {
           {!showResults ? (
             <>
               <div className="text-center mb-12">
-                <div className="tag mb-4">Free Assessment</div>
-                <h1 className="heading-xl mb-6">Assess Your Change Readiness</h1>
+                <div className="tag mb-4">Diagnostic Tool</div>
+                <h1 className="heading-xl mb-6">How Ready Is Your Organization for Change?</h1>
                 <p className="body-lg max-w-2xl mx-auto mb-4">
-                  Take this free 2-minute assessment to discover how ready your organization
-                  is for meaningful transformation. Get personalized insights based on the
-                  CLEAR Change Framework.
+                  Most change initiatives fail not because the strategy is wrong, but because
+                  the organization isn't ready. This diagnostic helps you identify where your
+                  strengths and blind spots lie across five critical dimensions.
                 </p>
                 <p className="text-sm text-foreground/50">
-                  8 questions &middot; 2 minutes &middot; Instant results
+                  5 diagnostic questions &middot; then a few about your context &middot; instant insights
                 </p>
               </div>
               <AssessmentQuiz onComplete={handleComplete} />

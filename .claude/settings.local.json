@@ -148,7 +148,8 @@
       "Bash(curl -s --head https://pi.hostup.se:2083)",
       "Bash(npm ls:*)",
       "WebFetch(domain:clear-framework.com)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(git rm:*)"
     ]
   }
 }
