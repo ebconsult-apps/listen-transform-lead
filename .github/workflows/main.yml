@@ -48,12 +48,11 @@ jobs:
             --exclude='assessment_leads.csv' \
             dist/ dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
 
-      - name: Upload PHP handlers (only if missing on server)
+      - name: Force-upload PHP handlers (one-time update)
         run: |
           for file in assessment-handler.php whitepaper-handler.php lead-handler.php book-chapter-handler.php mail-handler.php book-interest-handler.php; do
             if [ -f "dist/$file" ]; then
-              ssh dwdda@pi.hostup.se "test -f /home/dwdda/public_html/clear-framework.com/$file" || \
-                rsync -avz "dist/$file" dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
+              rsync -avz "dist/$file" dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
             fi
           done
 
