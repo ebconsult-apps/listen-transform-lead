@@ -15,6 +15,7 @@ const TrustedBy = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            (entry.target as HTMLElement).style.opacity = '1';
             entry.target.classList.add("animate-fade-in");
             observer.unobserve(entry.target);
           }

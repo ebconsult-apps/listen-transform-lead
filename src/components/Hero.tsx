@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
@@ -46,7 +46,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background pattern */}
       <div 
         ref={bgPatternRef}
@@ -67,7 +67,7 @@ const Hero = () => {
           className="mb-2 tag text-lg md:text-xl"
           style={{ opacity: '0' }}
         >
-          First Listen
+          Organizational Change
         </div>
         
         <h1 
@@ -75,7 +75,7 @@ const Hero = () => {
           className="heading-xl"
           style={{ opacity: '0' }}
         >
-          <span className="text-primary">Listen.</span> Transform. <span className="text-primary">Lead.</span>
+          <span className="text-primary">CLEAR</span> Change Framework
         </h1>
         
         <p 
@@ -83,8 +83,7 @@ const Hero = () => {
           className="mt-6 body-lg max-w-2xl"
           style={{ opacity: '0' }}
         >
-          I'm Erik Bohjort, licensed psychologist and guide to transformative change. 
-          Discover how genuine listening becomes the catalyst for meaningful action.
+          A psychology-backed, five-step approach to organizational transformation. Combining behavioral science, systems thinking, and iterative experimentation to drive lasting change.
         </p>
         
         <div 
@@ -92,19 +91,19 @@ const Hero = () => {
           className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center"
           style={{ opacity: '0' }}
         >
-          <Link to="/framework" className="btn-primary">
-            Explore the Model
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-          <Link to="/contact" className="btn-secondary">
-            Book a Consultation
+          <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-primary">
+            Book a Free Discovery Call
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </a>
+          <Link to="/methodology" className="btn-secondary">
+            Explore the Framework
           </Link>
         </div>
       </div>
 
-      {/* Glass element for visual interest */}
-      <div className="absolute bottom-10 left-[10%] w-20 h-20 md:w-32 md:h-32 rounded-full glass opacity-40 animate-rotate-slow pointer-events-none"></div>
-      <div className="absolute top-20 right-[12%] w-16 h-16 md:w-24 md:h-24 rounded-full glass opacity-30 animate-rotate-slow pointer-events-none" style={{ animationDirection: 'reverse' }}></div>
+      {/* Static decorative elements */}
+      <div className="absolute bottom-10 left-[10%] w-20 h-20 md:w-32 md:h-32 rounded-full bg-primary/5 blur-2xl pointer-events-none"></div>
+      <div className="absolute top-20 right-[12%] w-16 h-16 md:w-24 md:h-24 rounded-full bg-primary/5 blur-xl pointer-events-none"></div>
     </section>
   );
 };

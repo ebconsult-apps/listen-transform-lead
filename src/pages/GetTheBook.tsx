@@ -236,7 +236,7 @@ const GetTheBook = () => {
                 <div className="shrink-0">
                   <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
                     <img
-                      src="/erik-portrait.jpg"
+                      src="/erik-interview.jpg"
                       alt="Erik Bohjort"
                       className="object-cover w-full h-full"
                     />

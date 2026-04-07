@@ -38,9 +38,7 @@ const Layout = () => {
             to="/" 
             className="font-display text-2xl font-bold text-foreground flex items-center"
           >
-            <span className="mr-1.5 text-primary">S</span>
-            <span className="mr-1">L</span>
-            <span className="mr-1.5 text-primary">F</span>
+            <span className="text-primary">C</span>LEAR
           </Link>
 
           {isMobile ? (
@@ -93,12 +91,10 @@ const Layout = () => {
                 to="/" 
                 className="font-display text-xl font-bold text-foreground flex items-center"
               >
-                <span className="mr-1 text-primary">S</span>
-                <span className="mr-0.5">L</span>
-                <span className="mr-1 text-primary">F</span>
+                <span className="text-primary">C</span>LEAR
               </Link>
               <p className="mt-2 text-sm text-foreground/60 max-w-md">
-                The Simple Listening Framework helps organizations and individuals transform challenges into opportunities through empathetic listening.
+                The CLEAR Change Framework helps organizations drive lasting transformation through behavioral science, systems thinking, and iterative experimentation.
               </p>
             </div>
             
@@ -131,7 +127,7 @@ const Layout = () => {
           </div>
           
           <div className="mt-12 pt-8 border-t border-foreground/10 flex justify-between items-center text-sm text-foreground/50">
-            <p>© {new Date().getFullYear()} SLF. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} CLEAR Change Framework. All rights reserved.</p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="hover:text-foreground transition-colors">Terms</a>

@@ -16,9 +16,17 @@ const routes = [
   "/contact",
   "/get-the-book",
   "/booking-confirmed",
+  "/assessment",
   "/lp/organizational-change",
   "/lp/clear-whitepaper",
   "/lp/sustainability",
+  "/consulting/change-management-stockholm",
+  "/consulting/change-management-europe",
+  "/consulting/organizational-psychology-consulting",
+  "/consulting/manufacturing-change-management",
+  "/consulting/healthcare-change-management",
+  "/consulting/sustainability-change-management",
+  "/consulting/merger-integration-consulting",
 ];
 
 // https://vitejs.dev/config/

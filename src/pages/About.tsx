@@ -78,7 +78,7 @@ const About = () => {
                 <p className="body-md">
                   Throughout my career, I've observed that the most effective leaders and organizations share 
                   one critical skill: the ability to listen deeply and transform what they hear into strategic action. 
-                  This observation led to the development of the Simple Listening Framework (SLF).
+                  This observation led to the development of the CLEAR Change Framework.
                 </p>
               </div>
 
@@ -95,8 +95,8 @@ const About = () => {
                   you navigate complexity with clarity and confidence.
                 </p>
                 <p className="body-md">
-                  The Simple Listening Framework embodies this philosophy, turning the art of listening into a structured 
-                  methodology for change that can be applied to virtually any challenge, from high-stakes negotiations to 
+                  The CLEAR Change Framework embodies this philosophy, turning the art of listening into a structured
+                  methodology for change that can be applied to virtually any challenge, from high-stakes negotiations to
                   personal growth.
                 </p>
               </div>
@@ -137,7 +137,7 @@ const About = () => {
               <div className="glass-card p-8 mb-8 sticky top-28">
                 <div className="aspect-[3/4] rounded-xl overflow-hidden relative mb-6">
                   <img
-                    src="/erik-portrait.jpg"
+                    src="/erik-interview.jpg"
                     alt="Portrait of Erik Bohjort"
                     className="object-cover w-full h-full"
                   />

@@ -21,6 +21,14 @@ import OrganizationalChange from "./pages/landing/OrganizationalChange";
 import ClearWhitepaper from "./pages/landing/ClearWhitepaper";
 import Sustainability from "./pages/landing/Sustainability";
 import BookingConfirmation from "./pages/BookingConfirmation";
+import Assessment from "./pages/Assessment";
+import ChangeManagementStockholm from "./pages/niche/ChangeManagementStockholm";
+import ChangeManagementEurope from "./pages/niche/ChangeManagementEurope";
+import OrganizationalPsychologyConsulting from "./pages/niche/OrganizationalPsychologyConsulting";
+import ManufacturingChangeManagement from "./pages/niche/ManufacturingChangeManagement";
+import HealthcareChangeManagement from "./pages/niche/HealthcareChangeManagement";
+import SustainabilityChangeManagement from "./pages/niche/SustainabilityChangeManagement";
+import MergerIntegrationConsulting from "./pages/niche/MergerIntegrationConsulting";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +57,14 @@ const App = () => (
               <Route path="methodology" element={<Methodology />} />
               <Route path="faq" element={<FAQ />} />
               <Route path="booking-confirmed" element={<BookingConfirmation />} />
+              <Route path="assessment" element={<Assessment />} />
+              <Route path="consulting/change-management-stockholm" element={<ChangeManagementStockholm />} />
+              <Route path="consulting/change-management-europe" element={<ChangeManagementEurope />} />
+              <Route path="consulting/organizational-psychology-consulting" element={<OrganizationalPsychologyConsulting />} />
+              <Route path="consulting/manufacturing-change-management" element={<ManufacturingChangeManagement />} />
+              <Route path="consulting/healthcare-change-management" element={<HealthcareChangeManagement />} />
+              <Route path="consulting/sustainability-change-management" element={<SustainabilityChangeManagement />} />
+              <Route path="consulting/merger-integration-consulting" element={<MergerIntegrationConsulting />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

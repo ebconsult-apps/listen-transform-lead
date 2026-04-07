@@ -47,8 +47,8 @@ const CTASection = () => {
           <div className="relative z-10 text-center max-w-2xl mx-auto">
             <h2 className="heading-lg mb-6">Ready to Transform Your Approach?</h2>
             <p className="body-md mb-10">
-              Start your journey with the Simple Listening Framework today. 
-              Whether you're facing organizational challenges or seeking personal growth, 
+              Start your journey with the CLEAR Change Framework today.
+              Whether you're facing organizational challenges or seeking personal growth,
               I'm here to guide you through the transformative power of genuine listening.
             </p>
             
@@ -57,8 +57,8 @@ const CTASection = () => {
                 Book a Consultation
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link to="/framework" className="btn-secondary">
-                Learn More About SLF
+              <Link to="/methodology" className="btn-secondary">
+                Explore the Framework
               </Link>
             </div>
           </div>
