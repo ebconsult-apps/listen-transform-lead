@@ -79,10 +79,12 @@ $email_body = "
 // Send notification email
 $mail_success = mail($to, "Free Chapter Request: $name", $email_body, $headers);
 
-if ($mail_success) {
-    echo json_encode(["success" => true, "message" => "Your free chapter request has been received! Check your inbox shortly."]);
-} else {
-    // Still return success since the CSV was saved — email failure is non-critical
-    echo json_encode(["success" => true, "message" => "Your request has been received. We'll send the chapter to your inbox shortly."]);
-}
+// Add to Brevo and send welcome email
+require_once __DIR__ . '/brevo-config.php';
+require_once __DIR__ . '/nurture-emails.php';
+brevo_add_contact($email, $name, 4, ['SOURCE' => 'book_chapter']);
+$tpl = get_email_template('chapter_welcome', ['name' => $name]);
+if ($tpl) { brevo_send_email($email, $name, $tpl['subject'], $tpl['html']); }
+
+echo json_encode(["success" => true, "message" => "Your free chapter request has been received! Check your inbox shortly."]);
 ?>

@@ -121,6 +121,13 @@ fputcsv($file_handle, [
 ]);
 fclose($file_handle);
 
+// Add to Brevo and send welcome email
+require_once __DIR__ . '/brevo-config.php';
+require_once __DIR__ . '/nurture-emails.php';
+brevo_add_contact($email, $name, 2, ['COMPANY' => $company, 'WHITEPAPER' => $whitepaper_id, 'SOURCE' => 'whitepaper_download']);
+$tpl = get_email_template('whitepaper_welcome', ['name' => $name]);
+if ($tpl) { brevo_send_email($email, $name, $tpl['subject'], $tpl['html']); }
+
 // Return success with the PDF URL
 echo json_encode([
     "success" => true,
