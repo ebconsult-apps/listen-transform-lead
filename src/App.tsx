@@ -36,6 +36,12 @@ import ManufacturingChangeManagement from "./pages/niche/ManufacturingChangeMana
 import HealthcareChangeManagement from "./pages/niche/HealthcareChangeManagement";
 import SustainabilityChangeManagement from "./pages/niche/SustainabilityChangeManagement";
 import MergerIntegrationConsulting from "./pages/niche/MergerIntegrationConsulting";
+import ChangeManagementService from "./pages/services/ChangeManagementService";
+import LeadershipDevelopmentService from "./pages/services/LeadershipDevelopmentService";
+import ExecutiveCoachingService from "./pages/services/ExecutiveCoachingService";
+import PsychometricAssessmentsService from "./pages/services/PsychometricAssessmentsService";
+import WorkshopsService from "./pages/services/WorkshopsService";
+import Insights from "./pages/Insights";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +85,12 @@ const App = () => (
               <Route path="booking-confirmed" element={<BookingConfirmation />} />
               <Route path="thank-you" element={<ThankYou />} />
               <Route path="assessment" element={<Assessment />} />
+              <Route path="services/change-management" element={<ChangeManagementService />} />
+              <Route path="services/leadership-development" element={<LeadershipDevelopmentService />} />
+              <Route path="services/executive-coaching" element={<ExecutiveCoachingService />} />
+              <Route path="services/psychometric-assessments" element={<PsychometricAssessmentsService />} />
+              <Route path="services/workshops" element={<WorkshopsService />} />
+              <Route path="insights" element={<Insights />} />
               <Route path="consulting/change-management-stockholm" element={<ChangeManagementStockholm />} />
               <Route path="consulting/change-management-europe" element={<ChangeManagementEurope />} />
               <Route path="consulting/organizational-psychology-consulting" element={<OrganizationalPsychologyConsulting />} />

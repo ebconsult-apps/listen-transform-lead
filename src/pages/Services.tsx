@@ -66,10 +66,15 @@ const Services = () => {
               <p className="text-sm text-foreground/50 mb-6">
                 Best for: organizations that know something needs to change but aren't sure where to start.
               </p>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
-                Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-4 mt-auto">
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                  Book a Discovery Call
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+                <Link to="/services/change-management" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
+                  Learn more <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </div>
             </div>
 
             <div className="glass-card p-8 md:p-10 flex flex-col">
@@ -77,20 +82,26 @@ const Services = () => {
                 <Layers className="h-6 w-6 text-primary" />
               </div>
               <div className="flex items-baseline gap-3 mb-2">
-                <h2 className="text-xl font-bold">CLEAR Implementation Program</h2>
-                <span className="text-sm text-foreground/50 font-medium">3-6 months</span>
+                <h2 className="text-xl font-bold">Leadership Development</h2>
+                <span className="text-sm text-foreground/50 font-medium">Tailored programs</span>
               </div>
               <p className="text-foreground/70 mb-4 flex-grow">
-                Full transformation engagement. Multiple CLEAR cycles with hands-on facilitation —
-                from initial clarity and systems mapping through experimentation, analysis, and scaled refinement.
+                Psychology-backed programs that change how leaders think and act. Psychometric
+                assessment, structured coaching, and applied practice — not another workshop
+                they'll forget by Monday.
               </p>
               <p className="text-sm text-foreground/50 mb-6">
-                Best for: organizations ready to commit to meaningful, measurable change.
+                Best for: leadership teams, executive cohorts, and individual senior leaders.
               </p>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
-                Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-4 mt-auto">
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                  Book a Discovery Call
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+                <Link to="/services/leadership-development" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
+                  Learn more <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </div>
             </div>
 
             <div className="glass-card p-8 md:p-10 flex flex-col">
@@ -109,10 +120,15 @@ const Services = () => {
               <p className="text-sm text-foreground/50 mb-6">
                 Best for: executives and leaders who want ongoing support, not a one-off engagement.
               </p>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
-                Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-4 mt-auto">
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                  Book a Discovery Call
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+                <Link to="/services/executive-coaching" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
+                  Learn more <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </div>
             </div>
 
             <div className="glass-card p-8 md:p-10 flex flex-col">
@@ -120,7 +136,7 @@ const Services = () => {
                 <Mic className="h-6 w-6 text-primary" />
               </div>
               <div className="flex items-baseline gap-3 mb-2">
-                <h2 className="text-xl font-bold">Keynote Speaking & Training</h2>
+                <h2 className="text-xl font-bold">Keynote Speaking & Workshops</h2>
                 <span className="text-sm text-foreground/50 font-medium">Event-based</span>
               </div>
               <p className="text-foreground/70 mb-4 flex-grow">
@@ -130,10 +146,15 @@ const Services = () => {
               <p className="text-sm text-foreground/50 mb-6">
                 Best for: conferences, leadership offsites, and team development events.
               </p>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
-                Inquire About Availability
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+              <div className="flex items-center gap-4 mt-auto">
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                  Inquire About Availability
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </a>
+                <Link to="/services/workshops" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
+                  Learn more <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

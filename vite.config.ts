@@ -32,6 +32,12 @@ const routes = [
   "/consulting/sustainability-change-management",
   "/consulting/merger-integration-consulting",
   "/thank-you",
+  "/services/change-management",
+  "/services/leadership-development",
+  "/services/executive-coaching",
+  "/services/psychometric-assessments",
+  "/services/workshops",
+  "/insights",
 ];
 
 // https://vitejs.dev/config/
