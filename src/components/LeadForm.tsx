@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { trackFormSubmission } from "@/utils/analytics";
 import { z } from "zod";
 
 const leadSchema = z.object({
@@ -99,6 +100,7 @@ const LeadForm = () => {
       }
 
       setIsSubmitted(true);
+      trackFormSubmission("consultation_request");
 
       toast({
         title: "Consultation request sent!",

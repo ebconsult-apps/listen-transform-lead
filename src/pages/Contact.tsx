@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { trackFormSubmission } from "@/utils/analytics";
 import SEO from "@/components/SEO";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
 
@@ -49,7 +50,8 @@ const Contact = () => {
       }
       
       setIsSubmitted(true);
-      
+      trackFormSubmission("contact");
+
       toast({
         title: "Message sent!",
         description: `Your message has been sent to erik@eb-consulting.se. We'll get back to you soon.`,

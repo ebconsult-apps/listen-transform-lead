@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { trackCTAClick } from '@/utils/analytics';
 
 const Hero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -91,7 +92,7 @@ const Hero = () => {
           className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center"
           style={{ opacity: '0' }}
         >
-          <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-primary">
+          <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-primary" onClick={() => trackCTAClick("book_discovery_call")}>
             Book a Free Discovery Call
             <ExternalLink className="ml-2 h-4 w-4" />
           </a>

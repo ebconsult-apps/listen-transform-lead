@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { FileText, Download, Check, CheckSquare, Square } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { trackFormSubmission } from "@/utils/analytics";
 
 interface WhitepaperGateProps {
   title: string;
@@ -55,6 +56,7 @@ const WhitepaperGate = ({
       }
 
       setIsUnlocked(true);
+      trackFormSubmission("whitepaper_download");
 
       toast({
         title: "Success!",

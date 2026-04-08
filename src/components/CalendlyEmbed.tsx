@@ -2,6 +2,7 @@
 // For inline embed alternative: <iframe src="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" width="100%" height="700" scrolling="yes" style="border:0"></iframe>
 
 import { Calendar, Mail, ExternalLink } from "lucide-react";
+import { trackCTAClick } from "@/utils/analytics";
 
 const CalendlyEmbed = () => {
   return (
@@ -23,6 +24,7 @@ const CalendlyEmbed = () => {
         target="_blank"
         rel="noopener noreferrer"
         className="btn-primary w-full justify-center mb-6"
+        onClick={() => trackCTAClick("book_discovery_call")}
       >
         Book a Discovery Call
         <ExternalLink className="ml-2 h-4 w-4" />

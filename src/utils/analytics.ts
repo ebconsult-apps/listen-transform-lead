@@ -1,5 +1,3 @@
-const GA4_MEASUREMENT_ID = "G-0P6CY2BME8";
-
 declare global {
   interface Window {
     dataLayer: unknown[];
@@ -8,28 +6,16 @@ declare global {
 }
 
 /**
- * Load the GA4 script and initialize tracking.
- * Only call this after the user has accepted cookies.
+ * Grant analytics consent after the user accepts cookies.
+ * The gtag.js script is loaded in index.html with consent mode
+ * defaulting to "denied", so this upgrades to full tracking.
  */
-export function initGA4(measurementId: string = GA4_MEASUREMENT_ID): void {
-  if (document.querySelector(`script[src*="googletagmanager.com/gtag"]`)) {
-    return; // already loaded
+export function initGA4(): void {
+  if (typeof window.gtag === "function") {
+    window.gtag("consent", "update", {
+      analytics_storage: "granted",
+    });
   }
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(script);
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args);
-  };
-
-  window.gtag("js", new Date());
-  window.gtag("config", measurementId, {
-    anonymize_ip: true,
-  });
 }
 
 /**

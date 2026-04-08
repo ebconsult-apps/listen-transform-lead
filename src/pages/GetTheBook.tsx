@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { trackFormSubmission } from "@/utils/analytics";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
@@ -54,6 +55,7 @@ const GetTheBook = () => {
 
       // Show success message
       setSubmitted(true);
+      trackFormSubmission("book_preregistration");
       toast({
         title: "You're on the list!",
         description: "We'll notify you as soon as the book launches."

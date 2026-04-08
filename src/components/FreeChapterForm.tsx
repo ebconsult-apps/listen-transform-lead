@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { trackFormSubmission } from "@/utils/analytics";
 
 interface FreeChapterFormProps {
   onSuccess?: () => void;
@@ -37,6 +38,7 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
       }
 
       setSubmitted(true);
+      trackFormSubmission("free_chapter");
       toast({
         title: "Chapter on its way!",
         description: "Check your inbox for a free chapter of The CLEAR Change Framework.",
