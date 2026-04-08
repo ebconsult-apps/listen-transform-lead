@@ -149,7 +149,13 @@
       "Bash(npm ls:*)",
       "WebFetch(domain:clear-framework.com)",
       "Bash(npm uninstall:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(curl -s -X POST https://clear-framework.com/whitepaper-handler.php -H \"Content-Type: application/json\" -d '{\"\"name\"\":\"\"Test User\"\",\"\"email\"\":\"\"erik@eb-consulting.se\"\",\"\"company\"\":\"\"EB Consulting\"\",\"\"newsletter_opt_in\"\":true,\"\"whitepaper_id\"\":\"\"clear-change-framework\"\"}')",
+      "Bash(curl -s -X POST https://clear-framework.com/whitepaper-handler.php -H \"Content-Type: application/json\" -d '{\"\"\"\"name\"\"\"\":\"\"\"\"Test User\"\"\"\",\"\"\"\"email\"\"\"\":\"\"\"\"erik@eb-consulting.se\"\"\"\",\"\"\"\"company\"\"\"\":\"\"\"\"EB Consulting\"\"\"\",\"\"\"\"newsletter_opt_in\"\"\"\":true,\"\"\"\"whitepaper_id\"\"\"\":\"\"\"\"clear-change-framework\"\"\"\"}')",
+      "Bash(curl -s -I https://clear-framework.com/whitepaper-handler.php)",
+      "Bash(curl -s https://clear-framework.com/brevo-config.php)",
+      "Bash(curl -s -X POST https://clear-framework.com/whitepaper-handler.php -H 'Content-Type: application/json' -d '{\"name\":\"Test User\",\"email\":\"erik@eb-consulting.se\",\"company\":\"EB Consulting\",\"newsletter_opt_in\":true,\"whitepaper_id\":\"clear-change-framework\"}')",
+      "Bash(curl -s -I https://clear-framework.com/brevo-config.php)"
     ]
   }
 }

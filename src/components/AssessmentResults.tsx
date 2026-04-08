@@ -3,6 +3,7 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
+  PolarRadiusAxis,
   Radar,
   ResponsiveContainer,
 } from "recharts";
@@ -193,11 +194,18 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
         </p>
         <div className="w-full max-w-[400px] mx-auto" style={{ aspectRatio: "1" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
+            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="65%">
               <PolarGrid stroke="hsl(220 16% 90%)" />
               <PolarAngleAxis
                 dataKey="dimension"
-                tick={{ fill: "hsl(220 20% 10%)", fontSize: 13, fontWeight: 500 }}
+                tick={{ fill: "hsl(220 20% 10%)", fontSize: 12, fontWeight: 500 }}
+                tickMargin={8}
+              />
+              <PolarRadiusAxis
+                domain={[0, 5]}
+                tickCount={6}
+                tick={false}
+                axisLine={false}
               />
               <Radar
                 name="Score"
@@ -339,9 +347,9 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
                   <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 </div>
               )}
-              <span className={isSubmitting ? "opacity-0" : ""}>
+              <span className={`inline-flex items-center whitespace-nowrap ${isSubmitting ? "opacity-0" : ""}`}>
                 Send My Report
-                <Send className="ml-2 h-4 w-4" />
+                <Send className="ml-2 h-4 w-4 flex-shrink-0" />
               </span>
             </button>
           </form>

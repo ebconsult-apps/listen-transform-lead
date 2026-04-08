@@ -74,12 +74,18 @@ if (!$file_exists) {
 fputcsv($file_handle, [$name, $email, $notifications ? "Yes" : "No", date("Y-m-d H:i:s")]);
 fclose($file_handle);
 
-// Add to Brevo and send welcome email
-require_once __DIR__ . '/brevo-config.php';
-require_once __DIR__ . '/nurture-emails.php';
-brevo_add_contact($email, $name, 4, ['SOURCE' => 'book_interest']);
-$tpl = get_email_template('chapter_welcome', ['name' => $name]);
-if ($tpl) { brevo_send_email($email, $name, $tpl['subject'], $tpl['html']); }
+// Add to Brevo and send welcome email (non-blocking)
+try {
+    ob_start();
+    @include_once __DIR__ . '/brevo-config.php';
+    @include_once __DIR__ . '/nurture-emails.php';
+    ob_end_clean();
+    if (function_exists('brevo_add_contact')) {
+        brevo_add_contact($email, $name, 4, ['SOURCE' => 'book_interest']);
+        $tpl = get_email_template('chapter_welcome', ['name' => $name]);
+        if ($tpl) { brevo_send_email($email, $name, $tpl['subject'], $tpl['html']); }
+    }
+} catch (Exception $e) { /* non-critical */ }
 
 echo json_encode(["success" => true, "message" => "Your pre-order interest has been registered!"]);
 ?>
