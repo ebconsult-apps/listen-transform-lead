@@ -51,11 +51,12 @@ jobs:
             --exclude='nurture-emails.php' \
             dist/ dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
 
-      - name: Force-upload all PHP handlers
+      - name: Upload PHP handlers (only if missing on server)
         run: |
           for file in assessment-handler.php whitepaper-handler.php lead-handler.php book-chapter-handler.php mail-handler.php book-interest-handler.php brevo-config.php nurture-emails.php; do
             if [ -f "dist/$file" ]; then
-              rsync -avz "dist/$file" dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
+              ssh dwdda@pi.hostup.se "test -f /home/dwdda/public_html/clear-framework.com/$file" || \
+                rsync -avz "dist/$file" dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
             fi
           done
 
