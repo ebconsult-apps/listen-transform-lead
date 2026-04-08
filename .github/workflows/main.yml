@@ -60,10 +60,9 @@ jobs:
             fi
           done
 
-      - name: Create Brevo key placeholder (only if missing on server)
+      - name: Deploy Brevo API key to server
         run: |
-          ssh dwdda@pi.hostup.se "test -f /home/dwdda/public_html/clear-framework.com/brevo-key.php" || \
-            echo '<?php define(\"BREVO_API_KEY\", \"\"); ?>' | \
+          echo '<?php define("BREVO_API_KEY", "${{ secrets.BREVO_API_KEY }}"); ?>' | \
             ssh dwdda@pi.hostup.se 'cat > /home/dwdda/public_html/clear-framework.com/brevo-key.php'
 
       - name: Deploy redirect for simplelistening.com
