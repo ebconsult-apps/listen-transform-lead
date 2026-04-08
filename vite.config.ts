@@ -27,6 +27,7 @@ const routes = [
   "/consulting/healthcare-change-management",
   "/consulting/sustainability-change-management",
   "/consulting/merger-integration-consulting",
+  "/thank-you",
 ];
 
 // https://vitejs.dev/config/

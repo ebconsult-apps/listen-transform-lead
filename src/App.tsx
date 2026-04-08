@@ -18,6 +18,7 @@ import Framework from "./pages/Framework";
 import Methodology from "./pages/Methodology";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
+import ThankYou from "./pages/ThankYou";
 import CookieConsent from "./components/CookieConsent";
 import OrganizationalChange from "./pages/landing/OrganizationalChange";
 import ClearWhitepaper from "./pages/landing/ClearWhitepaper";
@@ -68,6 +69,7 @@ const App = () => (
               <Route path="methodology" element={<Methodology />} />
               <Route path="faq" element={<FAQ />} />
               <Route path="booking-confirmed" element={<BookingConfirmation />} />
+              <Route path="thank-you" element={<ThankYou />} />
               <Route path="assessment" element={<Assessment />} />
               <Route path="consulting/change-management-stockholm" element={<ChangeManagementStockholm />} />
               <Route path="consulting/change-management-europe" element={<ChangeManagementEurope />} />

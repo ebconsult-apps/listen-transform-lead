@@ -68,23 +68,23 @@ const Hero = () => {
           className="mb-2 tag text-lg md:text-xl"
           style={{ opacity: '0' }}
         >
-          Organizational Change
+          The CLEAR Change Framework
         </div>
-        
-        <h1 
+
+        <h1
           ref={titleRef}
           className="heading-xl"
           style={{ opacity: '0' }}
         >
-          <span className="text-primary">CLEAR</span> Change Framework
+          Change Management Built on <span className="text-primary">Clinical Psychology</span>
         </h1>
-        
-        <p 
+
+        <p
           ref={subtitleRef}
           className="mt-6 body-lg max-w-2xl"
           style={{ opacity: '0' }}
         >
-          Founded by licensed psychologist Erik Bohjort, our team of consultants helps organizations drive lasting transformation through behavioral science, systems thinking, and iterative experimentation.
+          70% of change initiatives fail. Licensed psychologist Erik Bohjort helps organizations beat those odds through the CLEAR framework &mdash; behavioral science and systems thinking that makes transformation stick.
         </p>
         
         <div 
@@ -92,13 +92,14 @@ const Hero = () => {
           className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center"
           style={{ opacity: '0' }}
         >
-          <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-primary" onClick={() => trackCTAClick("book_discovery_call")}>
-            Book a Free Discovery Call
+          <Link to="/assessment" className="btn-primary" onClick={() => trackCTAClick("hero_assessment")}>
+            Take the Free Assessment
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+          <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-secondary" onClick={() => trackCTAClick("book_discovery_call")}>
+            Book a Discovery Call
             <ExternalLink className="ml-2 h-4 w-4" />
           </a>
-          <Link to="/methodology" className="btn-secondary">
-            Explore the Framework
-          </Link>
         </div>
       </div>
 

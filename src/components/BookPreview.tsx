@@ -77,13 +77,13 @@ const BookPreview = () => {
               </p>
 
               <p className="body-md max-w-2xl mx-auto mb-8">
-                What if the most powerful tool for organizational transformation was
-                something we all do every day — but rarely do well? The Simple
-                Listening Framework reveals how genuine, structured listening can
-                unlock change in even the most complex organizations. Drawing on
-                psychology, systems thinking, and real-world case studies, this book
-                gives leaders a practical blueprint for turning listening into
-                strategic action.
+                Why do most change initiatives fail — even when the strategy is sound?
+                The CLEAR Change Framework offers a proven, psychology-backed method
+                for leading organizational transformation that actually lasts. Drawing
+                on systems thinking, real-world case studies, and decades of consulting
+                experience, this book gives leaders a practical blueprint for turning
+                Clarity, Leverage, Experimentation, Analysis, and Refinement into
+                lasting results.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -48,3 +48,44 @@ export function trackCTAClick(ctaName: string): void {
 export function trackPageView(pagePath: string): void {
   trackEvent("page_view", { page_path: pagePath });
 }
+
+// ---------------------------------------------------------------------------
+// Google Ads native conversion tracking
+// ---------------------------------------------------------------------------
+
+/**
+ * Fire a native Google Ads conversion event.
+ * Replace the send_to value with your actual Google Ads conversion ID/label
+ * once you create the conversion action in Google Ads.
+ *
+ * To set up:
+ * 1. Create a conversion action in Google Ads
+ * 2. Replace 'AW-XXXXXXXXX/YYYYYYY' with your conversion ID/label
+ * 3. Optionally pass a value and currency
+ */
+export function trackGoogleAdsConversion(
+  conversionLabel: string,
+  value?: number,
+): void {
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "conversion", {
+      send_to: conversionLabel,
+      value: value || 0,
+      currency: "EUR",
+    });
+  }
+}
+
+/**
+ * Send hashed user data for Enhanced Conversions.
+ * Call this right before trackGoogleAdsConversion in form handlers.
+ * The email is sent in plaintext — gtag.js hashes it automatically
+ * when Enhanced Conversions is enabled in the Google Ads account.
+ */
+export function setEnhancedConversionData(email: string): void {
+  if (typeof window.gtag === "function") {
+    window.gtag("set", "user_data", {
+      email: email,
+    });
+  }
+}

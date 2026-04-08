@@ -134,10 +134,18 @@ const LandingPage = ({
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="glass-card p-8 md:p-12">
               <h2 className="heading-md mb-6">Ready to get started?</h2>
-              <Link to={ctaLink} className="btn-primary text-lg px-8 py-3">
-                {ctaText}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              <p className="text-foreground/60 text-sm mb-6">No commitment. No pitch. Just clarity.</p>
+              {ctaLink.startsWith("http") ? (
+                <a href={ctaLink} target="_blank" rel="noopener noreferrer" className="btn-primary text-lg px-8 py-3">
+                  {ctaText}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+              ) : (
+                <Link to={ctaLink} className="btn-primary text-lg px-8 py-3">
+                  {ctaText}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
             </div>
           </div>
         </section>

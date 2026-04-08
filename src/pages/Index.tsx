@@ -19,18 +19,30 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="CLEAR Change Framework | Erik Bohjort - Organizational Change Consulting"
-        description="The CLEAR Change Framework helps organizations drive meaningful transformation through Clarity, Leverage, Experimentation, Analysis, and Refinement. Created by licensed psychologist Erik Bohjort."
+        title="Change Management Built on Clinical Psychology | CLEAR Framework - Erik Bohjort"
+        description="Licensed psychologist Erik Bohjort helps organizations beat the 70% failure rate of change initiatives. The CLEAR framework applies behavioral science and systems thinking for lasting transformation."
         path="/"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
           "name": "EB Consulting - CLEAR Change Framework",
-          "description": "Organizational change consulting using the CLEAR Change Framework",
-          "founder": { "@type": "Person", "name": "Erik Bohjort" },
+          "description": "Change management consulting built on clinical psychology. Licensed psychologist Erik Bohjort helps organizations drive lasting transformation through behavioral science and systems thinking.",
+          "founder": {
+            "@type": "Person",
+            "name": "Erik Bohjort",
+            "jobTitle": "Licensed Psychologist & Organizational Change Consultant",
+            "url": "https://clear-framework.com/about"
+          },
           "url": "https://clear-framework.com",
-          "areaServed": "Worldwide",
-          "serviceType": ["Organizational Change Management", "Leadership Development", "Systems Thinking Consulting"]
+          "areaServed": ["Europe", "Scandinavia"],
+          "serviceType": [
+            "Change Management Consulting",
+            "Leadership Development",
+            "Psychometric Assessments",
+            "Executive Coaching",
+            "Behavioral Design",
+            "Organizational Psychology"
+          ]
         }}
       />
       <Hero />

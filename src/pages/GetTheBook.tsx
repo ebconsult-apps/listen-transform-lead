@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission } from "@/utils/analytics";
+import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
@@ -56,6 +56,8 @@ const GetTheBook = () => {
       // Show success message
       setSubmitted(true);
       trackFormSubmission("book_preregistration");
+      setEnhancedConversionData(email);
+      trackGoogleAdsConversion("AW-XXXXXXXXX/BOOK_INTEREST");
       toast({
         title: "You're on the list!",
         description: "We'll notify you as soon as the book launches."
@@ -76,7 +78,7 @@ const GetTheBook = () => {
     <div className="min-h-screen">
       <SEO
         title="The CLEAR Change Framework Book | Erik Bohjort"
-        description="Discover how genuine, structured listening can unlock organizational transformation. The CLEAR Change Framework by Erik Bohjort gives leaders a practical blueprint for turning listening into strategic action."
+        description="A proven, psychology-backed method for leading organizational transformation that lasts. The CLEAR Change Framework by Erik Bohjort gives leaders a practical blueprint built on Clarity, Leverage, Experimentation, Analysis, and Refinement."
         path="/get-the-book"
         structuredData={{
           "@context": "https://schema.org",
@@ -97,9 +99,9 @@ const GetTheBook = () => {
               <div className="tag">Coming Soon</div>
               <h1 className="heading-xl">The CLEAR Change Framework</h1>
               <p className="body-lg">
-                Most change initiatives fail not because of bad strategy, but because leaders stop listening too soon.
-                This book gives you a proven, psychology-backed framework for turning genuine listening into the catalyst
-                for lasting organizational transformation.
+                Most change initiatives fail — not because of bad strategy, but because organizations lack a
+                systematic approach to navigating complexity. This book gives you a proven, psychology-backed
+                framework for leading transformation that actually lasts.
               </p>
 
               <div className="pt-6 flex flex-col sm:flex-row gap-4">
@@ -147,10 +149,10 @@ const GetTheBook = () => {
                   <CheckCircle className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">The SIMPLE Listening Framework</h3>
+                  <h3 className="text-xl font-bold mb-2">The Five Phases of CLEAR Change</h3>
                   <p className="text-foreground/70">
-                    A 7-step process for deep organizational listening that surfaces hidden insights, builds trust,
-                    and creates the conditions for meaningful transformation.
+                    Walk through each phase — Clarity, Leverage, Experimentation, Analysis, and Refinement —
+                    with practical tools and diagnostics you can apply to your own organization.
                   </p>
                 </div>
               </div>
@@ -186,9 +188,9 @@ const GetTheBook = () => {
                   <CheckCircle className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2">Building a Culture of Listening</h3>
+                  <h3 className="text-xl font-bold mb-2">Sustaining Change Over Time</h3>
                   <p className="text-foreground/70">
-                    Discover how to embed listening into your organization's DNA so that transformation
+                    Learn how to embed the CLEAR framework into your organization's DNA so that transformation
                     isn't a one-time event but a sustained, self-reinforcing capability.
                   </p>
                 </div>
@@ -208,8 +210,8 @@ const GetTheBook = () => {
             </div>
             <h2 className="heading-lg mb-6">Get a Free Chapter</h2>
             <p className="body-md max-w-2xl mx-auto">
-              Not sure if this book is for you? Read the opening chapter and discover why listening
-              is the most underused leadership tool in organizational change.
+              Not sure if this book is for you? Read the opening chapter and discover how the CLEAR
+              Change Framework helps leaders turn complexity into lasting results.
             </p>
           </div>
 

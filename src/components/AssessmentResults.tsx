@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { ArrowRight, Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission } from "@/utils/analytics";
+import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
 import { z } from "zod";
 import type { AssessmentData } from "./AssessmentQuiz";
 
@@ -167,6 +167,8 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
 
       setIsSubmitted(true);
       trackFormSubmission("assessment_report");
+      setEnhancedConversionData(formData.email);
+      trackGoogleAdsConversion("AW-XXXXXXXXX/ASSESSMENT_REPORT");
       toast({
         title: "Report request sent!",
         description: "Check your inbox for your full change readiness report.",

@@ -45,21 +45,20 @@ const CTASection = () => {
           <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
           
           <div className="relative z-10 text-center max-w-2xl mx-auto">
-            <h2 className="heading-lg mb-6">Ready to Transform Your Approach?</h2>
+            <h2 className="heading-lg mb-6">Ready to Break the Cycle of Failed Change?</h2>
             <p className="body-md mb-10">
-              Start your journey with the CLEAR Change Framework today.
-              Whether you're facing organizational challenges or seeking personal growth,
-              I'm here to guide you through the transformative power of genuine listening.
+              Find out where your organization stands with a free 2-minute assessment,
+              or book a conversation with Erik to discuss your specific challenges.
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link to="/contact" className="btn-primary">
-                Book a Consultation
+              <Link to="/assessment" className="btn-primary">
+                Take the Free Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link to="/methodology" className="btn-secondary">
-                Explore the Framework
-              </Link>
+              <a href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                Book a Discovery Call
+              </a>
             </div>
           </div>
         </div>

@@ -1,16 +1,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission } from "@/utils/analytics";
+import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
 import SEO from "@/components/SEO";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
 
 const Contact = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
+  const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,8 @@ const Contact = () => {
     const emailData = {
       name: name,
       email: email,
-      subject: subject,
+      subject: company ? `Contact from ${name} (${company})` : `Contact from ${name}`,
+      company: company,
       message: message
     };
     
@@ -51,20 +54,13 @@ const Contact = () => {
       
       setIsSubmitted(true);
       trackFormSubmission("contact");
+      setEnhancedConversionData(email);
+      trackGoogleAdsConversion("AW-XXXXXXXXX/CONTACT_FORM");
 
-      toast({
-        title: "Message sent!",
-        description: `Your message has been sent to erik@eb-consulting.se. We'll get back to you soon.`,
-      });
-      
-      // Reset form after animation completes
+      // Redirect to thank-you page after a brief success animation
       setTimeout(() => {
-        setName('');
-        setEmail('');
-        setSubject('');
-        setMessage('');
-        setIsSubmitted(false);
-      }, 2000);
+        navigate("/thank-you");
+      }, 800);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -164,17 +160,16 @@ const Contact = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
-                      Subject
+                    <label htmlFor="company" className="block text-sm font-medium text-foreground mb-2">
+                      Company
                     </label>
                     <input
                       type="text"
-                      id="subject"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
+                      id="company"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
                       className="w-full p-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
-                      placeholder="What's this about?"
-                      required
+                      placeholder="Your organization"
                     />
                   </div>
                   
@@ -188,7 +183,7 @@ const Contact = () => {
                       onChange={(e) => setMessage(e.target.value)}
                       rows={5}
                       className="w-full p-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow resize-none"
-                      placeholder="Your message here..."
+                      placeholder="Briefly describe your organization's current challenge and what kind of support you're looking for."
                       required
                     />
                   </div>
@@ -212,7 +207,7 @@ const Contact = () => {
                       )}
                       
                       <span className={isSubmitting || isSubmitted ? 'opacity-0' : ''}>
-                        Send Message
+                        Start the Conversation
                         <Send className="ml-2 h-4 w-4" />
                       </span>
                     </button>
