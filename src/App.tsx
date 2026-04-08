@@ -23,6 +23,10 @@ import CookieConsent from "./components/CookieConsent";
 import OrganizationalChange from "./pages/landing/OrganizationalChange";
 import ClearWhitepaper from "./pages/landing/ClearWhitepaper";
 import Sustainability from "./pages/landing/Sustainability";
+import ChangeManagement from "./pages/landing/ChangeManagement";
+import LeadershipDevelopment from "./pages/landing/LeadershipDevelopment";
+import OrganizationalPsychology from "./pages/landing/OrganizationalPsychology";
+import MergerIntegration from "./pages/landing/MergerIntegration";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import Assessment from "./pages/Assessment";
 import ChangeManagementStockholm from "./pages/niche/ChangeManagementStockholm";
@@ -56,6 +60,10 @@ const App = () => (
             <Route path="/lp/organizational-change" element={<OrganizationalChange />} />
             <Route path="/lp/clear-whitepaper" element={<ClearWhitepaper />} />
             <Route path="/lp/sustainability" element={<Sustainability />} />
+            <Route path="/lp/change-management" element={<ChangeManagement />} />
+            <Route path="/lp/leadership-development" element={<LeadershipDevelopment />} />
+            <Route path="/lp/organizational-psychology" element={<OrganizationalPsychology />} />
+            <Route path="/lp/merger-integration" element={<MergerIntegration />} />
 
             {/* Main site with Layout */}
             <Route path="/" element={<Layout />}>
