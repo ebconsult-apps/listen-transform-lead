@@ -151,8 +151,11 @@ const Services = () => {
                   Inquire About Availability
                   <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
+                <Link to="/services/speaking" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
+                  Speaking <ArrowRight className="ml-1 h-3 w-3" />
+                </Link>
                 <Link to="/services/workshops" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
-                  Learn more <ArrowRight className="ml-1 h-3 w-3" />
+                  Workshops <ArrowRight className="ml-1 h-3 w-3" />
                 </Link>
               </div>
             </div>

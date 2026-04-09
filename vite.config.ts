@@ -37,6 +37,7 @@ const routes = [
   "/services/executive-coaching",
   "/services/psychometric-assessments",
   "/services/workshops",
+  "/services/speaking",
   "/insights",
 ];
 

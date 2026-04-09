@@ -42,6 +42,7 @@ import ExecutiveCoachingService from "./pages/services/ExecutiveCoachingService"
 import PsychometricAssessmentsService from "./pages/services/PsychometricAssessmentsService";
 import WorkshopsService from "./pages/services/WorkshopsService";
 import Insights from "./pages/Insights";
+import SpeakingService from "./pages/services/SpeakingService";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +91,7 @@ const App = () => (
               <Route path="services/executive-coaching" element={<ExecutiveCoachingService />} />
               <Route path="services/psychometric-assessments" element={<PsychometricAssessmentsService />} />
               <Route path="services/workshops" element={<WorkshopsService />} />
+              <Route path="services/speaking" element={<SpeakingService />} />
               <Route path="insights" element={<Insights />} />
               <Route path="consulting/change-management-stockholm" element={<ChangeManagementStockholm />} />
               <Route path="consulting/change-management-europe" element={<ChangeManagementEurope />} />
