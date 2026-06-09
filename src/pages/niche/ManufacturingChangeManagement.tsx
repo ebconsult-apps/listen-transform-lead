@@ -1,7 +1,5 @@
 import NichePage from "@/components/NichePage";
-
-const BOOKINGS_URL =
-  "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";
+import { BOOKING_URL } from "@/config/site";
 
 const ManufacturingChangeManagement = () => (
   <NichePage
@@ -61,7 +59,7 @@ const ManufacturingChangeManagement = () => (
       result:
         "The modified MES implementation achieved 92% operator compliance within six weeks on the pilot line, compared to 35% in the original rollout. Downtime during the transition was reduced by 60%. The approach was then scaled across all production lines with local adaptations for each shift pattern.",
     }}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKINGS_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

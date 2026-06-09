@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { FileText, Download, Check, CheckSquare, Square } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { CONVERSION_LABELS } from "@/config/site";
 
 interface WhitepaperGateProps {
   title: string;
@@ -25,57 +26,26 @@ const WhitepaperGate = ({
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [newsletter, setNewsletter] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { submit, isSubmitting, submitted: isUnlocked, error } = useFormSubmit({
+    endpoint: "/whitepaper-handler.php",
+    formName: "whitepaper_download",
+    conversionLabel: CONVERSION_LABELS.whitepaper,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/whitepaper-handler.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          company,
-          newsletter_opt_in: newsletter,
-          whitepaper_id: whitepaperIdentifier,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to process your request.");
-      }
-
-      setIsUnlocked(true);
-      trackFormSubmission("whitepaper_download");
-      setEnhancedConversionData(email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/WHITEPAPER");
-
+    const ok = await submit({
+      name,
+      email,
+      company,
+      newsletter_opt_in: newsletter,
+      whitepaper_id: whitepaperIdentifier,
+    });
+    if (ok) {
       toast({
         title: "Success!",
         description: "Your whitepaper is ready to download.",
       });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-      toast({
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

@@ -1,8 +1,9 @@
 // Microsoft Bookings - Discovery Call
-// For inline embed alternative: <iframe src="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink" width="100%" height="700" scrolling="yes" style="border:0"></iframe>
+// For inline embed alternative: <iframe src={BOOKING_URL} width="100%" height="700" scrolling="yes" style="border:0"></iframe>
 
 import { Calendar, Mail, ExternalLink } from "lucide-react";
 import { trackCTAClick } from "@/utils/analytics";
+import { BOOKING_URL } from "@/config/site";
 
 const CalendlyEmbed = () => {
   return (
@@ -20,7 +21,7 @@ const CalendlyEmbed = () => {
       </p>
 
       <a
-        href="https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink"
+        href={BOOKING_URL}
         target="_blank"
         rel="noopener noreferrer"
         className="btn-primary w-full justify-center mb-6"

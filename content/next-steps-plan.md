@@ -6,39 +6,24 @@ Everything below is sequenced by dependency. Each section says who does it (Erik
 
 ## SPRINT 0: INSTRUMENTATION (This Week)
 
-### 1. Replace Google Ads Conversion Placeholders
-**Who:** Erik (5 minutes per conversion action)
-**Status:** Code is deployed with placeholder `AW-XXXXXXXXX/...` labels
+### 1. Wire Up Google Ads Conversions
+**Who:** Erik (15 minutes total)
+**Status:** The code is ready. Every form fires a distinct GA4 event (`lead_contact`, `lead_book_preregistration`, `lead_assessment_report`, `lead_whitepaper_download`, `lead_free_chapter`, `lead_consultation_request`). Native Google Ads conversion labels are placeholders in ONE file: `src/config/site.ts` (no events fire until they're replaced).
 
-**Steps:**
-1. Log into Google Ads (ads.google.com)
-2. Go to Goals → Conversions → New conversion action → Website
-3. Create 6 conversion actions:
+**Option A — GA4 import (fastest, no code changes):**
+1. Link Google Ads to GA4 (step 2 below) — required first
+2. In GA4: Admin → Events → find each `lead_*` event → toggle "Mark as key event" (events appear after the first real submission; you can also create them under Admin → Key events)
+3. In Google Ads: Goals → Conversions → New conversion action → Import → Google Analytics 4 properties → Web → select all 6 `lead_*` key events
+4. Done — conversions flow with zero code changes
 
-| Name | Category | Count |
-|------|----------|-------|
-| Contact Form | Submit lead form | One per click |
-| Book Interest | Submit lead form | One per click |
-| Assessment Report | Submit lead form | One per click |
-| Whitepaper Download | Submit lead form | One per click |
-| Free Chapter | Submit lead form | One per click |
-| Consultation Request | Submit lead form | One per click |
+**Option B — native Google Ads tags (better attribution + Enhanced Conversions):**
+1. Log into Google Ads → Goals → Conversions → New conversion action → Website
+2. Create 6 conversion actions (Category: Submit lead form, Count: One per click): Contact Form, Book Interest, Assessment Report, Whitepaper Download, Free Chapter, Consultation Request
+3. Google gives you a conversion ID + label per action (format: `AW-123456789/AbCdEfGh`)
+4. Paste them all into `src/config/site.ts` — set `GOOGLE_ADS_ID` to `AW-123456789` and replace the six `CONVERSION_LABELS` values. No other file needs to change.
+5. Enable Enhanced Conversions: Google Ads → Goals → Settings → Enhanced conversions for web → Turn on → Select "Google tag"
 
-4. For each action, Google gives you a conversion ID + label (format: `AW-123456789/AbCdEfGh`)
-5. Send me all 6 ID/label pairs and I'll replace the placeholders in the code, or find-and-replace yourself:
-
-| File | Placeholder to replace |
-|------|----------------------|
-| `src/pages/Contact.tsx` | `AW-XXXXXXXXX/CONTACT_FORM` |
-| `src/pages/GetTheBook.tsx` | `AW-XXXXXXXXX/BOOK_INTEREST` |
-| `src/components/AssessmentResults.tsx` | `AW-XXXXXXXXX/ASSESSMENT_REPORT` |
-| `src/components/WhitepaperGate.tsx` | `AW-XXXXXXXXX/WHITEPAPER` |
-| `src/components/FreeChapterForm.tsx` | `AW-XXXXXXXXX/FREE_CHAPTER` |
-| `src/components/LeadForm.tsx` | `AW-XXXXXXXXX/CONSULTATION` |
-
-6. Enable Enhanced Conversions: Google Ads → Goals → Settings → Enhanced conversions for web → Turn on → Select "Google tag"
-
-**Done when:** All 6 conversion actions fire real events in Google Ads, Enhanced Conversions is enabled.
+**Done when:** Conversions register in Google Ads (test by submitting a form and checking Google Ads → Conversions after a few hours).
 
 ---
 
@@ -100,6 +85,18 @@ Create a Google Sheet with this structure:
 **Tab 3: Referral Tracker**
 | Date sent | Recipient | Organization | Response (Y/N) | Intro made (Y/N) | Lead quality | Outcome |
 |-----------|-----------|-------------|----------------|-------------------|-------------|---------|
+
+---
+
+### 6. AI Search Findability (reference for content work)
+**Who:** Already implemented in code; keep in mind when writing content
+
+Google's official guidance for appearing in AI Overviews / AI Mode (and what AI models cite generally) is the [Guide to Optimizing for Generative AI Features](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide). Summary:
+
+- **It's still SEO.** Crawlable, indexable, snippet-eligible pages are the only technical requirement — the site already prerenders every route to static HTML, allows all major AI crawlers in robots.txt, and ships structured data.
+- **Content is the lever.** AI features favor unique, non-commodity content: first-hand expertise, original analysis, real case outcomes — not generic explainers. The licensed-psychologist angle IS this advantage; lead every article with it.
+- **Self-contained answers win.** Write so a section can be lifted out and still make sense (clear heading, direct answer in the first sentence, supporting detail after). The FAQ page format is a good model.
+- **Explicitly ignore:** llms.txt files, AI-specific rewriting, special markdown/schema variants — Google says these do nothing.
 
 ---
 

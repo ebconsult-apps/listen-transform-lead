@@ -1,7 +1,5 @@
 import NichePage from "@/components/NichePage";
-
-const BOOKINGS_URL =
-  "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";
+import { BOOKING_URL } from "@/config/site";
 
 const HealthcareChangeManagement = () => (
   <NichePage
@@ -52,7 +50,7 @@ const HealthcareChangeManagement = () => (
           "CLEAR's Experimentation phase is designed for high-stakes environments. In healthcare, this means testing changes in controlled conditions\u2014a single ward, a specific patient pathway, a limited time period\u2014with rigorous monitoring of both intended and unintended effects. Clinical staff participate in designing safety parameters for each pilot, and the Analysis phase uses methods familiar to anyone with clinical research training.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKINGS_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",
