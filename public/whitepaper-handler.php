@@ -1,8 +1,11 @@
 
 <?php
-// Allow requests from your domain
-// TODO: In production, tighten CORS to: header("Access-Control-Allow-Origin: https://clear-framework.com");
-header("Access-Control-Allow-Origin: *");
+// Only allow requests from the site's own origins
+$allowedOrigins = ["https://clear-framework.com", "https://www.clear-framework.com"];
+$origin = $_SERVER["HTTP_ORIGIN"] ?? "";
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: " . $origin);
+}
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Content-Type: application/json");

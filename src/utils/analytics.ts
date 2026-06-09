@@ -1,7 +1,21 @@
+import { GOOGLE_ADS_ID } from "@/config/site";
+
 declare global {
   interface Window {
     dataLayer: unknown[];
     gtag: (...args: unknown[]) => void;
+  }
+}
+
+/**
+ * Configure the Google Ads tag alongside the GA4 tag loaded in index.html.
+ * Without this config call, native Google Ads conversion events are dropped
+ * even when valid conversion labels are passed to trackGoogleAdsConversion().
+ * Call once on app startup; no-ops until GOOGLE_ADS_ID is set in config/site.ts.
+ */
+export function initGoogleAds(): void {
+  if (GOOGLE_ADS_ID && typeof window.gtag === "function") {
+    window.gtag("config", GOOGLE_ADS_ID);
   }
 }
 
@@ -42,6 +56,15 @@ export function trackFormSubmission(formName: string): void {
   trackEvent("form_submission", { form_name: formName });
 }
 
+/**
+ * Fire a distinct GA4 event per lead form (lead_contact, lead_free_chapter, ...).
+ * Distinct event names can be marked as key events in GA4 (Admin → Events)
+ * and imported into Google Ads as conversions — no conversion labels needed.
+ */
+export function trackLead(formName: string): void {
+  trackEvent(`lead_${formName}`, { form_name: formName });
+}
+
 /** Track a CTA click (booking, whitepaper download, etc.) */
 export function trackCTAClick(ctaName: string): void {
   trackEvent("cta_click", { cta_name: ctaName });
@@ -58,18 +81,16 @@ export function trackPageView(pagePath: string): void {
 
 /**
  * Fire a native Google Ads conversion event.
- * Replace the send_to value with your actual Google Ads conversion ID/label
- * once you create the conversion action in Google Ads.
- *
- * To set up:
- * 1. Create a conversion action in Google Ads
- * 2. Replace 'AW-XXXXXXXXX/YYYYYYY' with your conversion ID/label
- * 3. Optionally pass a value and currency
+ * Conversion labels live in src/config/site.ts (CONVERSION_LABELS); while they
+ * are still placeholders this is a no-op so no invalid conversions are sent.
  */
 export function trackGoogleAdsConversion(
   conversionLabel: string,
   value?: number,
 ): void {
+  if (!conversionLabel || conversionLabel.startsWith("AW-XXXXXXXXX")) {
+    return;
+  }
   if (typeof window.gtag === "function") {
     window.gtag("event", "conversion", {
       send_to: conversionLabel,

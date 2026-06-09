@@ -1,7 +1,5 @@
 import NichePage from "@/components/NichePage";
-
-const BOOKINGS_URL =
-  "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";
+import { BOOKING_URL } from "@/config/site";
 
 const MergerIntegrationConsulting = () => (
   <NichePage
@@ -57,7 +55,7 @@ const MergerIntegrationConsulting = () => (
           "In merger environments, overt resistance is rare\u2014people know that visible opposition is career-limiting. Instead, resistance goes underground: passive non-compliance, strategic information withholding, and quiet sabotage. CLEAR's foundation in psychological listening techniques creates safe channels for surfacing these concerns, allowing integration planners to address real obstacles rather than pretending they don't exist.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKINGS_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

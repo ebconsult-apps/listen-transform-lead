@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { CONVERSION_LABELS } from "@/config/site";
 import { z } from "zod";
 
 const leadSchema = z.object({
@@ -51,9 +52,17 @@ const LeadForm = () => {
     description: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof LeadFormData, string>>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const {
+    submit,
+    isSubmitting,
+    submitted: isSubmitted,
+    setSubmitted: setIsSubmitted,
+    error: submitError,
+  } = useFormSubmit({
+    endpoint: "/lead-handler.php",
+    formName: "consultation_request",
+    conversionLabel: CONVERSION_LABELS.consultation,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -68,7 +77,6 @@ const LeadForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError(null);
 
     // Validate with Zod
     const result = leadSchema.safeParse(formData);
@@ -84,26 +92,7 @@ const LeadForm = () => {
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/lead-handler.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to submit form.");
-      }
-
-      setIsSubmitted(true);
-      trackFormSubmission("consultation_request");
-      setEnhancedConversionData(formData.email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/CONSULTATION");
-
+    if (await submit(formData)) {
       toast({
         title: "Consultation request sent!",
         description:
@@ -124,18 +113,6 @@ const LeadForm = () => {
         });
         setIsSubmitted(false);
       }, 2000);
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-      toast({
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { CONVERSION_LABELS } from "@/config/site";
 import SEO from "@/components/SEO";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
 
@@ -13,9 +13,11 @@ const Contact = () => {
   const [company, setCompany] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { submit, isSubmitting, submitted: isSubmitted, error } = useFormSubmit({
+    endpoint: "/mail-handler.php",
+    formName: "contact",
+    conversionLabel: CONVERSION_LABELS.contactForm,
+  });
 
   const heroRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
@@ -24,10 +26,7 @@ const Contact = () => {
   // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    
-    // Prepare email data
+
     const emailData = {
       name: name,
       email: email,
@@ -35,42 +34,12 @@ const Contact = () => {
       company: company,
       message: message
     };
-    
-    try {
-      // Send data to PHP script
-      const response = await fetch('/mail-handler.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(emailData)
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to send message.');
-      }
-      
-      setIsSubmitted(true);
-      trackFormSubmission("contact");
-      setEnhancedConversionData(email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/CONTACT_FORM");
 
+    if (await submit(emailData)) {
       // Redirect to thank-you page after a brief success animation
       setTimeout(() => {
         navigate("/thank-you");
       }, 800);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : 'An unexpected error occurred',
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

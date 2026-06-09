@@ -6,6 +6,8 @@ interface SEOProps {
   path: string;
   type?: string;
   structuredData?: Record<string, unknown>;
+  /** Keep utility pages (thank-you, booking confirmations) out of search/AI results */
+  noindex?: boolean;
 }
 
 const SEO = ({
@@ -14,16 +16,18 @@ const SEO = ({
   path,
   type = "website",
   structuredData,
+  noindex = false,
 }: SEOProps) => {
   const siteUrl = "https://clear-framework.com";
   const canonicalUrl = `${siteUrl}${path}`;
-  const ogImage = `${siteUrl}/og-image.png`;
+  const ogImage = `${siteUrl}/og-image.jpg`;
 
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
+      {noindex && <meta name="robots" content="noindex" />}
 
       {/* Open Graph */}
       <meta property="og:title" content={title} />

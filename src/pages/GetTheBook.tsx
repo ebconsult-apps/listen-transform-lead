@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { CONVERSION_LABELS } from "@/config/site";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
@@ -17,9 +18,11 @@ const GetTheBook = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [notifications, setNotifications] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { submit, isSubmitting, submitted, error } = useFormSubmit({
+    endpoint: "/book-interest-handler.php",
+    formName: "book_preregistration",
+    conversionLabel: CONVERSION_LABELS.bookInterest,
+  });
 
   // Scroll to top on page load
   useEffect(() => {
@@ -28,49 +31,12 @@ const GetTheBook = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
 
-    const bookInterestData = {
-      name,
-      email,
-      notifications
-    };
-
-    try {
-      // Send data to PHP script
-      const response = await fetch('/book-interest-handler.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookInterestData)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to register your interest.');
-      }
-
-      // Show success message
-      setSubmitted(true);
-      trackFormSubmission("book_preregistration");
-      setEnhancedConversionData(email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/BOOK_INTEREST");
+    if (await submit({ name, email, notifications })) {
       toast({
         title: "You're on the list!",
         description: "We'll notify you as soon as the book launches."
       });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : 'An unexpected error occurred',
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

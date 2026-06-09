@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { CONVERSION_LABELS } from "@/config/site";
 
 interface FreeChapterFormProps {
   onSuccess?: () => void;
@@ -15,46 +16,20 @@ interface FreeChapterFormProps {
 const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { submit, isSubmitting, submitted, error } = useFormSubmit({
+    endpoint: "/book-chapter-handler.php",
+    formName: "free_chapter",
+    conversionLabel: CONVERSION_LABELS.freeChapter,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/book-chapter-handler.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Something went wrong. Please try again.");
-      }
-
-      setSubmitted(true);
-      trackFormSubmission("free_chapter");
-      setEnhancedConversionData(email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/FREE_CHAPTER");
+    if (await submit({ name, email })) {
       toast({
         title: "Chapter on its way!",
         description: "Check your inbox for a free chapter of The CLEAR Change Framework.",
       });
       onSuccess?.();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

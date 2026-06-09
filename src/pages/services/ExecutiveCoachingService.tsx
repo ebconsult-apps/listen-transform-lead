@@ -3,9 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
 import SEO from "@/components/SEO";
-
-const BOOKING_URL =
-  "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";
+import { BOOKING_URL } from "@/config/site";
 
 const ExecutiveCoachingService = () => {
   useEffect(() => {

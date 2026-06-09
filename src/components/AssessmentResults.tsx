@@ -9,7 +9,8 @@ import {
 } from "recharts";
 import { ArrowRight, Check, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { trackFormSubmission, setEnhancedConversionData, trackGoogleAdsConversion } from "@/utils/analytics";
+import { useFormSubmit } from "@/hooks/use-form-submit";
+import { BOOKING_URL, CONVERSION_LABELS } from "@/config/site";
 import { z } from "zod";
 import type { AssessmentData } from "./AssessmentQuiz";
 
@@ -65,15 +66,19 @@ const dimensionKeys = [
 const inputClasses =
   "w-full p-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow";
 
-const BOOKINGS_URL =
-  "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";
-
 const AssessmentResults = ({ data }: AssessmentResultsProps) => {
   const [contactForm, setContactForm] = useState({ name: "", email: "", company: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const {
+    submit,
+    isSubmitting,
+    submitted: isSubmitted,
+    error: submitError,
+  } = useFormSubmit({
+    endpoint: "/assessment-handler.php",
+    formName: "assessment_report",
+    conversionLabel: CONVERSION_LABELS.assessmentReport,
+  });
 
   // Build radar data
   const radarData = dimensionKeys.map((key) => ({
@@ -122,7 +127,6 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError(null);
 
     const result = contactSchema.safeParse(contactForm);
     if (!result.success) {
@@ -135,56 +139,26 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
       return;
     }
 
-    setIsSubmitting(true);
+    const payload = {
+      name: contactForm.name,
+      email: contactForm.email,
+      company: contactForm.company,
+      orgSize: data.orgSize,
+      role: data.role,
+      challenge: data.challenge,
+      clarity: data.clarity,
+      leverage: data.leverage,
+      experimentation: data.experimentation,
+      analysis: data.analysis,
+      refinement: data.refinement,
+      totalScore: data.totalScore,
+    };
 
-    try {
-      const payload = {
-        name: contactForm.name,
-        email: contactForm.email,
-        company: contactForm.company,
-        orgSize: data.orgSize,
-        role: data.role,
-        challenge: data.challenge,
-        clarity: data.clarity,
-        leverage: data.leverage,
-        experimentation: data.experimentation,
-        analysis: data.analysis,
-        refinement: data.refinement,
-        totalScore: data.totalScore,
-      };
-
-      const response = await fetch("/assessment-handler.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to submit form.");
-      }
-
-      setIsSubmitted(true);
-      trackFormSubmission("assessment_report");
-      setEnhancedConversionData(formData.email);
-      trackGoogleAdsConversion("AW-XXXXXXXXX/ASSESSMENT_REPORT");
+    if (await submit(payload)) {
       toast({
         title: "Report request sent!",
         description: "Check your inbox for your full change readiness report.",
       });
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
-      );
-      toast({
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -203,7 +177,6 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
               <PolarAngleAxis
                 dataKey="dimension"
                 tick={{ fill: "hsl(220 20% 10%)", fontSize: 12, fontWeight: 500 }}
-                tickMargin={8}
               />
               <PolarRadiusAxis
                 domain={[0, 5]}
@@ -367,7 +340,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
           Book a free discovery call to explore how the CLEAR framework can address your organization's specific challenges.
         </p>
         <a
-          href={BOOKINGS_URL}
+          href={BOOKING_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-primary"

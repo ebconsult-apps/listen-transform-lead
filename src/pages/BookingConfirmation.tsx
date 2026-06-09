@@ -9,6 +9,7 @@ const BookingConfirmation = () => {
         title="Booking Confirmed | CLEAR Change Framework"
         description="Your discovery call has been booked. We look forward to discussing how the CLEAR Change Framework can help your organization."
         path="/booking-confirmed"
+        noindex
       />
       <div className="glass-card p-10 md:p-14 max-w-lg text-center animate-fade-in">
         <div className="bg-green-100 p-4 rounded-full inline-flex mb-6">

@@ -31,9 +31,12 @@ const Index = () => {
             "@type": "Person",
             "name": "Erik Bohjort",
             "jobTitle": "Licensed Psychologist & Organizational Change Consultant",
-            "url": "https://clear-framework.com/about"
+            "url": "https://clear-framework.com/about",
+            "sameAs": ["https://twitter.com/erikbohjort"]
           },
           "url": "https://clear-framework.com",
+          "logo": "https://clear-framework.com/logo-square.png",
+          "image": "https://clear-framework.com/og-image.jpg",
           "areaServed": ["Europe", "Scandinavia"],
           "serviceType": [
             "Change Management Consulting",
