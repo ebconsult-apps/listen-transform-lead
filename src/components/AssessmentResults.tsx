@@ -165,7 +165,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       {/* Radar Chart */}
-      <div className="glass-card p-8 md:p-10">
+      <div className="glass-card p-6 sm:p-8 md:p-10">
         <h2 className="heading-md mb-2 text-center">Your CLEAR Readiness Profile</h2>
         <p className="text-foreground/60 text-center mb-6">
           Based on your responses across the five CLEAR dimensions
@@ -198,7 +198,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
       </div>
 
       {/* Overall Score */}
-      <div className="glass-card p-8 md:p-10">
+      <div className="glass-card p-6 sm:p-8 md:p-10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
           <div className="text-center sm:text-left">
             <p className="text-sm font-medium text-foreground/60 mb-1">Overall Score</p>
@@ -212,7 +212,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
       </div>
 
       {/* Dimension Breakdown */}
-      <div className="glass-card p-8 md:p-10">
+      <div className="glass-card p-6 sm:p-8 md:p-10">
         <h3 className="text-xl font-bold mb-6">Dimension Breakdown</h3>
         <div className="space-y-5">
           {dimensionKeys.map((key) => {
@@ -247,7 +247,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
       </div>
 
       {/* Email Gate */}
-      <div className="glass-card p-8 md:p-10">
+      <div className="glass-card p-6 sm:p-8 md:p-10">
         <h3 className="text-xl font-bold mb-2">Get Your Full Change Readiness Report</h3>
         <p className="text-foreground/70 mb-6">
           Your report includes detailed recommendations, benchmark comparisons, and suggested next steps.
@@ -334,7 +334,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
       </div>
 
       {/* CTA */}
-      <div className="glass-card p-8 md:p-10 text-center">
+      <div className="glass-card p-6 sm:p-8 md:p-10 text-center">
         <h3 className="text-xl font-bold mb-3">Discuss Your Results with Erik</h3>
         <p className="text-foreground/70 mb-6">
           Book a free discovery call to explore how the CLEAR framework can address your organization's specific challenges.

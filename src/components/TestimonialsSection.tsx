@@ -104,7 +104,7 @@ const TestimonialsSection = () => {
           </div>
           
           {/* Testimonial Card */}
-          <div ref={testimonialRef} className="glass-card p-10 md:p-14 relative z-10">
+          <div ref={testimonialRef} className="glass-card p-6 sm:p-10 md:p-14 relative z-10">
             <blockquote className="text-xl md:text-2xl font-display font-light italic text-foreground/90 leading-relaxed mb-8">
               "{testimonials[activeIndex].quote}"
             </blockquote>

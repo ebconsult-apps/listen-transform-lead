@@ -33,7 +33,7 @@ const Layout = () => {
             : "py-5 bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <Link 
             to="/" 
             className="font-display text-2xl font-bold text-foreground flex items-center"
@@ -79,7 +79,7 @@ const Layout = () => {
         </div>
       </header>
 
-      <main className="flex-grow pt-24">
+      <main className="flex-grow pt-20 sm:pt-24">
         <Outlet />
       </main>
 
@@ -126,7 +126,7 @@ const Layout = () => {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t border-foreground/10 flex justify-between items-center text-sm text-foreground/50">
+          <div className="mt-12 pt-8 border-t border-foreground/10 flex flex-col gap-4 text-center sm:flex-row sm:justify-between sm:text-left items-center text-sm text-foreground/50">
             <p>© {new Date().getFullYear()} CLEAR Change Framework. All rights reserved.</p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>

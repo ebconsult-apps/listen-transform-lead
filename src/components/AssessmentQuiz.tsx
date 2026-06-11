@@ -154,7 +154,7 @@ const AssessmentQuiz = ({ onComplete }: AssessmentQuizProps) => {
   };
 
   return (
-    <div className="glass-card p-8 md:p-10 max-w-2xl mx-auto">
+    <div className="glass-card p-6 sm:p-8 md:p-10 max-w-2xl mx-auto">
       {/* Progress bar */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
