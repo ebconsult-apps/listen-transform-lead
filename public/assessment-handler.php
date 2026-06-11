@@ -110,7 +110,19 @@ try {
     ob_end_clean();
     if (function_exists('brevo_add_contact')) {
         brevo_add_contact($email, $name, 3, ['COMPANY' => $company, 'ASSESSMENT_SCORE' => (string)$totalScore, 'SOURCE' => 'assessment']);
-        $tpl = get_email_template('assessment_welcome', ['name' => $name]);
+        $tpl = get_email_template('assessment_welcome', [
+            'name' => $name,
+            'company' => $company,
+            'orgSize' => $orgSize,
+            'role' => $role,
+            'challenge' => $challenge,
+            'clarity' => $clarity,
+            'leverage' => $leverage,
+            'experimentation' => $experimentation,
+            'analysis' => $analysis,
+            'refinement' => $refinement,
+            'totalScore' => $totalScore,
+        ]);
         if ($tpl) { brevo_send_email($email, $name, $tpl['subject'], $tpl['html']); }
     }
 } catch (Exception $e) { /* Brevo failure is non-critical */ }
