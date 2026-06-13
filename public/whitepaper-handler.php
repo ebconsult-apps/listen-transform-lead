@@ -1,4 +1,3 @@
-
 <?php
 // Only allow requests from the site's own origins
 $allowedOrigins = ["https://clear-framework.com", "https://www.clear-framework.com"];
@@ -34,11 +33,11 @@ if (!isset($data['name']) || !isset($data['email']) || !isset($data['whitepaper_
 }
 
 // Sanitize input data
-$name = filter_var($data['name'], FILTER_SANITIZE_STRING);
+$name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
 $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
-$company = isset($data['company']) ? filter_var($data['company'], FILTER_SANITIZE_STRING) : '';
+$company = isset($data['company']) ? htmlspecialchars($data['company'], ENT_QUOTES, 'UTF-8') : '';
 $newsletter_opt_in = isset($data['newsletter_opt_in']) ? (bool)$data['newsletter_opt_in'] : false;
-$whitepaper_id = filter_var($data['whitepaper_id'], FILTER_SANITIZE_STRING);
+$whitepaper_id = htmlspecialchars($data['whitepaper_id'], ENT_QUOTES, 'UTF-8');
 
 // Validate email format
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

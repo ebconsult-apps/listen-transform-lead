@@ -1,4 +1,3 @@
-
 <?php
 // Only allow requests from the site's own origins
 $allowedOrigins = ["https://clear-framework.com", "https://www.clear-framework.com"];
@@ -34,7 +33,7 @@ if (!isset($data['name']) || !isset($data['email'])) {
 }
 
 // Sanitize input data
-$name = filter_var($data['name'], FILTER_SANITIZE_STRING);
+$name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
 $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 
 // Validate email format
