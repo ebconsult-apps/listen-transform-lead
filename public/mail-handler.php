@@ -1,4 +1,3 @@
-
 <?php
 // Only allow requests from the site's own origins
 $allowedOrigins = ["https://clear-framework.com", "https://www.clear-framework.com"];
@@ -27,10 +26,10 @@ if (!isset($data['name']) || !isset($data['email']) || !isset($data['subject']) 
 }
 
 // Sanitize input data
-$name = filter_var($data['name'], FILTER_SANITIZE_STRING);
+$name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
 $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
-$subject = filter_var($data['subject'], FILTER_SANITIZE_STRING);
-$message = filter_var($data['message'], FILTER_SANITIZE_STRING);
+$subject = htmlspecialchars($data['subject'], ENT_QUOTES, 'UTF-8');
+$message = htmlspecialchars($data['message'], ENT_QUOTES, 'UTF-8');
 
 // Validate email format
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

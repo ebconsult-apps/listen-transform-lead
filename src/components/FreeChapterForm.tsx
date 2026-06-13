@@ -1,12 +1,16 @@
 
 import { useState } from "react";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { CONVERSION_LABELS } from "@/config/site";
+
+// The chapter file delivered on success. Swap in a dedicated chapter PDF here
+// when one is available; for now this is the CLEAR framework resource.
+const CHAPTER_PDF_URL = "/whitepapers/clear-change-framework.pdf";
 
 interface FreeChapterFormProps {
   onSuccess?: () => void;
@@ -26,8 +30,8 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
     e.preventDefault();
     if (await submit({ name, email })) {
       toast({
-        title: "Chapter on its way!",
-        description: "Check your inbox for a free chapter of The CLEAR Change Framework.",
+        title: "Your chapter is ready!",
+        description: "Download it below — we've also emailed you a copy.",
       });
       onSuccess?.();
     }
@@ -40,9 +44,20 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
           <CheckCircle className="h-6 w-6 text-primary" />
         </div>
         <h3 className="text-xl font-bold mb-2">Thank You!</h3>
-        <p className="text-muted-foreground">
-          A free chapter of "The CLEAR Change Framework" is on its way to your inbox.
+        <p className="text-muted-foreground mb-5">
+          Your free chapter of "The CLEAR Change Framework" is ready. We've also
+          emailed you a copy.
         </p>
+        <a
+          href={CHAPTER_PDF_URL}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Download Your Chapter
+        </a>
       </div>
     );
   }

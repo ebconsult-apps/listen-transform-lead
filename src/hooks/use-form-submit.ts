@@ -53,6 +53,15 @@ export function useFormSubmit({ endpoint, formName, conversionLabel }: UseFormSu
         throw new Error(message);
       }
 
+      // A 200 isn't proof the handler ran: if the PHP file is missing the SPA
+      // rewrite returns index.html (HTML, not JSON). Require a valid JSON body
+      // that isn't an explicit failure, otherwise report an error rather than
+      // a false success.
+      const body = await response.json().catch(() => null);
+      if (!body || body.success === false) {
+        throw new Error(body?.message || "Something went wrong. Please try again.");
+      }
+
       setSubmitted(true);
       trackFormSubmission(formName);
       trackLead(formName);

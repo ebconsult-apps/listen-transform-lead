@@ -74,9 +74,9 @@ function get_email_template($templateName, $vars = []) {
             'subject' => 'Your free chapter of The CLEAR Change Framework',
             'html' => $wrap(
                 "<h1 style='color: #1e3a5f; font-size: 24px;'>Hi {$firstName},</h1>
-                <p style='{$pStyle}'>Thank you for your interest in the book. We'll send you a free chapter soon — keep an eye on your inbox.</p>
-                <p style='{$pStyle}'>In the meantime, you might find the Change Readiness Assessment useful — it takes 2 minutes and gives you a quick read on where your organization stands.</p>
-                <p style='margin-top: 30px;'><a href='https://clear-framework.com/assessment' style='{$btnStyle}'>Take the Assessment</a></p>
+                <p style='{$pStyle}'>Thank you for your interest in the book. Your free chapter is ready — download it using the button below.</p>
+                <p style='margin-top: 30px;'><a href='https://clear-framework.com/whitepapers/clear-change-framework.pdf' style='{$btnStyle}'>Download Your Chapter</a></p>
+                <p style='{$pStyle}'>You might also find the Change Readiness Assessment useful — it takes 2 minutes and gives you a quick read on where your organization stands. <a href='https://clear-framework.com/assessment' style='color: #2563eb;'>Take the assessment</a>.</p>
                 {$footer}"
             ),
         ],
