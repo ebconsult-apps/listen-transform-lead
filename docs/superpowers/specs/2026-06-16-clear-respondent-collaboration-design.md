@@ -120,17 +120,29 @@ via signed upload URL, which bypasses RLS).
 `POST { projectId, emails: string[], note?: string }`
 - Verify caller membership of the project's workspace.
 - For each email: generate a 32-byte random token, store `sha-256(token)`,
-  upsert the invitation row, send the email via Brevo with the link
+  **insert** the invitation row, send the email via Brevo with the link
   `https://clear-framework.com/respond/<token>`.
+- **Upsert-vs-resend boundary:** the initial `invite` is insert-only on the new
+  `(project_id, email)` pair — re-inviting an existing email is a no-op that
+  routes the caller to `resend`. Re-issuing a token for an existing invitation
+  happens **only** via `action: 'resend'` (new token, new `last_sent_at`,
+  status → `pending`). This keeps one code path for new invites and one for
+  re-issuing.
 - Returns per-email status. Never returns the raw token after send.
-- Also handles `action: 'resend'` (new token + re-send) and
-  `action: 'revoke'` (status → revoked) for the owner UI.
+- Also handles `action: 'resend'` and `action: 'revoke'` (status → revoked) for
+  the owner UI.
 
 ### `respondent` (public, token-authed, `action`-based)
 `POST { token, action, ... }`
 - `load` — hash token, look up non-revoked, non-expired invitation; mark
-  `opened`; return `{ projectName, prompts, map | null, points[], existing:
-  { answers, reactions, respondentName, documents } }`.
+  `opened`; return `{ projectName, prompts, map | null, currentRunId | null,
+  points[], existing: { answers, reactions, respondentName, documents } }`.
+  **The "current map" is the latest `leverage_teaser` run** (the same selection
+  the owner UI already uses: `latestOutput(runs, "leverage_teaser")` in
+  ProjectDetail.tsx). `currentRunId` is that run's id; every reaction the
+  respondent leaves is keyed to it. If a later owner re-run produces a new teaser
+  run, prior reactions stay anchored to the older `run_id` (historical) and the
+  owner's reaction summary reflects the current run.
 - `save` — upsert draft `answers` / `respondentName` / `reactions`.
 - `submit` — set contribution `status='submitted'`, `submitted_at=now()`,
   invitation `status='submitted'`.
@@ -172,10 +184,17 @@ index.ts   -> getDocumentExtractor() selects by Deno.env DOC_EXTRACT_MODE (defau
     point #2 as 'missing something': <notes>").
   - Respondent documents are already returned by the existing `documents` query
     (no change) and now carry `extracted_text` for text formats via the stub.
+- **Intended owner-side behavior change (not a regression):** today nothing
+  populates `extracted_text`, so documents contribute *nothing* to any run. Once
+  `extract-document` runs on the owner upload path too (§14), owner-uploaded
+  **text** files (`.txt/.md/.csv`) start contributing to intake on the next run.
+  Binary files remain skipped until `DOC_EXTRACT_MODE=live`. Call this out in the
+  plan so existing projects' richer output isn't mistaken for a regression.
 - **No automatic re-run.** `ProjectDetail` computes "new contributions since
   last run" (`contributions.submitted_at > latest run.created_at`) and shows a
   **"Re-run to incorporate"** CTA that calls the existing `project-run` teaser
-  phase.
+  phase. The owner reaction summary (§10) groups reactions by the current teaser
+  `run_id`.
 
 ## 9. Respondent page (`src/pages/respond/RespondentPortal.tsx`, route `/respond/:token`)
 
@@ -183,10 +202,17 @@ Sections, top to bottom:
 1. **Header** — "{Workspace} invited you to help shape '{project name}'."
 2. **Consent (GDPR)** — what's collected, who sees it; a required acknowledgment
    checkbox gating Submit.
-3. **Current thinking** — if a map exists, render read-only Goals + ranked
-   Leverage points by **reusing `TeaserReport`**; each point shows three reaction
-   chips (*resonates / not sure / missing something*) + optional note. If no map
-   yet: a friendly "the team is preparing this — your input below will shape it."
+3. **Current thinking** — if a map exists (latest `leverage_teaser` run), render
+   the read-only Goals + ranked Leverage points with a reaction control under each
+   point: three chips (*resonates / not sure / missing something*) + optional
+   note, keyed by `point_rank` + `currentRunId`. If no map yet: a friendly "the
+   team is preparing this — your input below will shape it."
+   - **Rendering note:** `TeaserReport` renders points via `LeverageTable`, which
+     is closed (no per-point slot), so it can't host chips as-is. Two options for
+     the plan to choose: (a) thread a per-point render slot through `TeaserReport`
+     → `LeverageTable` and reuse them, or (b) build a small parallel read-only
+     `RespondentMap` component. Either way the Goals/Clarify block can reuse
+     existing presentation. Budget for touching `LeverageTable` if (a).
 4. **Your input** — 3–4 guided open prompts (text). A disabled mic affordance
    ("voice input coming soon") wired to the same `answers` fields for the
    dictation workstream.
@@ -244,6 +270,8 @@ Sections, top to bottom:
 - `src/pages/respond/RespondentPortal.tsx`
 - `src/components/product/CollaborateTab.tsx`
 - `src/components/product/ReactionChips.tsx`
+- `src/components/product/RespondentMap.tsx` (read-only map + per-point reaction
+  slots — needed if §9.3 option (b); skip if reusing `TeaserReport` via option (a))
 - `src/lib/collab.ts` (owner-side data access + function invokers)
 
 **Modified**
@@ -252,6 +280,8 @@ Sections, top to bottom:
 - `src/pages/app/NewProject.tsx` (invoke `extract-document` after upload)
 - `src/lib/db.ts` (types for new tables; `documents.invitation_id`)
 - `src/App.tsx` (respondent route)
+- `src/components/product/TeaserReport.tsx` + `LeverageTable.tsx` (only if §9.3
+  option (a): add a per-point render slot)
 - `supabase/README.md` (BREVO_API_KEY, DOC_EXTRACT_MODE, new functions)
 
 ## 15. Testing
