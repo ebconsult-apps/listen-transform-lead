@@ -28,6 +28,16 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Vite inlines VITE_* at build time. The anon/publishable key is public
+          # (it ships in the browser bundle by design), so these live as repo
+          # Actions *Variables*, not secrets. Empty values are harmless — the app
+          # just shows a "Setup required" card until they're set.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_APP_URL: https://clear-framework.com
+          VITE_AI_MODE: stub
+          VITE_BILLING_ENABLED: "false"
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
