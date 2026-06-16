@@ -36,7 +36,10 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_APP_URL: https://clear-framework.com
-          VITE_AI_MODE: stub
+          # live = the client calls the deployed project-run edge function (which
+          # holds ANTHROPIC_API_KEY and enforces the cost cap) instead of running
+          # the in-browser stub. Requires the edge function deployed with AI_MODE=live.
+          VITE_AI_MODE: live
           VITE_BILLING_ENABLED: "false"
 
       - name: Setup SSH
