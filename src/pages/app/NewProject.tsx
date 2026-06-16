@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, X, Upload } from "lucide-react";
 import SEO from "@/components/SEO";
+import DictationButton from "@/components/DictationButton";
 import { requireSupabase } from "@/lib/supabase";
 import { getMyWorkspace } from "@/lib/db";
 import { extractText } from "@/lib/extract-text";
@@ -13,6 +14,14 @@ const USE_CASES = ["churn", "onboarding", "compliance", "policy_uptake", "other"
 const ACCEPT = ".pdf,.docx,.xlsx,.md,.txt,.csv";
 const MAX_FILES = 10;
 const MAX_TOTAL_BYTES = 50 * 1024 * 1024;
+
+/** Append a dictated segment to existing text without clobbering what's typed. */
+function appendTranscript(prev: string, addition: string): string {
+  const add = addition.trim();
+  if (!add) return prev;
+  if (!prev) return add;
+  return /\s$/.test(prev) ? prev + add : `${prev} ${add}`;
+}
 
 const NewProject = () => {
   const navigate = useNavigate();
@@ -127,8 +136,13 @@ const NewProject = () => {
             className="input"
             value={challenge}
             onChange={(e) => setChallenge(e.target.value)}
-            placeholder="Describe the challenge, the group, and what success looks like…"
+            placeholder="Describe the challenge, the group, and what success looks like — type, or tap Dictate to speak…"
           />
+          <div className="mt-2">
+            <DictationButton
+              onResult={(text) => setChallenge((c) => appendTranscript(c, text))}
+            />
+          </div>
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
