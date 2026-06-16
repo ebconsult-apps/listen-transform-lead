@@ -46,10 +46,32 @@ supabase secrets set \
   AI_MODE=stub \
   CLARIFY_MODEL=claude-haiku-4-5 \
   LEVERAGE_MODEL=claude-sonnet-4-6 \
-  WORKSPACE_MONTHLY_COST_CAP_USD=25
+  WORKSPACE_MONTHLY_COST_CAP_USD=25 \
+  BREVO_API_KEY=xkeysib-... \
+  PUBLIC_APP_URL=https://clear-framework.com
 
-supabase functions deploy project-run stripe-checkout stripe-webhook
+supabase functions deploy project-run stripe-checkout stripe-webhook \
+  invite-respondents respondent
 ```
+
+`BREVO_API_KEY` powers respondent invitation emails (reuses the marketing-site
+Brevo account; sender is the already-verified `erik@eb-consulting.se`).
+`PUBLIC_APP_URL` is the base for tokenized `/respond/<token>` links.
+
+## 3b. Respondent collaboration
+
+Two functions enable email-invited respondents to contribute to a project:
+
+- `invite-respondents` (owner JWT) — sends/resends/revokes invitations.
+- `respondent` (public, `verify_jwt = false`) — token-authed portal API
+  (load/save/submit/upload). Respondents have no Supabase account; the invitation
+  token authorizes every call, and writes go through the service-role client.
+
+Respondent document uploads reuse the same in-browser text extraction as the owner
+intake, so no separate extraction service is needed. The CI workflow
+`.github/workflows/supabase-deploy.yml` deploys all three edge functions on push to
+`main`; the `20260616210000_respondent_collaboration.sql` migration adds the
+`project_invitations`, `project_contributions`, and `leverage_reactions` tables.
 
 ## 4. Stripe
 

@@ -6,6 +6,14 @@ project_id = "clear-self-serve"
 [functions.project-run]
 verify_jwt = true
 
+# Owner-only: invites respondents to a project (membership checked in-function).
+[functions.invite-respondents]
+verify_jwt = true
+
+# Public portal: respondents have no Supabase session; the invitation token authorizes.
+[functions.respondent]
+verify_jwt = false
+
 [functions.stripe-checkout]
 verify_jwt = true
 

@@ -5,6 +5,7 @@ import {
   listDocuments,
   setProjectStatus,
 } from "@/lib/db";
+import { listContributions, listReactions, summarizeRespondentInput } from "@/lib/collab";
 import { AI_MODE, getClearEngine } from "./index";
 import type {
   ClarifyOutput,
@@ -14,20 +15,31 @@ import type {
 } from "./types";
 
 async function buildIntake(projectId: string): Promise<IntakeInput> {
-  const [project, input, docs] = await Promise.all([
+  const [project, input, docs, contributions, reactions] = await Promise.all([
     getProject(projectId),
     getProjectInput(projectId),
     listDocuments(projectId),
+    listContributions(projectId),
+    listReactions(projectId),
   ]);
+  const documents = docs
+    .filter((d) => d.extracted_text)
+    .map((d) => ({ filename: d.filename, text: d.extracted_text! }));
+
+  // Fold submitted respondent input (text answers + reaction summary) into intake.
+  // Respondent documents already arrive via listDocuments (same project_id).
+  const respondentInput = summarizeRespondentInput(contributions, reactions);
+  if (respondentInput) {
+    documents.push({ filename: "Respondent contributions", text: respondentInput });
+  }
+
   return {
     challenge: input?.challenge ?? "",
     stakeholders: input?.stakeholders ?? [],
     timeline: input?.timeline ?? undefined,
     targetGroup: project.target_group ?? undefined,
     useCase: project.use_case ?? undefined,
-    documents: docs
-      .filter((d) => d.extracted_text)
-      .map((d) => ({ filename: d.filename, text: d.extracted_text! })),
+    documents,
   };
 }
 

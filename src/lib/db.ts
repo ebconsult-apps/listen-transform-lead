@@ -67,6 +67,44 @@ export interface ProjectUnlock {
   unlocked_at: string | null;
 }
 
+export type InvitationStatus = "pending" | "opened" | "submitted" | "revoked";
+
+export interface ProjectInvitation {
+  id: string;
+  project_id: string;
+  email: string;
+  status: InvitationStatus;
+  invited_by: string;
+  note: string | null;
+  created_at: string;
+  expires_at: string | null;
+  last_sent_at: string | null;
+}
+
+export interface ProjectContribution {
+  id: string;
+  project_id: string;
+  invitation_id: string;
+  respondent_name: string | null;
+  answers: Record<string, string>;
+  status: "draft" | "submitted";
+  submitted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ReactionValue = "resonates" | "unsure" | "missing";
+
+export interface LeverageReaction {
+  id: string;
+  project_id: string;
+  invitation_id: string;
+  run_id: string;
+  point_rank: number;
+  reaction: ReactionValue;
+  note: string | null;
+}
+
 /** The first workspace the signed-in user belongs to (their personal one). */
 export async function getMyWorkspace(): Promise<Workspace> {
   const sb = requireSupabase();

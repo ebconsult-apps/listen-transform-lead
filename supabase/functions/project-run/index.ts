@@ -14,6 +14,70 @@ const AI_MODE = Deno.env.get("AI_MODE") ?? "stub";
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
+interface Contribution {
+  invitation_id: string;
+  respondent_name: string | null;
+  answers: Record<string, string> | null;
+  status: string;
+}
+interface Reaction {
+  invitation_id: string;
+  point_rank: number;
+  reaction: string;
+  note: string | null;
+}
+
+/**
+ * Render submitted respondent input (text answers + reaction summary) as one intake
+ * document. Mirrors summarizeRespondentInput in src/lib/collab.ts. Returns null when
+ * nothing submitted.
+ */
+function summarizeRespondentInput(contributions: Contribution[], reactions: Reaction[]): string | null {
+  const submitted = contributions.filter((c) => c.status === "submitted");
+  if (submitted.length === 0) return null;
+  const submittedIds = new Set(submitted.map((c) => c.invitation_id));
+  const parts: string[] = [];
+
+  for (const c of submitted) {
+    const answers = Object.values(c.answers ?? {})
+      .map((v) => String(v).trim())
+      .filter(Boolean);
+    if (answers.length === 0) continue;
+    const who = c.respondent_name?.trim() || "Anonymous respondent";
+    parts.push(`Respondent: ${who}\n${answers.map((a) => `- ${a}`).join("\n")}`);
+  }
+
+  const relevant = reactions.filter((r) => submittedIds.has(r.invitation_id));
+  if (relevant.length) {
+    const byRank = new Map<number, Reaction[]>();
+    for (const r of relevant) {
+      const arr = byRank.get(r.point_rank) ?? [];
+      arr.push(r);
+      byRank.set(r.point_rank, arr);
+    }
+    const lines: string[] = [];
+    for (const rank of [...byRank.keys()].sort((a, b) => a - b)) {
+      const rs = byRank.get(rank)!;
+      const counts: Record<string, number> = { resonates: 0, unsure: 0, missing: 0 };
+      const notes: string[] = [];
+      for (const r of rs) {
+        counts[r.reaction] = (counts[r.reaction] ?? 0) + 1;
+        if (r.note?.trim()) notes.push(r.note.trim());
+      }
+      const summary = Object.entries(counts)
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => `${n} ${k}`)
+        .join(", ");
+      lines.push(
+        `- Leverage point #${rank}: ${summary}${notes.length ? `. Notes: ${notes.map((n) => `"${n}"`).join("; ")}` : ""}`,
+      );
+    }
+    parts.push(`Stakeholder reactions to the current leverage map:\n${lines.join("\n")}`);
+  }
+
+  return parts.length ? `[Respondent contributions]\n\n${parts.join("\n\n")}` : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   let projectId: string | undefined;
@@ -44,22 +108,34 @@ Deno.serve(async (req) => {
     if (!membership) return json({ error: "Forbidden" }, 403);
 
     // Build intake
-    const [{ data: input }, { data: docs }] = await Promise.all([
-      admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
-      admin.from("documents").select("*").eq("project_id", projectId),
-    ]);
+    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }] =
+      await Promise.all([
+        admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
+        admin.from("documents").select("*").eq("project_id", projectId),
+        admin.from("project_contributions").select("*").eq("project_id", projectId),
+        admin.from("leverage_reactions").select("*").eq("project_id", projectId),
+      ]);
+    const documents = (docs ?? [])
+      .filter((d: { extracted_text: string | null }) => d.extracted_text)
+      .map((d: { filename: string; extracted_text: string }) => ({
+        filename: d.filename,
+        text: d.extracted_text,
+      }));
+
+    // Fold submitted respondent input (text answers + reaction summary) into intake.
+    // Respondent documents already arrive via the documents query (same project_id).
+    const respondentInput = summarizeRespondentInput(contributions ?? [], reactions ?? []);
+    if (respondentInput) {
+      documents.push({ filename: "Respondent contributions", text: respondentInput });
+    }
+
     const intake: IntakeInput = {
       challenge: input?.challenge ?? "",
       stakeholders: input?.stakeholders ?? [],
       timeline: input?.timeline ?? undefined,
       targetGroup: project.target_group ?? undefined,
       useCase: project.use_case ?? undefined,
-      documents: (docs ?? [])
-        .filter((d: { extracted_text: string | null }) => d.extracted_text)
-        .map((d: { filename: string; extracted_text: string }) => ({
-          filename: d.filename,
-          text: d.extracted_text,
-        })),
+      documents,
     };
 
     // Cost cap (live only): sum this calendar month's spend for the workspace.

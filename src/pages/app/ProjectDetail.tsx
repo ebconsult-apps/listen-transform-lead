@@ -15,6 +15,8 @@ import { canViewFull } from "@/config/billing";
 import TeaserReport from "@/components/product/TeaserReport";
 import FullReport from "@/components/product/FullReport";
 import Paywall from "@/components/product/Paywall";
+import CollaborateTab from "@/components/product/CollaborateTab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
 
@@ -29,6 +31,7 @@ const ProjectDetail = () => {
   const [devUnlocked, setDevUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [teaserAt, setTeaserAt] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -37,6 +40,8 @@ const ProjectDetail = () => {
     setClarify(latestOutput<ClarifyOutput>(runs, "clarify"));
     setTeaser(latestOutput<LeverageTeaser>(runs, "leverage_teaser"));
     setFull(latestOutput<LeverageFull>(runs, "leverage_full"));
+    const teaserRuns = runs.filter((r) => r.phase === "leverage_teaser");
+    setTeaserAt(teaserRuns.length ? teaserRuns[teaserRuns.length - 1].created_at : null);
     const [ent, unlock] = await Promise.all([
       getEntitlement(proj.workspace_id),
       getUnlock(proj.id),
@@ -155,30 +160,48 @@ const ProjectDetail = () => {
         </div>
       )}
 
-      {/* Teaser + paywall/full */}
+      {/* Teaser + paywall/full, with a Collaborate tab for respondent input */}
       {hasTeaser && (
-        <div className="space-y-8">
-          <TeaserReport clarify={clarify!} teaser={teaser!} />
+        <Tabs defaultValue="report">
+          <TabsList className="mb-6 no-print">
+            <TabsTrigger value="report">Report</TabsTrigger>
+            <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
+          </TabsList>
 
-          {showFull ? (
-            <FullReport full={full!} />
-          ) : isRunning && entitled ? (
-            <div className="glass-card p-10 text-center">
-              <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-              <p className="body-md">Generating your full report…</p>
+          <TabsContent value="report">
+            <div className="space-y-8">
+              <TeaserReport clarify={clarify!} teaser={teaser!} />
+
+              {showFull ? (
+                <FullReport full={full!} />
+              ) : isRunning && entitled ? (
+                <div className="glass-card p-10 text-center">
+                  <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
+                  <p className="body-md">Generating your full report…</p>
+                </div>
+              ) : (
+                <div className="relative">
+                  {/* Blurred locked preview behind the paywall */}
+                  <div className="locked-blur" aria-hidden>
+                    <div className="glass-card p-8 h-64" />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center p-4">
+                    <Paywall projectId={project.id} onDevPreview={onDevPreview} />
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="relative">
-              {/* Blurred locked preview behind the paywall */}
-              <div className="locked-blur" aria-hidden>
-                <div className="glass-card p-8 h-64" />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <Paywall projectId={project.id} onDevPreview={onDevPreview} />
-              </div>
-            </div>
-          )}
-        </div>
+          </TabsContent>
+
+          <TabsContent value="collaborate">
+            <CollaborateTab
+              projectId={project.id}
+              lastTeaserAt={teaserAt}
+              onRerun={onRun}
+              busy={isRunning}
+            />
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
