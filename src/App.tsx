@@ -55,6 +55,7 @@ import Dashboard from "./pages/app/Dashboard";
 import NewProject from "./pages/app/NewProject";
 import ProjectDetail from "./pages/app/ProjectDetail";
 import Billing from "./pages/app/Billing";
+import RespondentPortal from "./pages/respond/RespondentPortal";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Public respondent portal — no account, tokenized link, no app chrome */}
+            <Route path="/respond/:token" element={<RespondentPortal />} />
 
             {/* Self-serve product — landing, pricing, and gated app share ProductLayout */}
             <Route element={<ProductLayout />}>
