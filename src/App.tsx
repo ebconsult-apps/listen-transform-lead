@@ -43,6 +43,18 @@ import PsychometricAssessmentsService from "./pages/services/PsychometricAssessm
 import WorkshopsService from "./pages/services/WorkshopsService";
 import Insights from "./pages/Insights";
 import SpeakingService from "./pages/services/SpeakingService";
+import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ProductLayout from "@/components/product/ProductLayout";
+import ProductLanding from "./pages/product/ProductLanding";
+import Pricing from "./pages/product/Pricing";
+import Login from "./pages/product/Login";
+import Signup from "./pages/product/Signup";
+import AuthCallback from "./pages/product/AuthCallback";
+import Dashboard from "./pages/app/Dashboard";
+import NewProject from "./pages/app/NewProject";
+import ProjectDetail from "./pages/app/ProjectDetail";
+import Billing from "./pages/app/Billing";
 
 const queryClient = new QueryClient();
 
@@ -65,7 +77,23 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <RouteTracker />
+          <AuthProvider>
           <Routes>
+            {/* Self-serve product — auth (standalone, no chrome) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Self-serve product — landing, pricing, and gated app share ProductLayout */}
+            <Route element={<ProductLayout />}>
+              <Route path="/product" element={<ProductLanding />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/app/projects/new" element={<ProtectedRoute><NewProject /></ProtectedRoute>} />
+              <Route path="/app/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
+              <Route path="/account/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
+            </Route>
+
             {/* Landing pages - no Layout wrapper (no nav/footer) */}
             <Route path="/lp/organizational-change" element={<OrganizationalChange />} />
             <Route path="/lp/clear-whitepaper" element={<ClearWhitepaper />} />
@@ -106,6 +134,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
+          </AuthProvider>
           <CookieConsent />
         </BrowserRouter>
       </TooltipProvider>

@@ -7,6 +7,10 @@ import PuppeteerRenderer from "@prerenderer/renderer-puppeteer";
 
 const routes = [
   "/",
+  // Self-serve product marketing (static). Auth + /app/* + /account/* are
+  // intentionally excluded — they are dynamic/auth-gated and render client-side.
+  "/product",
+  "/pricing",
   "/about",
   "/services",
   "/framework",

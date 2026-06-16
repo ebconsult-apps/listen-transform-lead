@@ -1,0 +1,14 @@
+# Supabase project config (CLI). Link with: supabase link --project-ref <ref>
+# Choose an EU region when creating the project (eu-central-1 / eu-west-1) for
+# GDPR data residency.
+project_id = "clear-self-serve"
+
+[functions.project-run]
+verify_jwt = true
+
+[functions.stripe-checkout]
+verify_jwt = true
+
+# Stripe authenticates the webhook via its signature, not a Supabase JWT.
+[functions.stripe-webhook]
+verify_jwt = false
