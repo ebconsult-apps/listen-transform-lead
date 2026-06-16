@@ -43,6 +43,13 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* CLEAR phase accents (light-theme mapping of the deck's c1–c5) */
+    --phase-c: 220 80% 55%;   /* Clarify  */
+    --phase-l: 172 66% 45%;   /* Leverage */
+    --phase-e: 145 63% 45%;   /* Experiment */
+    --phase-a: 43 89% 55%;    /* Analyse  */
+    --phase-r: 351 95% 71%;   /* Refine   */
   }
 }
 
@@ -132,9 +139,34 @@
   }
 }
 
+@layer components {
+  /* Locked report sections — blurred teaser preview behind the paywall */
+  .locked-blur {
+    @apply pointer-events-none select-none blur-[6px] opacity-60;
+  }
+
+  /* CLEAR phase chip — reuses .tag rhythm with a per-phase accent */
+  .phase-chip {
+    @apply inline-flex items-center justify-center h-9 w-9 rounded-full text-sm font-bold text-white;
+  }
+
+  /* Form control used across the product intake/auth forms */
+  .input {
+    @apply w-full rounded-lg border border-input bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring;
+  }
+}
+
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* Print / export — full report → "Save as PDF" (hide app chrome) */
+@media print {
+  .no-print { display: none !important; }
+  .locked-blur { filter: none !important; opacity: 1 !important; }
+  body { background: #fff; }
+  .glass-card { box-shadow: none !important; border-color: #e5e7eb !important; }
 }
 
 /* Custom animation for transitions */

@@ -1,0 +1,30 @@
+{
+  "systemsMapSummary": "The target behaviour is gated by three reinforcing loops: a friction loop (each extra step at the moment of action compounds drop-off), a salience loop (the behaviour is easy to forget because nothing in the environment cues it), and a social-proof loop (people copy the visible norm, which currently runs against the desired behaviour). The highest-leverage points sit where these loops intersect — early in the journey, before habits set.",
+  "topLeveragePoints": [
+    {
+      "rank": 1,
+      "point": "Remove the highest-friction step at the moment of action",
+      "currentState": "A required step adds ~2 minutes and a context switch right when motivation peaks, causing most of the first-action drop-off.",
+      "impact": "High",
+      "ease": "High",
+      "confidence": 78
+    },
+    {
+      "rank": 2,
+      "point": "Add a timely environmental cue tied to an existing routine",
+      "currentState": "There is no reminder anchored to a moment the group already pays attention to, so the behaviour relies on memory.",
+      "impact": "High",
+      "ease": "Medium",
+      "confidence": 64
+    },
+    {
+      "rank": 3,
+      "point": "Make the desired behaviour the visible social norm",
+      "currentState": "Peers only see the old behaviour; the new one is invisible, so social proof pulls the wrong way.",
+      "impact": "Medium",
+      "ease": "Medium",
+      "confidence": 57
+    }
+  ],
+  "headline": "Three changes — cut one friction point, add one cue, flip the visible norm — plausibly move adoption from 31% toward the 50% target without new incentives."
+}
