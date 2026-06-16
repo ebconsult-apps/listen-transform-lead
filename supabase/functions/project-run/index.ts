@@ -16,6 +16,7 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  let projectId: string | undefined;
   try {
     const jwt = req.headers.get("Authorization")?.replace("Bearer ", "");
     if (!jwt) return json({ error: "Unauthorized" }, 401);
@@ -23,7 +24,9 @@ Deno.serve(async (req) => {
     const user = userData.user;
     if (!user) return json({ error: "Unauthorized" }, 401);
 
-    const { projectId, phase } = await req.json();
+    const body = await req.json();
+    projectId = body.projectId;
+    const phase = body.phase;
     if (!projectId || !["teaser", "full"].includes(phase)) {
       return json({ error: "Bad request" }, 400);
     }
@@ -123,6 +126,13 @@ Deno.serve(async (req) => {
     await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
     return json({ ok: true, status: "full_ready" });
   } catch (e) {
+    // A run threw partway through (e.g. model/JSON error) — don't leave the project
+    // stuck on "running". Mark it "error" so the UI can surface it and allow re-run.
+    if (projectId) {
+      try {
+        await admin.from("projects").update({ status: "error" }).eq("id", projectId);
+      } catch { /* best-effort */ }
+    }
     return json({ error: (e as Error).message }, 500);
   }
 });

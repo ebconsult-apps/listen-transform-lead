@@ -4,6 +4,7 @@ import { Plus, X, Upload } from "lucide-react";
 import SEO from "@/components/SEO";
 import { requireSupabase } from "@/lib/supabase";
 import { getMyWorkspace } from "@/lib/db";
+import { extractText } from "@/lib/extract-text";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -86,12 +87,17 @@ const NewProject = () => {
         const path = `${ws.id}/${project.id}/${crypto.randomUUID()}-${safeName}`;
         const { error: upErr } = await sb.storage.from("documents").upload(path, file);
         if (upErr) throw upErr;
+        // Extract text so the analysis can actually read the file. Best-effort:
+        // a failed/unsupported file just contributes no text, never blocks the run.
+        const extracted = await extractText(file);
+        if (!extracted) toast.warning(`Couldn't read text from ${file.name}.`);
         const { error: dErr } = await sb.from("documents").insert({
           project_id: project.id,
           storage_path: path,
           filename: file.name,
           mime: file.type || null,
           bytes: file.size,
+          extracted_text: extracted,
           status: "uploaded",
         });
         if (dErr) throw dErr;
