@@ -88,3 +88,44 @@ with the prompts in `functions/_shared/clear/prompts.ts` — **no UI changes**.
 Model ids come from `CLARIFY_MODEL` / `LEVERAGE_MODEL` so they can be upgraded
 without code changes. Per-workspace monthly spend is capped by
 `WORKSPACE_MONTHLY_COST_CAP_USD`.
+
+## 6. QA / full-access test account
+
+With billing off (`VITE_BILLING_ENABLED=false`), no one can pay through Stripe, so
+to exercise the **full** report (and the rest of the flow) you grant a test account
+a paid `entitlements` row directly.
+
+1. **Sign up** the test account at `clear-framework.com/signup` using an inbox you
+   control (a `+alias`, e.g. `you+clear-test@gmail.com`, works well — it must
+   receive the confirmation email). First login auto-provisions its workspace and a
+   free entitlement.
+
+2. **Grant full access** — Supabase → SQL Editor (swap in the email):
+
+   ```sql
+   update entitlements e
+   set tier = 'business', status = 'active'
+   from workspaces w
+   join auth.users u on u.id = w.owner_id
+   where e.workspace_id = w.id
+     and u.email = 'you+clear-test@gmail.com';
+   ```
+
+3. **Verify**:
+
+   ```sql
+   select u.email, e.tier, e.status
+   from entitlements e
+   join workspaces w on w.id = e.workspace_id
+   join auth.users u on u.id = w.owner_id
+   where u.email = 'you+clear-test@gmail.com';
+   ```
+
+   Expect `tier = business`, `status = active`. That account now gets the full
+   report auto-generated on any project it runs — no paywall.
+
+Notes:
+
+- Live runs still count against `WORKSPACE_MONTHLY_COST_CAP_USD` ($25/workspace/mo).
+- When testing the **respondent** side, invite a *different* address than the
+  project owner (the owner address is also the Brevo sender), e.g. another `+alias`.
