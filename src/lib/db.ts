@@ -1,7 +1,7 @@
 import { requireSupabase } from "./supabase";
 import type { ProjectStatus, RunPhase } from "./clear/types";
 
-/** Row shapes mirror supabase/migrations/0001_init.sql. */
+/** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
 export interface Workspace {
   id: string;
   name: string;

@@ -10,12 +10,21 @@ without any of this configured.
 Create a Supabase project in an **EU region** (`eu-central-1` / `eu-west-1`) for
 GDPR data residency, then:
 
+**Recommended — GitHub integration (GitOps).** In the Supabase dashboard:
+Settings → Integrations → GitHub, connect this repo with production branch
+`main`. Supabase then applies any `supabase/migrations/*.sql` on merge to `main`.
+Migration files must be named `<timestamp>_name.sql` for the integration to pick
+them up. Add future changes as new `supabase/migrations/<timestamp>_*.sql` files
+and merge.
+
+**Alternative — CLI:**
+
 ```bash
 supabase link --project-ref <your-ref>
-supabase db push                 # applies migrations/0001_init.sql
+supabase db push                 # applies supabase/migrations/*.sql
 ```
 
-`0001_init.sql` creates the schema, RLS policies, the private `documents`
+The init migration creates the schema, RLS policies, the private `documents`
 storage bucket + policies, and a trigger that provisions a `profiles` row, a
 personal `workspaces` row, an owner `memberships` row, and a free `entitlements`
 row on first login.
