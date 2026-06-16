@@ -73,7 +73,17 @@ const NewProject = () => {
       if (iErr) throw iErr;
 
       for (const file of files) {
-        const path = `${ws.id}/${project.id}/${crypto.randomUUID()}-${file.name}`;
+        // Supabase Storage keys reject non-ASCII characters (e.g. "förändra"),
+        // so transliterate accents and replace anything else with "_". The real
+        // filename is preserved in documents.filename below for display.
+        const safeName =
+          file.name
+            .normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-zA-Z0-9.\-_]/g, "_")
+            .replace(/_{2,}/g, "_")
+            .replace(/^_+|_+$/g, "") || "file";
+        const path = `${ws.id}/${project.id}/${crypto.randomUUID()}-${safeName}`;
         const { error: upErr } = await sb.storage.from("documents").upload(path, file);
         if (upErr) throw upErr;
         const { error: dErr } = await sb.from("documents").insert({
