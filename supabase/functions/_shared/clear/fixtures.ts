@@ -3,6 +3,7 @@ import type {
   ExperimentOutput,
   LeverageFull,
   LeverageTeaser,
+  ResearchOutput,
 } from "./types.ts";
 
 // Canned demo output (parity with src/lib/clear/fixtures/*.json). Used by the
@@ -150,5 +151,58 @@ export const EXPERIMENT_FIXTURE: ExperimentOutput = {
   gapLog: [
     { type: "assumption", content: "Resource envelope assumed conservative (one engineer, two weeks, no new spend) — confirm with owner.", source: "Envelope unclear at intake" },
     { type: "gap", content: "Success threshold for the cue test depends on the week-8 metric that is not yet instrumented." },
+  ],
+};
+
+export const RESEARCH_FIXTURE: ResearchOutput = {
+  findings: [
+    {
+      phaseTarget: "leverage",
+      claim: "Removing steps at the point of action ('make it easy' / reducing sludge) is one of the most reliable ways to lift a target behaviour.",
+      detail: "Behavioural-science reviews consistently find that stripping small frictions at the decision point shifts behaviour more than adding persuasion. Supports treating the moment-of-action friction as the primary lever.",
+      sourceKind: "knowledge_base",
+      citations: [{ title: "EAST framework — 'Make it Easy' (Behavioural Insights Team, 2014)", url: "https://www.bi.team/publications/east-four-simple-ways-to-apply-behavioural-insights/" }],
+      evidenceFlag: "V",
+      confidence: 80,
+      tags: { topic: "friction", comBComponent: "opportunity_physical" },
+    },
+    {
+      phaseTarget: "leverage",
+      claim: "Anchoring a new action to an existing routine (implementation intentions / habit stacking) reliably increases follow-through versus standalone reminders.",
+      detail: "Cue-based prompts tied to an existing habit outperform generic reminders. Supports leverage point #2 (timely environmental cue).",
+      sourceKind: "web",
+      citations: [{ title: "Gollwitzer & Sheeran, implementation-intentions meta-analysis", note: "Medium-to-large effect on goal attainment across domains." }],
+      evidenceFlag: "V",
+      confidence: 72,
+      tags: { topic: "cue", comBComponent: "opportunity_physical" },
+    },
+    {
+      phaseTarget: "leverage",
+      claim: "Honest aggregate social-proof signals ('most people do X') can shift behaviour, but naming individuals publicly risks backfiring.",
+      detail: "Aggregate descriptive-norm messaging is effective and low-risk; personalised public exposure raises acceptability and equity concerns — reinforces the APEASE veto on the 'publish by name' idea.",
+      sourceKind: "knowledge_base",
+      citations: [{ title: "EAST framework — 'Make it Social' (Behavioural Insights Team, 2014)", url: "https://www.bi.team/publications/east-four-simple-ways-to-apply-behavioural-insights/" }],
+      evidenceFlag: "A",
+      confidence: 60,
+      tags: { topic: "social_proof", comBComponent: "opportunity_social" },
+    },
+    {
+      phaseTarget: "clarify",
+      claim: "First-to-repeat drop-off of roughly 50–60% is common for early-stage adoption funnels, so the 58% baseline looks in-range rather than an outlier.",
+      detail: "Use to sanity-check the CLARIFY baseline and set a realistic target band — not as a target in itself until confirmed against this customer's own segment.",
+      sourceKind: "web",
+      citations: [{ title: "Industry onboarding/activation benchmarks (illustrative)", note: "Confirm against the customer's segment before treating as a target." }],
+      evidenceFlag: "A",
+      confidence: 45,
+      tags: { topic: "benchmark", useCase: "churn" },
+    },
+  ],
+  questions: [
+    { question: "Which existing routine does the priority group already reliably attend to (a weekly email, a Monday stand-up, a shift start)?", rationale: "Leverage point #2 depends on anchoring a cue to a real existing habit — without a named routine the cue finding stays an assumption." },
+    { question: "Do you have segment-level funnel data isolating the friction step, or only the aggregate 58% drop-off?", rationale: "Determines whether the moment-of-action friction barrier can be marked Verified (V) rather than Assumption (A) for this customer." },
+  ],
+  gapLog: [
+    { type: "assumption", content: "Sector benchmark for first→repeat drop-off applied generically; not yet confirmed against this customer's segment.", source: "Industry benchmarks (illustrative)" },
+    { type: "needs_input", content: "A named existing routine for cue-anchoring is required before the environmental-cue finding can be treated as verified." },
   ],
 };

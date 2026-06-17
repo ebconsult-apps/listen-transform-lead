@@ -169,6 +169,52 @@ export interface AssumptionGapRow {
   updated_at: string;
 }
 
+// ── RESEARCH agent rows (mirror 20260617150000_research_agent.sql) ────────────
+export type ResearchFindingStatus = "proposed" | "accepted" | "dismissed" | "promoted";
+
+export interface ResearchFindingRow {
+  id: string;
+  project_id: string;
+  phase_target: "clarify" | "leverage";
+  claim: string;
+  detail: string | null;
+  source_kind: "web" | "knowledge_base" | "dialogue";
+  citations: { title: string; url?: string; note?: string }[];
+  evidence_flag: "V" | "A" | "G" | "NA";
+  confidence: number | null;
+  tags: Record<string, unknown>;
+  status: ResearchFindingStatus;
+  shared_finding_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ResearchQuestionRow {
+  id: string;
+  project_id: string;
+  question: string;
+  rationale: string | null;
+  answer: string | null;
+  status: "open" | "answered" | "dismissed";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KnowledgeEntryRow {
+  id: string;
+  kind: "curated" | "promoted";
+  title: string;
+  summary: string;
+  tags: Record<string, unknown>;
+  citations: { title: string; url?: string; note?: string }[];
+  evidence_strength: string | null;
+  origin_note: string | null;
+  created_by: string | null;
+  review_status: "approved" | "pending";
+  created_at: string;
+  updated_at: string;
+}
+
 /** The first workspace the signed-in user belongs to (their personal one). */
 export async function getMyWorkspace(): Promise<Workspace> {
   const sb = requireSupabase();

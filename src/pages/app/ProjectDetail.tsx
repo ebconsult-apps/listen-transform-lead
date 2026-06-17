@@ -17,6 +17,7 @@ import FullReport from "@/components/product/FullReport";
 import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
+import ResearchTab from "@/components/product/ResearchTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
@@ -99,6 +100,7 @@ const ProjectDetail = () => {
 
   const showFull = (entitled || devUnlocked) && full;
   const canExperiment = Boolean((entitled || devUnlocked) && full);
+  const canResearch = entitled || devUnlocked;
 
   const onDevPreview = async () => {
     setDevUnlocked(true);
@@ -169,6 +171,7 @@ const ProjectDetail = () => {
         <Tabs defaultValue="report">
           <TabsList className="mb-6 no-print">
             <TabsTrigger value="report">Report</TabsTrigger>
+            <TabsTrigger value="research" disabled={!canResearch}>Research</TabsTrigger>
             <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
             <TabsTrigger value="experiment" disabled={!canExperiment}>Experiment</TabsTrigger>
           </TabsList>
@@ -196,6 +199,20 @@ const ProjectDetail = () => {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="research">
+            {canResearch ? (
+              <ResearchTab projectId={project.id} onAfterRun={load} />
+            ) : (
+              <div className="glass-card p-10 text-center">
+                <h3 className="heading-md mb-2">Research is part of a paid plan</h3>
+                <p className="body-md">
+                  The research agent gathers cited evidence to strengthen your Clarify and Leverage
+                  analysis. Unlock the full report to use it.
+                </p>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="collaborate">

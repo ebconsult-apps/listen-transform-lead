@@ -106,6 +106,35 @@ Return ONLY a JSON object with this exact shape:
 
 Tie each intervention to a Key Result implicitly through the barrier it targets. Do not design a rollout, do not invent results, and do not include any prose outside the JSON.`;
 
+export const RESEARCH_PROMPT = `${NEVER_FABRICATE_BANNER}
+
+You are the RESEARCH agent for the CLEAR behavioral-change framework. Your job is to gather EXTERNAL EVIDENCE that strengthens the CLARIFY and LEVERAGE phases — turning gaps and assumptions into cited, verifiable facts. You do NOT design interventions, write the OKRs, or build the systems map; you supply the evidence those phases stand on.
+
+You are given the intake (challenge, target group, use case, documents, any respondent input) and a set of CURATED KNOWLEDGE-BASE ENTRIES retrieved from a private library. Use the web search and web fetch tools to find sector benchmarks, behavioral-science findings (e.g. COM-B, the EAST framework, friction/sludge, implementation intentions, social norms), and real-world examples relevant to THIS challenge.
+
+The single most important rule: every finding MUST carry at least one real source (a title, plus a URL when you have one from the web). If you cannot find a source for a claim, DO NOT state it as a finding — instead either raise it as a follow-up question or record it in gapLog as a "gap". Never invent a statistic, study, benchmark, or quote.
+
+For each finding:
+- "phaseTarget": "clarify" (baselines, benchmarks, what good looks like) or "leverage" (known barriers, COM-B patterns, what has worked elsewhere).
+- "evidenceFlag": "V" only when a concrete source supports it for this context; "A" for a reasonable inference or a generic benchmark not yet confirmed to fit this customer; "G" for an acknowledged gap.
+- "confidence": 0-100, calibrated to source quality and fit.
+- "citations": at least one for any "V" finding.
+- "tags": so the finding can be reused on future projects.
+
+Also produce:
+- "questions": targeted follow-up questions whose answers would let the owner (or their respondents) turn an assumption into verified evidence — each with a "rationale".
+- "gapLog": anything still missing or unverifiable, using the never-fabricate flag taxonomy.
+
+Return ONLY a JSON object with this exact shape:
+{
+  "findings": [
+    { "phaseTarget": "clarify"|"leverage", "claim": string, "detail"?: string, "sourceKind": "web"|"knowledge_base"|"dialogue", "citations": [ { "title": string, "url"?: string, "note"?: string } ], "evidenceFlag": "V"|"A"|"G"|"NA", "confidence": number, "tags"?: { "useCase"?: string, "targetGroup"?: string, "topic"?: string, "comBComponent"?: string } }
+  ],
+  "questions": [ { "question": string, "rationale": string } ],
+  ${GAP_LOG_SPEC}
+}
+Do not include any prose outside the JSON.`;
+
 export function renderIntake(input: {
   challenge: string;
   stakeholders: { name?: string; role: string }[];
@@ -113,6 +142,13 @@ export function renderIntake(input: {
   targetGroup?: string;
   useCase?: string;
   documents?: { filename: string; text: string }[];
+  research?: {
+    phaseTarget?: string;
+    claim: string;
+    detail?: string;
+    evidenceFlag?: string;
+    citations?: { title: string; url?: string; note?: string }[];
+  }[];
 }): string {
   const parts = [
     `Challenge:\n${input.challenge}`,
@@ -127,6 +163,8 @@ export function renderIntake(input: {
         input.documents.map((d) => `### ${d.filename}\n${d.text.slice(0, 20000)}`).join("\n\n"),
     );
   }
+  const research = renderResearch(input.research ?? []);
+  if (research) parts.push(research);
   return parts.filter(Boolean).join("\n\n");
 }
 
@@ -138,4 +176,51 @@ export function renderEnvelope(envelope: { budget?: string; people?: string; tim
     `- People: ${envelope.people?.trim() || "unclear"}`,
     `- Time: ${envelope.time?.trim() || "unclear"}`,
   ].join("\n");
+}
+
+/**
+ * Render owner-accepted research findings as a cited evidence block for the
+ * CLARIFY/LEVERAGE prompts. These are facts the owner reviewed — the model should
+ * treat them as Verified where a source is given, cite the source, and not re-flag
+ * them as its own unverified assumptions.
+ */
+export function renderResearch(
+  findings: {
+    phaseTarget?: string;
+    claim: string;
+    detail?: string;
+    evidenceFlag?: string;
+    citations?: { title: string; url?: string; note?: string }[];
+  }[],
+): string {
+  if (!findings.length) return "";
+  const lines = findings.map((f) => {
+    const cites = (f.citations ?? [])
+      .map((c) => (c.url ? `${c.title} (${c.url})` : c.title))
+      .join("; ");
+    const flag = f.evidenceFlag ? `[${f.evidenceFlag}] ` : "";
+    const target = f.phaseTarget ? `(${f.phaseTarget}) ` : "";
+    const detail = f.detail ? ` — ${f.detail}` : "";
+    return `- ${flag}${target}${f.claim}${detail}${cites ? `\n  Sources: ${cites}` : ""}`;
+  });
+  return (
+    "EXTERNAL EVIDENCE (owner-reviewed research — treat as Verified where a source is given, " +
+    "cite the source, and do not present these as your own unverified assumptions):\n" +
+    lines.join("\n")
+  );
+}
+
+/** Render retrieved knowledge-base entries as candidate evidence for the RESEARCH prompt. */
+export function renderKnowledge(
+  entries: { title: string; summary: string; citations?: { title: string; url?: string }[] }[],
+): string {
+  if (!entries.length) return "No curated knowledge-base entries matched this challenge.";
+  return entries
+    .map((e, i) => {
+      const cites = (e.citations ?? [])
+        .map((c) => (c.url ? `${c.title} (${c.url})` : c.title))
+        .join("; ");
+      return `### KB${i + 1}: ${e.title}\n${e.summary}${cites ? `\nSources: ${cites}` : ""}`;
+    })
+    .join("\n\n");
 }

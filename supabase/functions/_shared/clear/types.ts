@@ -19,6 +19,11 @@ export interface IntakeInput {
   targetGroup?: string;
   useCase?: string;
   documents: ParsedDocument[];
+  /**
+   * Owner-accepted research findings, folded in as cited "Verified" evidence so
+   * CLARIFY/LEVERAGE can ground claims in real sources (see renderResearch).
+   */
+  research?: ResearchFinding[];
 }
 
 // ── Never-fabricate flag taxonomy (orchestration.md) ─────────────────────────
@@ -198,6 +203,76 @@ export interface ExperimentOutput {
   gapLog: GapFlag[];
 }
 
+// ── RESEARCH (cited evidence enrichment for CLARIFY & LEVERAGE) ───────────────
+// Not a CLEAR phase — a cross-cutting enrichment step. Findings reuse the same
+// evidence-provenance vocabulary the reports already render (V/A/G/NA + source).
+
+/** A single source backing a research finding. Never empty for a "V" finding. */
+export interface Citation {
+  title: string;
+  url?: string;
+  note?: string;
+}
+
+/** Which phase a finding is meant to strengthen. */
+export type ResearchPhaseTarget = "clarify" | "leverage";
+
+/** Where a finding came from: live web, the curated/shared library, or owner dialogue. */
+export type ResearchSourceKind = "web" | "knowledge_base" | "dialogue";
+
+/** Free-form-ish classification used for shared-library retrieval and reuse. */
+export interface ResearchTags {
+  useCase?: string;
+  targetGroup?: string;
+  topic?: string;
+  comBComponent?: ComBComponent;
+}
+
+/**
+ * A cited piece of evidence the research agent gathered. Never fabricated: a
+ * claim with no citation must be flagged "G" (gap) or turned into a follow-up
+ * question, not invented.
+ */
+export interface ResearchFinding {
+  phaseTarget: ResearchPhaseTarget;
+  claim: string;
+  detail?: string;
+  sourceKind: ResearchSourceKind;
+  citations: Citation[];
+  evidenceFlag: EvidenceFlag;
+  /** 0–100 */
+  confidence: number;
+  tags?: ResearchTags;
+}
+
+/** A targeted follow-up question the agent needs answered to close a gap. */
+export interface ResearchQuestion {
+  question: string;
+  rationale: string;
+}
+
+export interface ResearchOutput {
+  findings: ResearchFinding[];
+  questions: ResearchQuestion[];
+  gapLog: GapFlag[];
+}
+
+/** A reusable, de-identified entry from the shared knowledge library. */
+export interface KnowledgeEntry {
+  id: string;
+  kind: "curated" | "promoted";
+  title: string;
+  summary: string;
+  tags?: ResearchTags;
+  citations?: Citation[];
+}
+
+/** Extra context passed to the research engine beyond the intake. */
+export interface ResearchContext {
+  /** Curated/shared knowledge-base entries retrieved as candidate evidence. */
+  knowledgeEntries?: KnowledgeEntry[];
+}
+
 /** Standard envelope so every phase can report cost/usage uniformly. */
 export interface EngineResult<T> {
   output: T;
@@ -223,9 +298,18 @@ export interface ClearEngine {
     full: LeverageFull,
     envelope: ResourceEnvelope,
   ): Promise<EngineResult<ExperimentOutput>>;
+  runResearch(
+    input: IntakeInput,
+    ctx: ResearchContext,
+  ): Promise<EngineResult<ResearchOutput>>;
 }
 
-export type RunPhase = "clarify" | "leverage_teaser" | "leverage_full" | "experiment";
+export type RunPhase =
+  | "clarify"
+  | "leverage_teaser"
+  | "leverage_full"
+  | "experiment"
+  | "research";
 
 export type ProjectStatus =
   | "draft"

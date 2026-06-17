@@ -6,9 +6,17 @@ import type {
   IntakeInput,
   LeverageFull,
   LeverageTeaser,
+  ResearchContext,
+  ResearchOutput,
   ResourceEnvelope,
 } from "./types.ts";
-import { CLARIFY_FIXTURE, EXPERIMENT_FIXTURE, FULL_FIXTURE, TEASER_FIXTURE } from "./fixtures.ts";
+import {
+  CLARIFY_FIXTURE,
+  EXPERIMENT_FIXTURE,
+  FULL_FIXTURE,
+  RESEARCH_FIXTURE,
+  TEASER_FIXTURE,
+} from "./fixtures.ts";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,5 +50,12 @@ export class StubClearEngine implements ClearEngine {
   ): Promise<EngineResult<ExperimentOutput>> {
     await delay(1000);
     return { output: EXPERIMENT_FIXTURE, tokens: 0, costUsd: 0 };
+  }
+  async runResearch(
+    _input: IntakeInput,
+    _ctx: ResearchContext,
+  ): Promise<EngineResult<ResearchOutput>> {
+    await delay(1000);
+    return { output: RESEARCH_FIXTURE, tokens: 0, costUsd: 0 };
   }
 }
