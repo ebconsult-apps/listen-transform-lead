@@ -1,7 +1,8 @@
 name: Deploy Supabase functions
 
 # Deploys the edge functions to the linked Supabase project: project-run (the live
-# AI runner) and the respondent-collaboration pair (invite-respondents, respondent).
+# AI runner), project-research (the research agent), and the respondent-collaboration
+# pair (invite-respondents, respondent).
 # Stub mode runs the AI engine client-side, but the collaboration functions are needed
 # in both modes. The Stripe functions stay undeployed until the billing stage.
 on:
@@ -25,7 +26,7 @@ jobs:
           version: latest
 
       - name: Deploy edge functions
-        run: supabase functions deploy project-run invite-respondents respondent --project-ref "$SUPABASE_PROJECT_REF"
+        run: supabase functions deploy project-run project-research invite-respondents respondent --project-ref "$SUPABASE_PROJECT_REF"
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}

@@ -6,6 +6,11 @@ project_id = "clear-self-serve"
 [functions.project-run]
 verify_jwt = true
 
+# Owner-triggered research agent: gathers cited evidence + de-identified promotion.
+# Membership + entitlement are checked in-function.
+[functions.project-research]
+verify_jwt = true
+
 # Owner-only: invites respondents to a project (membership checked in-function).
 [functions.invite-respondents]
 verify_jwt = true
