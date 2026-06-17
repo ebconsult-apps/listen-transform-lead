@@ -4,6 +4,7 @@ import { Upload, X, Check, Loader2 } from "lucide-react";
 import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
 import RespondentMap, { type PointReaction } from "@/components/product/RespondentMap";
+import PrepPromptCard from "@/components/product/PrepPromptCard";
 import {
   RESPONDENT_PROMPTS,
   respondentLoad,
@@ -188,6 +189,10 @@ const RespondentPortal = () => {
                   The team is still preparing the analysis — your input below will help shape it.
                 </p>
               </section>
+            )}
+
+            {data.prepPrompt && (
+              <PrepPromptCard variant="respondent" prebuilt={data.prepPrompt} />
             )}
 
             {/* Guided input */}

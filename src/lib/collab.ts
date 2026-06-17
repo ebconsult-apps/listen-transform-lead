@@ -106,6 +106,8 @@ export interface RespondentLoad {
   currentRunId: string | null;
   /** The current leverage_teaser output (LeverageTeaser) or null if not run yet. */
   map: unknown;
+  /** Ready-made "prep your input" prompt (EN + SV) for the respondent's own AI tool. */
+  prepPrompt?: { en: string; sv: string };
   existing: {
     respondentName: string;
     answers: Record<string, string>;

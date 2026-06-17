@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, X, Upload } from "lucide-react";
 import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
+import PrepPromptCard from "@/components/product/PrepPromptCard";
 import { requireSupabase } from "@/lib/supabase";
 import { getMyWorkspace } from "@/lib/db";
 import { extractText } from "@/lib/extract-text";
@@ -195,6 +196,19 @@ const NewProject = () => {
             <Plus className="h-3.5 w-3.5 mr-1" /> Add stakeholder
           </button>
         </div>
+
+        {challenge.trim() && (
+          <PrepPromptCard
+            variant="owner"
+            ctx={{
+              challenge,
+              stakeholders: stakeholders.filter((s) => s.role.trim()),
+              timeline: timeline || undefined,
+              targetGroup,
+              useCase,
+            }}
+          />
+        )}
 
         <div>
           <label className="block text-sm font-medium mb-2">

@@ -8,6 +8,7 @@
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { hashToken } from "../_shared/token.ts";
+import { buildRespondentPrepPrompt } from "../_shared/clear/prep-prompt.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -19,6 +20,7 @@ interface Invitation {
   email: string;
   status: string;
   expires_at: string | null;
+  note: string | null;
 }
 
 /** Resolve a raw token to a usable (non-revoked, non-expired) invitation, or null. */
@@ -26,7 +28,7 @@ async function resolveInvitation(token: unknown): Promise<Invitation | null> {
   if (!token || typeof token !== "string") return null;
   const { data: inv } = await admin
     .from("project_invitations")
-    .select("id, project_id, email, status, expires_at")
+    .select("id, project_id, email, status, expires_at, note")
     .eq("token_hash", await hashToken(token))
     .maybeSingle();
   if (!inv) return null;
@@ -69,7 +71,7 @@ Deno.serve(async (req) => {
 
     const { data: project } = await admin
       .from("projects")
-      .select("id, name, workspace_id")
+      .select("id, name, workspace_id, target_group")
       .eq("id", inv.project_id)
       .single();
     if (!project) return json({ error: "This link is no longer valid." }, 404);
@@ -78,17 +80,35 @@ Deno.serve(async (req) => {
       if (inv.status === "pending") {
         await admin.from("project_invitations").update({ status: "opened" }).eq("id", inv.id);
       }
-      const [teaser, { data: contribution }, { data: reactions }, { data: documents }] = await Promise.all([
-        currentTeaser(inv.project_id),
-        admin.from("project_contributions").select("*").eq("invitation_id", inv.id).maybeSingle(),
-        admin.from("leverage_reactions").select("point_rank, reaction, note, run_id").eq("invitation_id", inv.id),
-        admin.from("documents").select("id, filename, created_at").eq("invitation_id", inv.id).order("created_at"),
-      ]);
+      const [teaser, { data: contribution }, { data: reactions }, { data: documents }, { data: pinput }] =
+        await Promise.all([
+          currentTeaser(inv.project_id),
+          admin.from("project_contributions").select("*").eq("invitation_id", inv.id).maybeSingle(),
+          admin.from("leverage_reactions").select("point_rank, reaction, note, run_id").eq("invitation_id", inv.id),
+          admin.from("documents").select("id, filename, created_at").eq("invitation_id", inv.id).order("created_at"),
+          admin.from("project_inputs").select("challenge").eq("project_id", inv.project_id).maybeSingle(),
+        ]);
+
+      // A ready-made prompt the respondent can paste into their own AI assistant
+      // to turn their notes/documents into a clear contribution (EN + SV).
+      const teaserMap = teaser?.output as { topLeveragePoints?: { rank: number; point: string }[] } | null;
+      const prepCtx = {
+        projectName: project.name,
+        challenge: pinput?.challenge ?? undefined,
+        targetGroup: project.target_group ?? undefined,
+        topLeveragePoints: (teaserMap?.topLeveragePoints ?? []).map((p) => ({ rank: p.rank, point: p.point })),
+        invitationNote: inv.note ?? undefined,
+      };
+
       return json({
         projectName: project.name,
         status: inv.status === "pending" ? "opened" : inv.status,
         currentRunId: teaser?.id ?? null,
         map: teaser?.output ?? null,
+        prepPrompt: {
+          en: buildRespondentPrepPrompt(prepCtx, "en"),
+          sv: buildRespondentPrepPrompt(prepCtx, "sv"),
+        },
         existing: {
           respondentName: contribution?.respondent_name ?? "",
           answers: contribution?.answers ?? {},

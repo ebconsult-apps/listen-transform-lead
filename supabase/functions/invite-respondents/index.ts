@@ -7,6 +7,7 @@ import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { generateToken, hashToken } from "../_shared/token.ts";
 import { sendBrevoEmail } from "../_shared/email.ts";
+import { buildRespondentPrepPrompt } from "../_shared/clear/prep-prompt.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -16,10 +17,31 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function inviteEmail(opts: { projectName: string; inviterName: string; link: string; note?: string }) {
-  const { projectName, inviterName, link, note } = opts;
+function inviteEmail(opts: {
+  projectName: string;
+  inviterName: string;
+  link: string;
+  note?: string;
+  challenge?: string;
+  targetGroup?: string;
+}) {
+  const { projectName, inviterName, link, note, challenge, targetGroup } = opts;
   const subject = `${inviterName} invited you to help shape "${projectName}"`;
   const noteHtml = note ? `<p style="margin:16px 0;padding:12px 16px;background:#f5f5f4;border-radius:8px">${escapeHtml(note)}</p>` : "";
+
+  // A ready-made prompt the respondent can paste into their own AI assistant to
+  // turn their notes/documents into a clear contribution before opening the form.
+  const prepPrompt = challenge
+    ? buildRespondentPrepPrompt({ projectName, challenge, targetGroup }, "en")
+    : "";
+  const promptHtml = prepPrompt
+    ? `<p style="margin:24px 0 8px;font-size:14px"><strong>Short on time?</strong> Paste this into your AI assistant (ChatGPT, Claude, Copilot) with any notes you have — it'll help you prepare your input:</p>
+    <pre style="white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.5;background:#f5f5f4;border:1px solid #e7e5e4;border-radius:8px;padding:12px;color:#1c1917">${escapeHtml(prepPrompt)}</pre>`
+    : "";
+  const promptText = prepPrompt
+    ? `\n\nShort on time? Paste this into your AI assistant to prepare your input:\n\n${prepPrompt}\n`
+    : "";
+
   const html = `
   <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:0 auto;color:#1c1917">
     <p>Hi,</p>
@@ -29,10 +51,12 @@ function inviteEmail(opts: { projectName: string; inviterName: string; link: str
     <p style="margin:24px 0">
       <a href="${link}" style="background:#0f766e;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;display:inline-block">Share your input</a>
     </p>
+    ${promptHtml}
     <p style="color:#78716c;font-size:13px">This link is personal to you and expires in 30 days. If the button doesn't work, paste this into your browser:<br>${link}</p>
   </div>`;
   const text = `${inviterName} invited you to share your input on the CLEAR project "${projectName}".`
     + (note ? `\n\nNote: ${note}` : "")
+    + promptText
     + `\n\nOpen your personal link (expires in 30 days):\n${link}`;
   return { subject, html, text };
 }
@@ -79,6 +103,13 @@ Deno.serve(async (req) => {
       const project = await assertMember(projectId);
       if (!project) return json({ error: "Forbidden" }, 403);
 
+      const { data: pinput } = await admin
+        .from("project_inputs")
+        .select("challenge")
+        .eq("project_id", projectId)
+        .maybeSingle();
+      const challenge: string | undefined = pinput?.challenge ?? undefined;
+
       const results: { email: string; status: string; invitationId?: string; error?: string }[] = [];
       for (const raw of emails) {
         const email = String(raw).trim().toLowerCase();
@@ -117,7 +148,14 @@ Deno.serve(async (req) => {
         try {
           await sendBrevoEmail({
             to: email,
-            ...inviteEmail({ projectName: project.name, inviterName, link: `${PUBLIC_APP_URL}/respond/${token}`, note }),
+            ...inviteEmail({
+              projectName: project.name,
+              inviterName,
+              link: `${PUBLIC_APP_URL}/respond/${token}`,
+              note,
+              challenge,
+              targetGroup: project.target_group ?? undefined,
+            }),
           });
           results.push({ email, status: "sent", invitationId: inv.id });
         } catch (e) {
@@ -156,6 +194,11 @@ Deno.serve(async (req) => {
           expires_at: new Date(Date.now() + THIRTY_DAYS_MS).toISOString(),
         })
         .eq("id", invitationId);
+      const { data: pinput } = await admin
+        .from("project_inputs")
+        .select("challenge")
+        .eq("project_id", inv.project_id)
+        .maybeSingle();
       await sendBrevoEmail({
         to: inv.email,
         ...inviteEmail({
@@ -163,6 +206,8 @@ Deno.serve(async (req) => {
           inviterName,
           link: `${PUBLIC_APP_URL}/respond/${token}`,
           note: inv.note ?? undefined,
+          challenge: pinput?.challenge ?? undefined,
+          targetGroup: project.target_group ?? undefined,
         }),
       });
       return json({ ok: true });
