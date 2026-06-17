@@ -17,6 +17,16 @@ const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
+/** The project's behaviour-change challenge — context for the respondent prep prompt. */
+async function loadChallenge(projectId: string): Promise<string | undefined> {
+  const { data } = await admin
+    .from("project_inputs")
+    .select("challenge")
+    .eq("project_id", projectId)
+    .maybeSingle();
+  return data?.challenge ?? undefined;
+}
+
 function inviteEmail(opts: {
   projectName: string;
   inviterName: string;
@@ -103,12 +113,7 @@ Deno.serve(async (req) => {
       const project = await assertMember(projectId);
       if (!project) return json({ error: "Forbidden" }, 403);
 
-      const { data: pinput } = await admin
-        .from("project_inputs")
-        .select("challenge")
-        .eq("project_id", projectId)
-        .maybeSingle();
-      const challenge: string | undefined = pinput?.challenge ?? undefined;
+      const challenge = await loadChallenge(projectId);
 
       const results: { email: string; status: string; invitationId?: string; error?: string }[] = [];
       for (const raw of emails) {
@@ -194,11 +199,6 @@ Deno.serve(async (req) => {
           expires_at: new Date(Date.now() + THIRTY_DAYS_MS).toISOString(),
         })
         .eq("id", invitationId);
-      const { data: pinput } = await admin
-        .from("project_inputs")
-        .select("challenge")
-        .eq("project_id", inv.project_id)
-        .maybeSingle();
       await sendBrevoEmail({
         to: inv.email,
         ...inviteEmail({
@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
           inviterName,
           link: `${PUBLIC_APP_URL}/respond/${token}`,
           note: inv.note ?? undefined,
-          challenge: pinput?.challenge ?? undefined,
+          challenge: await loadChallenge(inv.project_id),
           targetGroup: project.target_group ?? undefined,
         }),
       });

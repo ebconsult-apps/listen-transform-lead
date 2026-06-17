@@ -167,7 +167,7 @@ export function PrepPromptCard({ variant, ctx, prebuilt, className }: PrepPrompt
           value={prompt}
           rows={14}
           onFocus={(e) => e.currentTarget.select()}
-          className="input mt-3 font-mono text-xs leading-relaxed whitespace-pre"
+          className="input mt-3 font-mono text-xs leading-relaxed whitespace-pre-wrap"
         />
       )}
 
