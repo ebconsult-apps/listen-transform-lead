@@ -4,10 +4,12 @@ import { ArrowLeft, Play, FileDown, RefreshCw } from "lucide-react";
 import SEO from "@/components/SEO";
 import {
   getProject,
+  getProjectInput,
   getEntitlement,
   getUnlock,
   listRuns,
   type Project,
+  type ProjectInput,
 } from "@/lib/db";
 import { runFull, runTeaser, latestOutput } from "@/lib/clear/run";
 import type { ClarifyOutput, ExperimentOutput, LeverageFull, LeverageTeaser } from "@/lib/clear/types";
@@ -17,6 +19,7 @@ import FullReport from "@/components/product/FullReport";
 import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
+import PrepPromptCard from "@/components/product/PrepPromptCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
@@ -25,6 +28,7 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const [project, setProject] = useState<Project | null>(null);
+  const [projectInput, setProjectInput] = useState<ProjectInput | null>(null);
   const [clarify, setClarify] = useState<ClarifyOutput | null>(null);
   const [teaser, setTeaser] = useState<LeverageTeaser | null>(null);
   const [full, setFull] = useState<LeverageFull | null>(null);
@@ -37,8 +41,13 @@ const ProjectDetail = () => {
 
   const load = useCallback(async () => {
     if (!id) return;
-    const [proj, runs] = await Promise.all([getProject(id), listRuns(id)]);
+    const [proj, input, runs] = await Promise.all([
+      getProject(id),
+      getProjectInput(id),
+      listRuns(id),
+    ]);
     setProject(proj);
+    setProjectInput(input);
     setClarify(latestOutput<ClarifyOutput>(runs, "clarify"));
     setTeaser(latestOutput<LeverageTeaser>(runs, "leverage_teaser"));
     setFull(latestOutput<LeverageFull>(runs, "leverage_full"));
@@ -112,6 +121,15 @@ const ProjectDetail = () => {
 
   const isRunning = project.status === "running" || busy;
   const hasTeaser = Boolean(clarify && teaser);
+  const ownerCtx = projectInput
+    ? {
+        challenge: projectInput.challenge,
+        stakeholders: projectInput.stakeholders ?? [],
+        timeline: projectInput.timeline ?? undefined,
+        targetGroup: project.target_group ?? undefined,
+        useCase: project.use_case ?? undefined,
+      }
+    : null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -145,22 +163,25 @@ const ProjectDetail = () => {
 
       {/* Not yet run */}
       {!hasTeaser && (
-        <div className="glass-card p-10 text-center no-print">
-          {isRunning ? (
-            <>
-              <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-              <h2 className="heading-md mb-1">Running your analysis…</h2>
-              <p className="body-md">Clarify → Leverage. This takes a few seconds.</p>
-            </>
-          ) : (
-            <>
-              <h2 className="heading-md mb-2">Ready to analyze</h2>
-              <p className="body-md mb-6">Run Clarify + Leverage to generate your free teaser.</p>
-              <button onClick={onRun} disabled={busy} className="btn-primary">
-                <Play className="h-4 w-4 mr-1.5" /> Run analysis
-              </button>
-            </>
-          )}
+        <div className="space-y-6 no-print">
+          <div className="glass-card p-10 text-center">
+            {isRunning ? (
+              <>
+                <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
+                <h2 className="heading-md mb-1">Running your analysis…</h2>
+                <p className="body-md">Clarify → Leverage. This takes a few seconds.</p>
+              </>
+            ) : (
+              <>
+                <h2 className="heading-md mb-2">Ready to analyze</h2>
+                <p className="body-md mb-6">Run Clarify + Leverage to generate your free teaser.</p>
+                <button onClick={onRun} disabled={busy} className="btn-primary">
+                  <Play className="h-4 w-4 mr-1.5" /> Run analysis
+                </button>
+              </>
+            )}
+          </div>
+          {!isRunning && ownerCtx && <PrepPromptCard variant="owner" ctx={ownerCtx} />}
         </div>
       )}
 
