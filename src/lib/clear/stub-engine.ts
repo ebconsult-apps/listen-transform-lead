@@ -2,13 +2,16 @@ import type {
   ClarifyOutput,
   ClearEngine,
   EngineResult,
+  ExperimentOutput,
   IntakeInput,
   LeverageFull,
   LeverageTeaser,
+  ResourceEnvelope,
 } from "./types";
 import clarifyFixture from "./fixtures/clarify.json";
 import teaserFixture from "./fixtures/leverage-teaser.json";
 import fullFixture from "./fixtures/leverage-full.json";
+import experimentFixture from "./fixtures/experiment.json";
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -39,5 +42,16 @@ export class StubClearEngine implements ClearEngine {
   ): Promise<EngineResult<LeverageFull>> {
     await delay(1800);
     return { output: fullFixture as LeverageFull, tokens: 0, costUsd: 0 };
+  }
+
+  async runExperiment(
+    _input: IntakeInput,
+    _clarify: ClarifyOutput,
+    _teaser: LeverageTeaser,
+    _full: LeverageFull,
+    _envelope: ResourceEnvelope,
+  ): Promise<EngineResult<ExperimentOutput>> {
+    await delay(1500);
+    return { output: experimentFixture as ExperimentOutput, tokens: 0, costUsd: 0 };
   }
 }

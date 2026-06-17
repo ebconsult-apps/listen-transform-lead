@@ -3,11 +3,19 @@ import type {
   ClarifyOutput,
   ClearEngine,
   EngineResult,
+  ExperimentOutput,
   IntakeInput,
   LeverageFull,
   LeverageTeaser,
+  ResourceEnvelope,
 } from "./types.ts";
-import { CLARIFY_PROMPT, LEVERAGE_PROMPT, renderIntake } from "./prompts.ts";
+import {
+  CLARIFY_PROMPT,
+  EXPERIMENT_PROMPT,
+  LEVERAGE_PROMPT,
+  renderEnvelope,
+  renderIntake,
+} from "./prompts.ts";
 
 // Rough per-million-token prices (USD) for cost logging. Update alongside model
 // choices; these are only used for the cost cap + reporting, not billing.
@@ -37,6 +45,7 @@ export class LiveClearEngine implements ClearEngine {
   private client = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY")! });
   private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-haiku-4-5";
   private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-sonnet-4-6";
+  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-sonnet-4-6";
 
   private async call<T>(
     model: string,
@@ -65,16 +74,27 @@ export class LiveClearEngine implements ClearEngine {
   runClarify(input: IntakeInput) {
     // Clarify: challenge + stakeholders only — no documents.
     const user = renderIntake({ ...input, documents: [] });
-    return this.call<ClarifyOutput>(this.clarifyModel, CLARIFY_PROMPT, user, 2000);
+    return this.call<ClarifyOutput>(this.clarifyModel, CLARIFY_PROMPT, user, 3000);
   }
 
   runLeverageTeaser(input: IntakeInput, clarify: ClarifyOutput) {
     const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nReturn the TEASER JSON.`;
-    return this.call<LeverageTeaser>(this.leverageModel, LEVERAGE_PROMPT, user, 2000);
+    return this.call<LeverageTeaser>(this.leverageModel, LEVERAGE_PROMPT, user, 2500);
   }
 
   runLeverageFull(input: IntakeInput, clarify: ClarifyOutput, teaser: LeverageTeaser) {
-    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nReturn the FULL JSON (teaser fields + comb, barrierNarratives, gapLog, discoveryActivities).`;
-    return this.call<LeverageFull>(this.leverageModel, LEVERAGE_PROMPT, user, 4000);
+    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nReturn the FULL JSON (teaser fields with 5-10 ranked points, plus behaviors, behaviorPriorities, keyActors, causeEffect, loops, comb, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
+    return this.call<LeverageFull>(this.leverageModel, LEVERAGE_PROMPT, user, 6000);
+  }
+
+  runExperiment(
+    input: IntakeInput,
+    clarify: ClarifyOutput,
+    _teaser: LeverageTeaser,
+    full: LeverageFull,
+    envelope: ResourceEnvelope,
+  ) {
+    const user = `${renderIntake(input)}\n\n${renderEnvelope(envelope)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nLEVERAGE FULL OUTPUT:\n${JSON.stringify(full)}\n\nReturn the EXPERIMENT JSON.`;
+    return this.call<ExperimentOutput>(this.experimentModel, EXPERIMENT_PROMPT, user, 4000);
   }
 }

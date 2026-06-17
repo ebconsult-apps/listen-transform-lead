@@ -5,7 +5,12 @@
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
-import type { IntakeInput } from "../_shared/clear/types.ts";
+import type {
+  GapFlag,
+  IntakeInput,
+  InterventionCandidate,
+  ResourceEnvelope,
+} from "../_shared/clear/types.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -91,7 +96,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     projectId = body.projectId;
     const phase = body.phase;
-    if (!projectId || !["teaser", "full"].includes(phase)) {
+    if (!projectId || !["teaser", "full", "experiment"].includes(phase)) {
       return json({ error: "Bad request" }, 400);
     }
 
@@ -158,7 +163,7 @@ Deno.serve(async (req) => {
     const engine = getClearEngine();
 
     const persist = async (
-      runPhase: "clarify" | "leverage_teaser" | "leverage_full",
+      runPhase: "clarify" | "leverage_teaser" | "leverage_full" | "experiment",
       output: unknown,
       tokens?: number,
       costUsd?: number,
@@ -174,17 +179,62 @@ Deno.serve(async (req) => {
       });
     };
 
+    // Seed a phase's gapLog flags into the persistent cross-phase log (idempotent).
+    const seedGapLog = async (runPhase: string, flags: GapFlag[] | undefined) => {
+      if (!flags?.length) return;
+      const { data: existing } = await admin
+        .from("assumption_gaps")
+        .select("content")
+        .eq("project_id", projectId)
+        .eq("phase", runPhase);
+      const seen = new Set((existing ?? []).map((r: { content: string }) => r.content));
+      const rows = flags
+        .filter((f) => !seen.has(f.content))
+        .map((f) => ({
+          project_id: projectId,
+          phase: runPhase,
+          flag_type: f.type,
+          content: f.content,
+          source: f.source ?? null,
+        }));
+      if (rows.length) await admin.from("assumption_gaps").insert(rows);
+    };
+
+    // Seed AI-proposed intervention candidates as editable rows (idempotent).
+    const seedCandidates = async (candidates: InterventionCandidate[]) => {
+      const { data: existing } = await admin
+        .from("intervention_candidates")
+        .select("id")
+        .eq("project_id", projectId)
+        .limit(1);
+      if (existing && existing.length) return;
+      const rows = candidates.map((c) => ({
+        project_id: projectId,
+        leverage_point_rank: c.leveragePointRank ?? null,
+        barrier: c.barrier ?? null,
+        title: c.title,
+        description: c.description ?? null,
+        apease: c.apease,
+        parked:
+          c.apease.acceptability === "fail" ||
+          c.apease.safety === "fail" ||
+          c.apease.equity === "fail",
+      }));
+      if (rows.length) await admin.from("intervention_candidates").insert(rows);
+    };
+
     if (phase === "teaser") {
       await admin.from("projects").update({ status: "running" }).eq("id", projectId);
       const clarify = await engine.runClarify(intake);
       await persist("clarify", clarify.output, clarify.tokens, clarify.costUsd);
+      await seedGapLog("clarify", clarify.output.gapLog);
       const teaser = await engine.runLeverageTeaser(intake, clarify.output);
       await persist("leverage_teaser", teaser.output, teaser.tokens, teaser.costUsd);
       await admin.from("projects").update({ status: "teaser_ready" }).eq("id", projectId);
       return json({ ok: true, status: "teaser_ready" });
     }
 
-    // phase === "full" — enforce entitlement server-side
+    // phase === "full" | "experiment" — both require entitlement server-side
     const [{ data: ent }, { data: unlock }] = await Promise.all([
       admin.from("entitlements").select("tier").eq("workspace_id", project.workspace_id).maybeSingle(),
       admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
@@ -194,13 +244,47 @@ Deno.serve(async (req) => {
       return json({ error: "Payment required" }, 402);
     }
 
+    if (phase === "full") {
+      await admin.from("projects").update({ status: "running" }).eq("id", projectId);
+      const clarify = await engine.runClarify(intake);
+      const teaser = await engine.runLeverageTeaser(intake, clarify.output);
+      const full = await engine.runLeverageFull(intake, clarify.output, teaser.output);
+      await persist("leverage_full", full.output, full.tokens, full.costUsd);
+      await seedGapLog("leverage_full", full.output.gapLog);
+      await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
+      return json({ ok: true, status: "full_ready" });
+    }
+
+    // phase === "experiment" — design APEASE candidates from the latest full report.
+    const { data: priorRuns } = await admin
+      .from("runs")
+      .select("phase, output, created_at")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: true });
+    const latest = <T,>(p: string): T | null => {
+      const matching = (priorRuns ?? []).filter((r: { phase: string }) => r.phase === p);
+      return matching.length ? (matching[matching.length - 1].output as T) : null;
+    };
+    const clarifyOut = latest<Parameters<typeof engine.runExperiment>[1]>("clarify");
+    const teaserOut = latest<Parameters<typeof engine.runExperiment>[2]>("leverage_teaser");
+    const fullOut = latest<Parameters<typeof engine.runExperiment>[3]>("leverage_full");
+    if (!clarifyOut || !teaserOut || !fullOut) {
+      return json({ error: "Generate the full report before designing experiments." }, 409);
+    }
+    const { data: design } = await admin
+      .from("experiment_designs")
+      .select("envelope")
+      .eq("project_id", projectId)
+      .maybeSingle();
+    const envelope: ResourceEnvelope = (design?.envelope as ResourceEnvelope) ?? {};
+
     await admin.from("projects").update({ status: "running" }).eq("id", projectId);
-    const clarify = await engine.runClarify(intake);
-    const teaser = await engine.runLeverageTeaser(intake, clarify.output);
-    const full = await engine.runLeverageFull(intake, clarify.output, teaser.output);
-    await persist("leverage_full", full.output, full.tokens, full.costUsd);
-    await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
-    return json({ ok: true, status: "full_ready" });
+    const exp = await engine.runExperiment(intake, clarifyOut, teaserOut, fullOut, envelope);
+    await persist("experiment", exp.output, exp.tokens, exp.costUsd);
+    await seedCandidates(exp.output.interventionCandidates);
+    await seedGapLog("experiment", exp.output.gapLog);
+    await admin.from("projects").update({ status: "experiment_design" }).eq("id", projectId);
+    return json({ ok: true, status: "experiment_design" });
   } catch (e) {
     // A run threw partway through (e.g. model/JSON error) — don't leave the project
     // stuck on "running". Mark it "error" so the UI can surface it and allow re-run.

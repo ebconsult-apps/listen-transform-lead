@@ -22,7 +22,14 @@ const LeverageTable = ({ points }: { points: LeveragePoint[] }) => {
               {p.rank}
             </div>
             <div className="flex-grow">
-              <h4 className="font-semibold text-foreground">{p.point}</h4>
+              <div className="flex items-start gap-2">
+                <h4 className="font-semibold text-foreground">{p.point}</h4>
+                {p.assumptionBased && (
+                  <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-600 whitespace-nowrap">
+                    Assumption-based
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-foreground/70 mt-1">{p.currentState}</p>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs">
                 <span className="flex items-center gap-1.5">

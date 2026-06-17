@@ -46,6 +46,7 @@ supabase secrets set \
   AI_MODE=stub \
   CLARIFY_MODEL=claude-haiku-4-5 \
   LEVERAGE_MODEL=claude-sonnet-4-6 \
+  EXPERIMENT_MODEL=claude-sonnet-4-6 \
   WORKSPACE_MONTHLY_COST_CAP_USD=25 \
   BREVO_API_KEY=xkeysib-... \
   PUBLIC_APP_URL=https://clear-framework.com
@@ -73,6 +74,18 @@ intake, so no separate extraction service is needed. The CI workflow
 `main`; the `20260616210000_respondent_collaboration.sql` migration adds the
 `project_invitations`, `project_contributions`, and `leverage_reactions` tables.
 
+## 3c. Experiment phase
+
+The `project-run` function gained a third phase, `experiment`, gated by the same
+entitlement check as `full` (paid tier or project unlock → otherwise `402`). It
+runs the APEASE-screened intervention generator (`EXPERIMENT_MODEL`, default
+Sonnet) off the latest CLARIFY/LEVERAGE runs plus the owner's resource envelope,
+then seeds editable records. The `20260617120000_experiment_phase.sql` migration
+adds `experiment_designs`, `intervention_candidates`, `test_cards`, and the
+cross-phase `assumption_gaps` log (all project-member read+write under RLS), and
+extends the `runs.phase` / `projects.status` enums. `project-run` is edited in
+place, so no change to the deploy workflow is required.
+
 ## 4. Stripe
 
 Create Products/Prices for Solo/Team/Business (recurring) and a one-off
@@ -85,6 +98,6 @@ webhook at the deployed `stripe-webhook` URL (events:
 
 Flip `AI_MODE=live` in the function secrets. `LiveClearEngine` then calls Claude
 with the prompts in `functions/_shared/clear/prompts.ts` — **no UI changes**.
-Model ids come from `CLARIFY_MODEL` / `LEVERAGE_MODEL` so they can be upgraded
-without code changes. Per-workspace monthly spend is capped by
-`WORKSPACE_MONTHLY_COST_CAP_USD`.
+Model ids come from `CLARIFY_MODEL` / `LEVERAGE_MODEL` / `EXPERIMENT_MODEL` so
+they can be upgraded without code changes. Per-workspace monthly spend is capped
+by `WORKSPACE_MONTHLY_COST_CAP_USD`.

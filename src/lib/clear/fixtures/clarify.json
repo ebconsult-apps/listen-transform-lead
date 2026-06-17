@@ -1,34 +1,14 @@
 {
-  "whyItMatters": "The behaviour you want to move sits at the centre of a system of habits, incentives and frictions. Without a shared, measurable definition of success, teams optimise for activity (more nudges, more comms) instead of the few changes that actually shift behaviour. Clarify fixes the target before any intervention is designed.",
+  "whyItMatters": "The behaviour you want to move sits at the centre of a system of habits, incentives and frictions, and right now the team measures activity instead of the few changes that actually shift behaviour. Without a shared, measurable definition of success, every conversation drifts toward more nudges and more comms — effort that feels productive but rarely moves the number that matters. Clarify fixes the target before any intervention is designed: it names one behavioural outcome, sets the key results that prove we moved it, and makes the baseline explicit so progress is undeniable. Getting this right means later phases can focus their energy on the highest-leverage barrier rather than relitigating what success means.",
   "objective": "Increase sustained adoption of the target behaviour within the priority group, measured by a behavioural rate that holds for at least 8 weeks rather than a one-off spike.",
   "keyResults": [
-    {
-      "kr": "Lift the core behaviour adoption rate in the priority segment",
-      "baseline": "31% (trailing 90 days)",
-      "target": "50% by end of quarter",
-      "confidence": "Medium"
-    },
-    {
-      "kr": "Reduce drop-off between first and repeat action",
-      "baseline": "58% drop-off",
-      "target": "≤35% drop-off",
-      "confidence": "Medium"
-    },
-    {
-      "kr": "Sustain the behaviour 8 weeks after first adoption (no decay)",
-      "baseline": "Not measured",
-      "target": "≥70% still active at week 8",
-      "confidence": "Low"
-    }
+    { "kr": "Lift the core behaviour adoption rate in the priority segment", "metric": "Adoption rate (%)", "baseline": "31% (trailing 90 days)", "target": "50%", "timeline": "End of quarter", "owner": "Product lead", "confidence": "Medium" },
+    { "kr": "Reduce drop-off between first and repeat action", "metric": "First→repeat drop-off (%)", "baseline": "58% drop-off", "target": "≤35% drop-off", "timeline": "End of quarter", "owner": "Growth lead", "confidence": "Medium" },
+    { "kr": "Sustain the behaviour 8 weeks after first adoption", "metric": "Week-8 retained-active (%)", "baseline": "Not measured", "target": "≥70% still active at week 8", "timeline": "8 weeks post-adoption", "owner": "Data lead", "confidence": "Low" }
   ],
-  "assumptions": [
-    "The priority segment is reachable through existing channels at least weekly.",
-    "Intent is not the bottleneck — most of the group already says they want the outcome.",
-    "Current baseline data is representative and not skewed by a recent campaign."
-  ],
-  "gaps": [
-    "No instrumented measure of the week-8 sustained behaviour yet.",
-    "Stakeholder ownership of the friction points is split across two teams.",
-    "Unclear which segment sub-groups face capability vs. motivation barriers."
+  "gapLog": [
+    { "type": "gap", "content": "No instrumented measure of the week-8 sustained behaviour yet." },
+    { "type": "assumption", "content": "Current baseline data is representative and not skewed by a recent campaign.", "source": "Trailing-90-day analytics" },
+    { "type": "input_needed", "content": "Confirm which team owns the friction point — ownership appears split across two teams." }
   ]
 }
