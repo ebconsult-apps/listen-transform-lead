@@ -1,5 +1,5 @@
 import { requireSupabase } from "./supabase";
-import type { ProjectStatus, RunPhase } from "./clear/types";
+import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
 export interface Workspace {
@@ -103,6 +103,70 @@ export interface LeverageReaction {
   point_rank: number;
   reaction: ReactionValue;
   note: string | null;
+}
+
+// ── EXPERIMENT phase rows (mirror 20260617120000_experiment_phase.sql) ────────
+export interface ExperimentDesign {
+  project_id: string;
+  envelope: ResourceEnvelope;
+  status: "design" | "active";
+  updated_at: string | null;
+}
+
+export interface InterventionCandidateRow {
+  id: string;
+  project_id: string;
+  leverage_point_rank: number | null;
+  barrier: string | null;
+  title: string;
+  description: string | null;
+  apease: Apease;
+  parked: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TestCardStatus = "planned" | "running" | "done" | "archived";
+
+export interface TestCardRow {
+  id: string;
+  project_id: string;
+  candidate_id: string | null;
+  leverage_point: string | null;
+  hypothesis: string | null;
+  action: string | null;
+  metric: string | null;
+  threshold: string | null;
+  duration: string | null;
+  risk_level: string | null;
+  kr_ref: string | null;
+  ethics_notes: string | null;
+  calendar_week: number | null;
+  owner_role: string | null;
+  status: TestCardStatus;
+  results: unknown | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type AssumptionGapStatus = "open" | "resolved" | "carried";
+
+export interface AssumptionGapRow {
+  id: string;
+  project_id: string;
+  phase: string | null;
+  flag_type:
+    | "assumption"
+    | "gap"
+    | "input_needed"
+    | "user_input"
+    | "needs_input"
+    | "requires_confirmation";
+  content: string;
+  source: string | null;
+  status: AssumptionGapStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 /** The first workspace the signed-in user belongs to (their personal one). */

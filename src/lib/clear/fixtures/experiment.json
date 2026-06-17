@@ -1,0 +1,47 @@
+{
+  "interventionCandidates": [
+    {
+      "leveragePointRank": 1,
+      "barrier": "Friction at the moment of action blocks capable, motivated users",
+      "title": "Pre-fill the blocking step",
+      "description": "Pre-populate the field that forces a context switch so the first action takes seconds, not minutes. Fully reversible behind a flag.",
+      "apease": { "effectiveness": 5, "practicability": 4, "affordability": 4, "acceptability": "pass", "safety": "pass", "equity": "pass", "notes": "Smallest reversible test of the dominant barrier." }
+    },
+    {
+      "leveragePointRank": 1,
+      "barrier": "Friction at the moment of action blocks capable, motivated users",
+      "title": "Defer the blocking step to after first value",
+      "description": "Move the high-friction step until after the user has seen value, testing whether ordering alone lifts completion.",
+      "apease": { "effectiveness": 4, "practicability": 4, "affordability": 5, "acceptability": "pass", "safety": "pass", "equity": "pass" }
+    },
+    {
+      "leveragePointRank": 2,
+      "barrier": "No environmental cue, so the behaviour depends on memory",
+      "title": "Anchor a cue to an existing weekly routine",
+      "description": "Attach a single lightweight reminder to a moment the group already attends to, rather than adding a new channel.",
+      "apease": { "effectiveness": 4, "practicability": 3, "affordability": 4, "acceptability": "flag", "safety": "pass", "equity": "pass", "notes": "FLAG: confirm reminder frequency with comms to avoid notification fatigue." }
+    },
+    {
+      "leveragePointRank": 3,
+      "barrier": "The new behaviour is invisible, so social proof runs the wrong way",
+      "title": "Show an aggregate 'most people' signal",
+      "description": "Surface an honest aggregate count of peers performing the behaviour on a shared surface.",
+      "apease": { "effectiveness": 3, "practicability": 4, "affordability": 4, "acceptability": "pass", "safety": "pass", "equity": "pass" }
+    },
+    {
+      "leveragePointRank": 3,
+      "barrier": "The new behaviour is invisible, so social proof runs the wrong way",
+      "title": "Publish individual peer activity by name",
+      "description": "Make each peer's activity individually visible to the cohort to maximise social proof.",
+      "apease": { "effectiveness": 4, "practicability": 3, "affordability": 4, "acceptability": "fail", "safety": "flag", "equity": "fail", "notes": "FAIL on Acceptability and Equity: exposes individuals without consent and disadvantages less-active users. Parked regardless of score." }
+    }
+  ],
+  "faq": [
+    { "q": "Will pre-filling the field cause wrong data?", "a": "We only pre-fill values the system already holds with high confidence, and users can edit before confirming." },
+    { "q": "Is the cue just another notification people will mute?", "a": "It's a single reminder anchored to an existing routine, capped in frequency, and measured against opt-outs during the test." }
+  ],
+  "gapLog": [
+    { "type": "assumption", "content": "Resource envelope assumed conservative (one engineer, two weeks, no new spend) — confirm with owner.", "source": "Envelope unclear at intake" },
+    { "type": "gap", "content": "Success threshold for the cue test depends on the week-8 metric that is not yet instrumented." }
+  ]
+}

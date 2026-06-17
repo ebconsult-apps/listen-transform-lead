@@ -1,33 +1,73 @@
 import type { LeverageFull } from "@/lib/clear/types";
+import { combLabel, gapFlags } from "@/lib/clear/labels";
+import CombMatrix from "./CombMatrix";
+import BehaviorTable from "./BehaviorTable";
+import CauseEffectList from "./CauseEffectList";
+import GapFlagList from "./GapFlagList";
 
-/** Paid sections: COM-B matrix + evidence, barrier narratives, gap log, discovery. */
+/**
+ * Paid Leverage sections: the full methodology chain — observable behaviors and
+ * their prioritization, systems map (actors + cause/effect), COM-B barrier
+ * matrix with evidence provenance, the strongest barriers, why each lever works,
+ * discovery activities, and the flagged gap log.
+ */
 const FullReport = ({ full }: { full: LeverageFull }) => {
+  const behaviors = full.behaviors ?? [];
+  const strongest = full.strongestBarriers ?? [];
+  const flags = gapFlags(full);
+
   return (
     <div className="space-y-6">
+      {/* Behaviors + prioritization */}
+      {behaviors.length > 0 && (
+        <div className="glass-card p-6 sm:p-8">
+          <h3 className="heading-md mb-1">Observable behaviors</h3>
+          <p className="text-sm text-foreground/50 mb-4">
+            Verb-led behaviors, scored 1–5 (relative) on Effect · Ease · Centrality · Measurability.
+          </p>
+          <BehaviorTable behaviors={behaviors} priorities={full.behaviorPriorities ?? []} />
+        </div>
+      )}
+
+      {/* Systems map: actors + cause/effect + loops */}
+      {((full.keyActors?.length ?? 0) > 0 || (full.causeEffect?.length ?? 0) > 0) && (
+        <div className="glass-card p-6 sm:p-8">
+          <h3 className="heading-md mb-4">Systems map</h3>
+          <CauseEffectList
+            actors={full.keyActors ?? []}
+            edges={full.causeEffect ?? []}
+            loops={full.loops}
+          />
+        </div>
+      )}
+
       {/* COM-B */}
       <div className="glass-card p-6 sm:p-8">
-        <h3 className="heading-md mb-4">COM-B barrier analysis</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-foreground/50 border-b border-border">
-                <th className="py-2 pr-4 font-medium">Factor</th>
-                <th className="py-2 pr-4 font-medium">Barrier</th>
-                <th className="py-2 font-medium">Evidence</th>
-              </tr>
-            </thead>
-            <tbody>
-              {full.comb.map((c, i) => (
-                <tr key={i} className="border-b border-border/60 align-top">
-                  <td className="py-3 pr-4 font-medium whitespace-nowrap">{c.factor}</td>
-                  <td className="py-3 pr-4 text-foreground/80">{c.barrier}</td>
-                  <td className="py-3 text-foreground/60">{c.evidence ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <h3 className="heading-md mb-1">COM-B barrier analysis</h3>
+        <p className="text-sm text-foreground/50 mb-4">
+          Each cell carries an evidence flag — Verified, Assumption, or Gap — so no assessment reads
+          as fact without provenance.
+        </p>
+        <CombMatrix cells={full.comb ?? []} />
       </div>
+
+      {/* Strongest barriers */}
+      {strongest.length > 0 && (
+        <div className="glass-card p-6 sm:p-8">
+          <h3 className="heading-md mb-4">Strongest barriers</h3>
+          <div className="space-y-4">
+            {strongest.map((b, i) => (
+              <div key={i} className="border-l-2 border-rose-400/40 pl-4">
+                <p className="font-semibold">
+                  {b.barrier}
+                  <span className="ml-2 text-xs font-normal text-foreground/45">{combLabel(b)}</span>
+                </p>
+                <p className="text-sm text-foreground/70 mt-1">{b.rationale}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Barrier narratives */}
       <div className="glass-card p-6 sm:p-8">
@@ -46,11 +86,7 @@ const FullReport = ({ full }: { full: LeverageFull }) => {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card p-6 sm:p-8">
           <h3 className="heading-md mb-4">Gap log</h3>
-          <ul className="space-y-2 list-disc pl-5 text-sm text-foreground/80">
-            {full.gapLog.map((g, i) => (
-              <li key={i}>{g}</li>
-            ))}
-          </ul>
+          <GapFlagList flags={flags} />
         </div>
         <div className="glass-card p-6 sm:p-8">
           <h3 className="heading-md mb-4">Discovery activities</h3>

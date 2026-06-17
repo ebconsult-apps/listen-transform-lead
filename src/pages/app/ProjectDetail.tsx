@@ -10,12 +10,13 @@ import {
   type Project,
 } from "@/lib/db";
 import { runFull, runTeaser, latestOutput } from "@/lib/clear/run";
-import type { ClarifyOutput, LeverageFull, LeverageTeaser } from "@/lib/clear/types";
+import type { ClarifyOutput, ExperimentOutput, LeverageFull, LeverageTeaser } from "@/lib/clear/types";
 import { canViewFull } from "@/config/billing";
 import TeaserReport from "@/components/product/TeaserReport";
 import FullReport from "@/components/product/FullReport";
 import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
+import ExperimentTab from "@/components/product/ExperimentTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ const ProjectDetail = () => {
   const [clarify, setClarify] = useState<ClarifyOutput | null>(null);
   const [teaser, setTeaser] = useState<LeverageTeaser | null>(null);
   const [full, setFull] = useState<LeverageFull | null>(null);
+  const [experimentOutput, setExperimentOutput] = useState<ExperimentOutput | null>(null);
   const [entitled, setEntitled] = useState(false);
   const [devUnlocked, setDevUnlocked] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -40,6 +42,7 @@ const ProjectDetail = () => {
     setClarify(latestOutput<ClarifyOutput>(runs, "clarify"));
     setTeaser(latestOutput<LeverageTeaser>(runs, "leverage_teaser"));
     setFull(latestOutput<LeverageFull>(runs, "leverage_full"));
+    setExperimentOutput(latestOutput<ExperimentOutput>(runs, "experiment"));
     const teaserRuns = runs.filter((r) => r.phase === "leverage_teaser");
     setTeaserAt(teaserRuns.length ? teaserRuns[teaserRuns.length - 1].created_at : null);
     const [ent, unlock] = await Promise.all([
@@ -95,6 +98,7 @@ const ProjectDetail = () => {
   }, [entitled, teaser, full, busy, onGenerateFull]);
 
   const showFull = (entitled || devUnlocked) && full;
+  const canExperiment = Boolean((entitled || devUnlocked) && full);
 
   const onDevPreview = async () => {
     setDevUnlocked(true);
@@ -166,6 +170,7 @@ const ProjectDetail = () => {
           <TabsList className="mb-6 no-print">
             <TabsTrigger value="report">Report</TabsTrigger>
             <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
+            <TabsTrigger value="experiment" disabled={!canExperiment}>Experiment</TabsTrigger>
           </TabsList>
 
           <TabsContent value="report">
@@ -200,6 +205,29 @@ const ProjectDetail = () => {
               onRerun={onRun}
               busy={isRunning}
             />
+          </TabsContent>
+
+          <TabsContent value="experiment">
+            {canExperiment && clarify && teaser && full ? (
+              <ExperimentTab
+                projectId={project.id}
+                projectName={project.name}
+                projectStatus={project.status}
+                clarify={clarify}
+                teaser={teaser}
+                full={full}
+                experimentOutput={experimentOutput}
+                onAfterRun={load}
+              />
+            ) : (
+              <div className="glass-card p-10 text-center">
+                <h3 className="heading-md mb-2">Unlock the full report to continue</h3>
+                <p className="body-md">
+                  The Experiment phase turns your leverage points into testable interventions. It
+                  becomes available once the full report is unlocked.
+                </p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       )}

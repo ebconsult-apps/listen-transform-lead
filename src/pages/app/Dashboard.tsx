@@ -12,6 +12,8 @@ const STATUS_LABEL: Record<ProjectStatus, string> = {
   teaser_ready: "Teaser ready",
   paid: "Unlocked",
   full_ready: "Full report ready",
+  experiment_design: "Designing experiments",
+  experiment_active: "Experiments running",
   error: "Error",
 };
 
@@ -21,6 +23,8 @@ const STATUS_CLASS: Record<ProjectStatus, string> = {
   teaser_ready: "bg-[hsl(var(--phase-l))]/15 text-[hsl(var(--phase-l))]",
   paid: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",
   full_ready: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",
+  experiment_design: "bg-[hsl(var(--phase-e))]/15 text-[hsl(var(--phase-e))]",
+  experiment_active: "bg-[hsl(var(--phase-e))]/15 text-[hsl(var(--phase-e))]",
   error: "bg-destructive/10 text-destructive",
 };
 
