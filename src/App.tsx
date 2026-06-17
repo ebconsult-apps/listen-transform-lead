@@ -47,6 +47,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ProductLayout from "@/components/product/ProductLayout";
 import ProductLanding from "./pages/product/ProductLanding";
+import Sample from "./pages/product/Sample";
 import Pricing from "./pages/product/Pricing";
 import Login from "./pages/product/Login";
 import Signup from "./pages/product/Signup";
@@ -91,6 +92,7 @@ const App = () => (
             {/* Self-serve product — landing, pricing, and gated app share ProductLayout */}
             <Route element={<ProductLayout />}>
               <Route path="/product" element={<ProductLanding />} />
+              <Route path="/product/sample" element={<Sample />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/app/projects/new" element={<ProtectedRoute><NewProject /></ProtectedRoute>} />

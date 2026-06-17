@@ -2,7 +2,7 @@ import type { LeverageFull } from "@/lib/clear/types";
 import { combLabel, gapFlags } from "@/lib/clear/labels";
 import CombMatrix from "./CombMatrix";
 import BehaviorTable from "./BehaviorTable";
-import CauseEffectList from "./CauseEffectList";
+import CauseEffectMap from "./CauseEffectMap";
 import GapFlagList from "./GapFlagList";
 
 /**
@@ -33,7 +33,7 @@ const FullReport = ({ full }: { full: LeverageFull }) => {
       {((full.keyActors?.length ?? 0) > 0 || (full.causeEffect?.length ?? 0) > 0) && (
         <div className="glass-card p-6 sm:p-8">
           <h3 className="heading-md mb-4">Systems map</h3>
-          <CauseEffectList
+          <CauseEffectMap
             actors={full.keyActors ?? []}
             edges={full.causeEffect ?? []}
             loops={full.loops}

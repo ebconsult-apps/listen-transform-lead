@@ -46,6 +46,9 @@ const ProductLanding = () => {
           <Link to="/signup" className="btn-secondary text-lg px-8 py-3">
             Start free
           </Link>
+          <Link to="/product/sample" className="btn-secondary text-lg px-8 py-3">
+            See a sample report
+          </Link>
         </div>
       </section>
 
