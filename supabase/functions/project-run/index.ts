@@ -1,7 +1,8 @@
-// POST /project-run  { projectId, phase: "teaser" | "full" }
-// Runs CLARIFY + LEVERAGE (stub or live by AI_MODE), persists runs, and updates
-// project status. Membership + entitlement are enforced here server-side; the
-// client gate in ProjectDetail is UX only.
+// POST /project-run  { projectId, phase: "clarify" | "leverage" | "full" | "experiment" }
+// Runs the CLEAR phases (stub or live by AI_MODE), persists runs, and updates
+// project status. CLARIFY pauses for owner review/approval; LEVERAGE/FULL consume
+// the owner-approved Clarify. Membership + entitlement are enforced here
+// server-side; the client gate in ProjectDetail is UX only.
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
@@ -96,7 +97,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     projectId = body.projectId;
     const phase = body.phase;
-    if (!projectId || !["teaser", "full", "experiment"].includes(phase)) {
+    if (!projectId || !["clarify", "leverage", "full", "experiment"].includes(phase)) {
       return json({ error: "Bad request" }, 400);
     }
 
@@ -250,12 +251,42 @@ Deno.serve(async (req) => {
       if (rows.length) await admin.from("intervention_candidates").insert(rows);
     };
 
-    if (phase === "teaser") {
+    // Owner-approved (possibly edited) Clarify for downstream phases. Falls back to
+    // the latest generated clarify run unless an explicit approval is required.
+    const loadClarify = async (requireApproval: boolean) => {
+      const { data: approval } = await admin
+        .from("phase_approvals")
+        .select("output")
+        .eq("project_id", projectId)
+        .eq("phase", "clarify")
+        .maybeSingle();
+      if (approval?.output) return approval.output as Parameters<typeof engine.runLeverageTeaser>[1];
+      if (requireApproval) return null;
+      const { data: runsC } = await admin
+        .from("runs")
+        .select("output, created_at")
+        .eq("project_id", projectId)
+        .eq("phase", "clarify")
+        .order("created_at", { ascending: true });
+      return runsC && runsC.length
+        ? (runsC[runsC.length - 1].output as Parameters<typeof engine.runLeverageTeaser>[1])
+        : null;
+    };
+
+    if (phase === "clarify") {
       await admin.from("projects").update({ status: "running" }).eq("id", projectId);
       const clarify = await engine.runClarify(intake);
       await persist("clarify", clarify.output, clarify.tokens, clarify.costUsd);
       await seedGapLog("clarify", clarify.output.gapLog);
-      const teaser = await engine.runLeverageTeaser(intake, clarify.output);
+      await admin.from("projects").update({ status: "clarify_ready" }).eq("id", projectId);
+      return json({ ok: true, status: "clarify_ready" });
+    }
+
+    if (phase === "leverage") {
+      const clarify = await loadClarify(true);
+      if (!clarify) return json({ error: "Approve Clarify before generating Leverage." }, 409);
+      await admin.from("projects").update({ status: "running" }).eq("id", projectId);
+      const teaser = await engine.runLeverageTeaser(intake, clarify);
       await persist("leverage_teaser", teaser.output, teaser.tokens, teaser.costUsd);
       await admin.from("projects").update({ status: "teaser_ready" }).eq("id", projectId);
       return json({ ok: true, status: "teaser_ready" });
@@ -272,10 +303,13 @@ Deno.serve(async (req) => {
     }
 
     if (phase === "full") {
+      const clarify = await loadClarify(false);
+      if (!clarify) {
+        return json({ error: "Approve Clarify before generating the full report." }, 409);
+      }
       await admin.from("projects").update({ status: "running" }).eq("id", projectId);
-      const clarify = await engine.runClarify(intake);
-      const teaser = await engine.runLeverageTeaser(intake, clarify.output);
-      const full = await engine.runLeverageFull(intake, clarify.output, teaser.output);
+      const teaser = await engine.runLeverageTeaser(intake, clarify);
+      const full = await engine.runLeverageFull(intake, clarify, teaser.output);
       await persist("leverage_full", full.output, full.tokens, full.costUsd);
       await seedGapLog("leverage_full", full.output.gapLog);
       await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
@@ -292,7 +326,7 @@ Deno.serve(async (req) => {
       const matching = (priorRuns ?? []).filter((r: { phase: string }) => r.phase === p);
       return matching.length ? (matching[matching.length - 1].output as T) : null;
     };
-    const clarifyOut = latest<Parameters<typeof engine.runExperiment>[1]>("clarify");
+    const clarifyOut = (await loadClarify(false)) as Parameters<typeof engine.runExperiment>[1] | null;
     const teaserOut = latest<Parameters<typeof engine.runExperiment>[2]>("leverage_teaser");
     const fullOut = latest<Parameters<typeof engine.runExperiment>[3]>("leverage_full");
     if (!clarifyOut || !teaserOut || !fullOut) {

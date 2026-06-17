@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import TeaserReport from "@/components/product/TeaserReport";
+import ClarifyCard from "@/components/product/ClarifyCard";
 import FullReport from "@/components/product/FullReport";
 import type { ClarifyOutput, LeverageTeaser, LeverageFull } from "@/lib/clear/types";
 import clarifyFixture from "@/lib/clear/fixtures/clarify.json";
@@ -40,7 +41,8 @@ const Sample = () => {
       </div>
 
       <div className="space-y-8">
-        <TeaserReport clarify={clarify} teaser={teaser} />
+        <ClarifyCard clarify={clarify} />
+        <TeaserReport teaser={teaser} />
         <FullReport full={full} />
       </div>
 

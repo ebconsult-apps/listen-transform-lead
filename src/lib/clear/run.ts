@@ -8,6 +8,7 @@ import {
 } from "@/lib/db";
 import { listContributions, listReactions, summarizeRespondentInput } from "@/lib/collab";
 import { apeaseParked, getExperimentDesign } from "@/lib/experiment";
+import { getClarifyApproval, pickClarify } from "@/lib/clarify";
 import { listAcceptedResearch } from "@/lib/research";
 import { AI_MODE, getClearEngine } from "./index";
 import type {
@@ -123,19 +124,29 @@ async function seedCandidates(projectId: string, candidates: InterventionCandida
   if (rows.length) await sb.from("intervention_candidates").insert(rows);
 }
 
+/** The Clarify downstream phases should use: owner-approved wins, else latest run. */
+async function approvedClarify(projectId: string): Promise<ClarifyOutput | null> {
+  const [approval, runs] = await Promise.all([
+    getClarifyApproval(projectId),
+    listRuns(projectId),
+  ]);
+  return pickClarify(approval, latestOutput<ClarifyOutput>(runs, "clarify"));
+}
+
 /**
- * Kick off CLARIFY + partial LEVERAGE (the free teaser).
+ * Step 1 — CLARIFY only. Runs Clarify, then PAUSES at `clarify_ready` so the owner
+ * can review, edit, and approve the OKRs before any Leverage work.
  *
  * - stub mode: run the engine in-browser and write `runs` rows directly (RLS
  *   lets workspace members insert). Fully demoable without any deployed backend.
  * - live mode: delegate to the `project-run` edge function, which holds the
  *   Anthropic key and enforces the per-workspace cost cap server-side.
  */
-export async function runTeaser(projectId: string): Promise<void> {
+export async function runClarify(projectId: string): Promise<void> {
   if (AI_MODE === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-run", {
-      body: { projectId, phase: "teaser" },
+      body: { projectId, phase: "clarify" },
     });
     if (error) throw error;
     return;
@@ -148,7 +159,34 @@ export async function runTeaser(projectId: string): Promise<void> {
     const clarify = await engine.runClarify(intake);
     await persistRun(projectId, "clarify", clarify.output, clarify.tokens, clarify.costUsd);
     await seedGapLog(projectId, "clarify", clarify.output.gapLog);
-    const teaser = await engine.runLeverageTeaser(intake, clarify.output);
+    await setProjectStatus(projectId, "clarify_ready");
+  } catch (e) {
+    await setProjectStatus(projectId, "error");
+    throw e;
+  }
+}
+
+/**
+ * Step 2 — LEVERAGE teaser, gated on an approved Clarify. Consumes the approved
+ * (possibly owner-edited) Clarify rather than regenerating it.
+ */
+export async function runLeverage(projectId: string): Promise<void> {
+  if (AI_MODE === "live") {
+    const sb = requireSupabase();
+    const { error } = await sb.functions.invoke("project-run", {
+      body: { projectId, phase: "leverage" },
+    });
+    if (error) throw error;
+    return;
+  }
+
+  await setProjectStatus(projectId, "running");
+  try {
+    const clarify = await approvedClarify(projectId);
+    if (!clarify) throw new Error("Approve Clarify before generating Leverage.");
+    const intake = await buildIntake(projectId);
+    const engine = getClearEngine();
+    const teaser = await engine.runLeverageTeaser(intake, clarify);
     await persistRun(projectId, "leverage_teaser", teaser.output, teaser.tokens, teaser.costUsd);
     await setProjectStatus(projectId, "teaser_ready");
   } catch (e) {
@@ -157,7 +195,7 @@ export async function runTeaser(projectId: string): Promise<void> {
   }
 }
 
-/** Generate the full report after the paywall is cleared. */
+/** Generate the full report after the paywall is cleared (uses the approved Clarify). */
 export async function runFull(projectId: string): Promise<void> {
   if (AI_MODE === "live") {
     const sb = requireSupabase();
@@ -170,11 +208,12 @@ export async function runFull(projectId: string): Promise<void> {
 
   await setProjectStatus(projectId, "running");
   try {
+    const clarify = await approvedClarify(projectId);
+    if (!clarify) throw new Error("Approve Clarify before generating the full report.");
     const intake = await buildIntake(projectId);
     const engine = getClearEngine();
-    const clarify = await engine.runClarify(intake);
-    const teaser = await engine.runLeverageTeaser(intake, clarify.output);
-    const full = await engine.runLeverageFull(intake, clarify.output, teaser.output);
+    const teaser = await engine.runLeverageTeaser(intake, clarify);
+    const full = await engine.runLeverageFull(intake, clarify, teaser.output);
     await persistRun(projectId, "leverage_full", full.output, full.tokens, full.costUsd);
     await seedGapLog(projectId, "leverage_full", full.output.gapLog);
     await setProjectStatus(projectId, "full_ready");
@@ -203,7 +242,10 @@ export async function runExperiment(projectId: string): Promise<void> {
   try {
     const intake = await buildIntake(projectId);
     const runs = await listRuns(projectId);
-    const clarify = latestOutput<ClarifyOutput>(runs, "clarify");
+    const clarify = pickClarify(
+      await getClarifyApproval(projectId),
+      latestOutput<ClarifyOutput>(runs, "clarify"),
+    );
     const teaser = latestOutput<LeverageTeaser>(runs, "leverage_teaser");
     const full = latestOutput<LeverageFull>(runs, "leverage_full");
     if (!clarify || !teaser || !full) {

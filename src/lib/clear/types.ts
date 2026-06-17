@@ -319,6 +319,8 @@ export type RunPhase =
 export type ProjectStatus =
   | "draft"
   | "running"
+  | "clarify_ready"
+  | "clarify_approved"
   | "teaser_ready"
   | "paid"
   | "full_ready"
