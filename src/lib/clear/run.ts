@@ -8,6 +8,7 @@ import {
 } from "@/lib/db";
 import { listContributions, listReactions, summarizeRespondentInput } from "@/lib/collab";
 import { apeaseParked, getExperimentDesign } from "@/lib/experiment";
+import { listAcceptedResearch } from "@/lib/research";
 import { AI_MODE, getClearEngine } from "./index";
 import type {
   ClarifyOutput,
@@ -16,16 +17,19 @@ import type {
   InterventionCandidate,
   LeverageFull,
   LeverageTeaser,
+  ResearchFinding,
+  ResearchQuestion,
   RunPhase,
 } from "./types";
 
 async function buildIntake(projectId: string): Promise<IntakeInput> {
-  const [project, input, docs, contributions, reactions] = await Promise.all([
+  const [project, input, docs, contributions, reactions, research] = await Promise.all([
     getProject(projectId),
     getProjectInput(projectId),
     listDocuments(projectId),
     listContributions(projectId),
     listReactions(projectId),
+    listAcceptedResearch(projectId),
   ]);
   const documents = docs
     .filter((d) => d.extracted_text)
@@ -45,6 +49,8 @@ async function buildIntake(projectId: string): Promise<IntakeInput> {
     targetGroup: project.target_group ?? undefined,
     useCase: project.use_case ?? undefined,
     documents,
+    // Owner-accepted research findings flow in as cited "Verified" evidence.
+    research,
   };
 }
 
@@ -214,6 +220,80 @@ export async function runExperiment(projectId: string): Promise<void> {
     await setProjectStatus(projectId, "error");
     throw e;
   }
+}
+
+/** Seed AI-proposed research findings as editable rows. Idempotent: skip if the
+ *  project already has findings (the owner may have curated them). */
+async function seedFindings(projectId: string, findings: ResearchFinding[]) {
+  if (!findings?.length) return;
+  const sb = requireSupabase();
+  const { data: existing } = await sb
+    .from("research_findings")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
+  if (existing && existing.length) return;
+  const rows = findings.map((f) => ({
+    project_id: projectId,
+    phase_target: f.phaseTarget ?? "leverage",
+    claim: f.claim,
+    detail: f.detail ?? null,
+    source_kind: f.sourceKind ?? "web",
+    citations: f.citations ?? [],
+    evidence_flag: f.evidenceFlag ?? "A",
+    confidence: f.confidence ?? null,
+    tags: f.tags ?? {},
+    status: "proposed",
+  }));
+  const { error } = await sb.from("research_findings").insert(rows);
+  if (error) throw error;
+}
+
+/** Seed the agent's follow-up questions. Idempotent like seedFindings. */
+async function seedQuestions(projectId: string, questions: ResearchQuestion[]) {
+  if (!questions?.length) return;
+  const sb = requireSupabase();
+  const { data: existing } = await sb
+    .from("research_questions")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
+  if (existing && existing.length) return;
+  const rows = questions.map((q) => ({
+    project_id: projectId,
+    question: q.question,
+    rationale: q.rationale ?? null,
+  }));
+  const { error } = await sb.from("research_questions").insert(rows);
+  if (error) throw error;
+}
+
+/**
+ * Gather cited external evidence to strengthen CLARIFY/LEVERAGE. Owner-triggered
+ * enrichment, NOT a gating phase — it seeds proposed findings + follow-up
+ * questions for the owner to curate, and does not change project.status.
+ *
+ * - live: delegate to the project-research edge function (Anthropic key, web
+ *   search tools, cost cap, and knowledge-base retrieval all run server-side).
+ * - stub: run the engine in-browser and write rows directly (member RLS).
+ */
+export async function runResearch(projectId: string): Promise<void> {
+  if (AI_MODE === "live") {
+    const sb = requireSupabase();
+    const { error } = await sb.functions.invoke("project-research", {
+      body: { action: "run", projectId },
+    });
+    if (error) throw error;
+    return;
+  }
+
+  const intake = await buildIntake(projectId);
+  const engine = getClearEngine();
+  const research = await engine.runResearch(intake, {});
+  await persistRun(projectId, "research", research.output, research.tokens, research.costUsd);
+  await seedFindings(projectId, research.output.findings);
+  await seedQuestions(projectId, research.output.questions);
+  await seedGapLog(projectId, "research", research.output.gapLog);
 }
 
 /** Convenience accessors used by the report views. */

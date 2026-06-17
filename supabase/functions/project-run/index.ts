@@ -113,12 +113,17 @@ Deno.serve(async (req) => {
     if (!membership) return json({ error: "Forbidden" }, 403);
 
     // Build intake
-    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }] =
+    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }] =
       await Promise.all([
         admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
         admin.from("documents").select("*").eq("project_id", projectId),
         admin.from("project_contributions").select("*").eq("project_id", projectId),
         admin.from("leverage_reactions").select("*").eq("project_id", projectId),
+        admin
+          .from("research_findings")
+          .select("*")
+          .eq("project_id", projectId)
+          .in("status", ["accepted", "promoted"]),
       ]);
     const documents = (docs ?? [])
       .filter((d: { extracted_text: string | null }) => d.extracted_text)
@@ -134,6 +139,27 @@ Deno.serve(async (req) => {
       documents.push({ filename: "Respondent contributions", text: respondentInput });
     }
 
+    // Owner-accepted research findings flow in as cited "Verified" evidence.
+    const research = (findings ?? []).map((f: {
+      phase_target: "clarify" | "leverage";
+      claim: string;
+      detail: string | null;
+      source_kind: "web" | "knowledge_base" | "dialogue";
+      citations: { title: string; url?: string; note?: string }[] | null;
+      evidence_flag: "V" | "A" | "G" | "NA";
+      confidence: number | null;
+      tags: Record<string, unknown> | null;
+    }) => ({
+      phaseTarget: f.phase_target,
+      claim: f.claim,
+      detail: f.detail ?? undefined,
+      sourceKind: f.source_kind,
+      citations: f.citations ?? [],
+      evidenceFlag: f.evidence_flag,
+      confidence: f.confidence ?? 0,
+      tags: f.tags ?? {},
+    }));
+
     const intake: IntakeInput = {
       challenge: input?.challenge ?? "",
       stakeholders: input?.stakeholders ?? [],
@@ -141,6 +167,7 @@ Deno.serve(async (req) => {
       targetGroup: project.target_group ?? undefined,
       useCase: project.use_case ?? undefined,
       documents,
+      research,
     };
 
     // Cost cap (live only): sum this calendar month's spend for the workspace.
