@@ -1,6 +1,7 @@
 import type { ClarifyOutput, LeverageTeaser } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
 import LeverageTable from "./LeverageTable";
+import LeveragePriorityMap from "./LeveragePriorityMap";
 import GapFlagList from "./GapFlagList";
 
 /** Free teaser: Clarify (objective + KRs) + partial Leverage (systems map + top 3). */
@@ -73,6 +74,10 @@ const TeaserReport = ({
         </h4>
         <p className="body-md mb-6">{teaser.systemsMapSummary}</p>
         <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-3">
+          Leverage priority map
+        </h4>
+        <LeveragePriorityMap points={teaser.topLeveragePoints} />
+        <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-3 mt-8">
           Top 3 leverage points
         </h4>
         <LeverageTable points={teaser.topLeveragePoints} />

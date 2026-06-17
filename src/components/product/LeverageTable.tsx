@@ -16,7 +16,7 @@ const LeverageTable = ({ points }: { points: LeveragePoint[] }) => {
   return (
     <div className="space-y-4">
       {points.map((p) => (
-        <div key={p.rank} className="border border-border rounded-xl p-4 sm:p-5">
+        <div key={p.rank} id={`lever-${p.rank}`} className="border border-border rounded-xl p-4 sm:p-5 scroll-mt-24">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0 h-7 w-7 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center">
               {p.rank}
