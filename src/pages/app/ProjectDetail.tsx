@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Play, FileDown, RefreshCw } from "lucide-react";
+import { ArrowLeft, Play, FileDown, RefreshCw, Pencil } from "lucide-react";
 import SEO from "@/components/SEO";
 import {
   getProject,
@@ -11,10 +11,13 @@ import {
   type Project,
   type ProjectInput,
 } from "@/lib/db";
-import { runFull, runTeaser, latestOutput } from "@/lib/clear/run";
+import { runClarify, runLeverage, runFull, latestOutput } from "@/lib/clear/run";
+import { approveClarify, getClarifyApproval } from "@/lib/clarify";
 import type { ClarifyOutput, ExperimentOutput, LeverageFull, LeverageTeaser } from "@/lib/clear/types";
 import { canViewFull } from "@/config/billing";
 import TeaserReport from "@/components/product/TeaserReport";
+import ClarifyCard from "@/components/product/ClarifyCard";
+import ClarifyReview from "@/components/product/ClarifyReview";
 import FullReport from "@/components/product/FullReport";
 import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
@@ -30,35 +33,36 @@ const ProjectDetail = () => {
   const [searchParams] = useSearchParams();
   const [project, setProject] = useState<Project | null>(null);
   const [projectInput, setProjectInput] = useState<ProjectInput | null>(null);
-  const [clarify, setClarify] = useState<ClarifyOutput | null>(null);
+  const [clarifyRun, setClarifyRun] = useState<ClarifyOutput | null>(null);
+  const [approval, setApproval] = useState<ClarifyOutput | null>(null);
   const [teaser, setTeaser] = useState<LeverageTeaser | null>(null);
   const [full, setFull] = useState<LeverageFull | null>(null);
   const [experimentOutput, setExperimentOutput] = useState<ExperimentOutput | null>(null);
   const [entitled, setEntitled] = useState(false);
   const [devUnlocked, setDevUnlocked] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [teaserAt, setTeaserAt] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
-    const [proj, input, runs] = await Promise.all([
+    const [proj, input, runs, approved] = await Promise.all([
       getProject(id),
       getProjectInput(id),
       listRuns(id),
+      getClarifyApproval(id),
     ]);
     setProject(proj);
     setProjectInput(input);
-    setClarify(latestOutput<ClarifyOutput>(runs, "clarify"));
+    setClarifyRun(latestOutput<ClarifyOutput>(runs, "clarify"));
+    setApproval(approved);
     setTeaser(latestOutput<LeverageTeaser>(runs, "leverage_teaser"));
     setFull(latestOutput<LeverageFull>(runs, "leverage_full"));
     setExperimentOutput(latestOutput<ExperimentOutput>(runs, "experiment"));
     const teaserRuns = runs.filter((r) => r.phase === "leverage_teaser");
     setTeaserAt(teaserRuns.length ? teaserRuns[teaserRuns.length - 1].created_at : null);
-    const [ent, unlock] = await Promise.all([
-      getEntitlement(proj.workspace_id),
-      getUnlock(proj.id),
-    ]);
+    const [ent, unlock] = await Promise.all([getEntitlement(proj.workspace_id), getUnlock(proj.id)]);
     setEntitled(canViewFull(ent, unlock));
   }, [id]);
 
@@ -76,40 +80,36 @@ const ProjectDetail = () => {
     }
   }, [searchParams, load]);
 
-  const onRun = async () => {
-    if (!id) return;
-    setBusy(true);
-    try {
-      await runTeaser(id);
-      await load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const run = useCallback(
+    async (fn: () => Promise<void>) => {
+      if (!id) return;
+      setBusy(true);
+      try {
+        await fn();
+        await load();
+      } catch (e) {
+        toast.error((e as Error).message);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [id, load],
+  );
 
-  const onGenerateFull = useCallback(async () => {
-    if (!id) return;
-    setBusy(true);
-    try {
-      await runFull(id);
-      await load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }, [id, load]);
+  const onRunClarify = () => run(() => runClarify(id!));
+  const onRegenerateLeverage = () => run(() => runLeverage(id!));
+  const onGenerateFull = useCallback(() => run(() => runFull(id!)), [run, id]);
+  const onApproveClarify = (edited: ClarifyOutput) =>
+    run(async () => {
+      await approveClarify(id!, edited);
+      await runLeverage(id!);
+      setEditing(false);
+    });
 
   // Once entitled (paid/subscribed) and the full report isn't built yet, build it.
   useEffect(() => {
     if (entitled && teaser && !full && !busy) onGenerateFull();
   }, [entitled, teaser, full, busy, onGenerateFull]);
-
-  const showFull = (entitled || devUnlocked) && full;
-  const canExperiment = Boolean((entitled || devUnlocked) && full);
-  const canResearch = entitled || devUnlocked;
 
   const onDevPreview = async () => {
     setDevUnlocked(true);
@@ -121,8 +121,16 @@ const ProjectDetail = () => {
   }
   if (!project) return null;
 
+  const clarify = approval ?? clarifyRun;
+  const hasClarify = Boolean(clarify);
+  const isApproved = Boolean(approval);
+  const hasTeaser = Boolean(teaser);
+  const showFull = (entitled || devUnlocked) && full;
+  const canExperiment = Boolean((entitled || devUnlocked) && full);
+  const canResearch = entitled || devUnlocked;
   const isRunning = project.status === "running" || busy;
-  const hasTeaser = Boolean(clarify && teaser);
+  const showReview = hasClarify && (!isApproved || editing);
+
   const ownerCtx = projectInput
     ? {
         challenge: projectInput.challenge,
@@ -143,42 +151,38 @@ const ProjectDetail = () => {
         </Link>
         <div className="flex items-start justify-between gap-4 mb-8">
           <h1 className="heading-lg">{project.name}</h1>
-          {hasTeaser && (
+          {showFull && (
             <div className="flex gap-2">
-              {showFull && (
-                <>
-                  <button onClick={() => window.print()} className="btn-secondary">
-                    <FileDown className="h-4 w-4 mr-1.5" /> PDF
-                  </button>
-                  <button
-                    onClick={() => exportReportMarkdown(project.name, clarify!, teaser!, full!)}
-                    className="btn-secondary"
-                  >
-                    Markdown
-                  </button>
-                </>
-              )}
+              <button onClick={() => window.print()} className="btn-secondary">
+                <FileDown className="h-4 w-4 mr-1.5" /> PDF
+              </button>
+              <button onClick={() => exportReportMarkdown(project.name, clarify!, teaser!, full!)} className="btn-secondary">
+                Markdown
+              </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Not yet run */}
-      {!hasTeaser && (
+      {/* Step 0 — not yet run: kick off Clarify */}
+      {!hasClarify && (
         <div className="space-y-6 no-print">
           <div className="glass-card p-10 text-center">
             {isRunning ? (
               <>
                 <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                <h2 className="heading-md mb-1">Running your analysis…</h2>
-                <p className="body-md">Clarify → Leverage. This takes a few seconds.</p>
+                <h2 className="heading-md mb-1">Running Clarify…</h2>
+                <p className="body-md">Defining your measurable target. This takes a few seconds.</p>
               </>
             ) : (
               <>
-                <h2 className="heading-md mb-2">Ready to analyze</h2>
-                <p className="body-md mb-6">Run Clarify + Leverage to generate your free teaser.</p>
-                <button onClick={onRun} disabled={busy} className="btn-primary">
-                  <Play className="h-4 w-4 mr-1.5" /> Run analysis
+                <h2 className="heading-md mb-2">Start with Clarify</h2>
+                <p className="body-md mb-6">
+                  Define a sharp, measurable target first. You'll review and approve the OKRs before
+                  Leverage runs.
+                </p>
+                <button onClick={onRunClarify} disabled={busy} className="btn-primary">
+                  <Play className="h-4 w-4 mr-1.5" /> Run Clarify
                 </button>
               </>
             )}
@@ -187,8 +191,46 @@ const ProjectDetail = () => {
         </div>
       )}
 
-      {/* Teaser + paywall/full, with a Collaborate tab for respondent input */}
-      {hasTeaser && (
+      {/* Step 1 — review / edit / approve Clarify */}
+      {showReview && clarify && (
+        <ClarifyReview
+          initial={clarify}
+          busy={isRunning}
+          onApprove={onApproveClarify}
+          onReRun={onRunClarify}
+          onCancel={isApproved ? () => setEditing(false) : undefined}
+        />
+      )}
+
+      {/* Step 2 — approved, awaiting Leverage */}
+      {isApproved && !editing && !hasTeaser && clarify && (
+        <div className="space-y-6">
+          <ClarifyCard clarify={clarify} />
+          <div className="glass-card p-8 text-center no-print">
+            {isRunning ? (
+              <>
+                <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
+                <p className="body-md">Generating Leverage…</p>
+              </>
+            ) : (
+              <>
+                <p className="body-md mb-5">Clarify is approved. Generate the Leverage map next.</p>
+                <div className="flex justify-center gap-2">
+                  <button onClick={onRegenerateLeverage} disabled={busy} className="btn-primary">
+                    <Play className="h-4 w-4 mr-1.5" /> Generate Leverage
+                  </button>
+                  <button onClick={() => setEditing(true)} disabled={busy} className="btn-secondary">
+                    <Pencil className="h-4 w-4 mr-1.5" /> Edit Clarify
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 3 — Leverage teaser + paywall/full, with tabs */}
+      {isApproved && !editing && hasTeaser && clarify && (
         <Tabs defaultValue="report">
           <TabsList className="mb-6 no-print">
             <TabsTrigger value="report">Report</TabsTrigger>
@@ -199,7 +241,17 @@ const ProjectDetail = () => {
 
           <TabsContent value="report">
             <div className="space-y-8">
-              <TeaserReport clarify={clarify!} teaser={teaser!} />
+              <ClarifyCard clarify={clarify} />
+              <div className="flex gap-2 no-print -mt-4">
+                <button onClick={() => setEditing(true)} disabled={busy} className="btn-secondary text-sm">
+                  <Pencil className="h-3.5 w-3.5 mr-1.5" /> Edit Clarify
+                </button>
+                <button onClick={onRegenerateLeverage} disabled={busy} className="btn-secondary text-sm">
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Re-generate Leverage
+                </button>
+              </div>
+
+              <TeaserReport teaser={teaser!} />
 
               {showFull ? (
                 <FullReport full={full!} />
@@ -210,7 +262,6 @@ const ProjectDetail = () => {
                 </div>
               ) : (
                 <div className="relative">
-                  {/* Blurred locked preview behind the paywall */}
                   <div className="locked-blur" aria-hidden>
                     <div className="glass-card p-8 h-64" />
                   </div>
@@ -237,12 +288,7 @@ const ProjectDetail = () => {
           </TabsContent>
 
           <TabsContent value="collaborate">
-            <CollaborateTab
-              projectId={project.id}
-              lastTeaserAt={teaserAt}
-              onRerun={onRun}
-              busy={isRunning}
-            />
+            <CollaborateTab projectId={project.id} lastTeaserAt={teaserAt} onRerun={onRegenerateLeverage} busy={isRunning} />
           </TabsContent>
 
           <TabsContent value="experiment">

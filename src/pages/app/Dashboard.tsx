@@ -9,6 +9,8 @@ import { toast } from "sonner";
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   draft: "Draft",
   running: "Running…",
+  clarify_ready: "Clarify — review",
+  clarify_approved: "Clarify approved",
   teaser_ready: "Teaser ready",
   paid: "Unlocked",
   full_ready: "Full report ready",
@@ -20,6 +22,8 @@ const STATUS_LABEL: Record<ProjectStatus, string> = {
 const STATUS_CLASS: Record<ProjectStatus, string> = {
   draft: "bg-secondary text-foreground/60",
   running: "bg-primary/10 text-primary",
+  clarify_ready: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",
+  clarify_approved: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",
   teaser_ready: "bg-[hsl(var(--phase-l))]/15 text-[hsl(var(--phase-l))]",
   paid: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",
   full_ready: "bg-[hsl(var(--phase-c))]/15 text-[hsl(var(--phase-c))]",

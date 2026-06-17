@@ -27,6 +27,15 @@ export interface ProjectInput {
   timeline: string | null;
 }
 
+/** Owner-approved (possibly edited) phase output — mirror 20260617160000_clarify_approval.sql. */
+export interface PhaseApproval {
+  project_id: string;
+  phase: string;
+  output: unknown;
+  approved_at: string | null;
+  updated_at: string | null;
+}
+
 export interface DocumentRow {
   id: string;
   project_id: string;
