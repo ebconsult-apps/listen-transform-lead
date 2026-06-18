@@ -142,3 +142,22 @@ Notes:
 - Live runs still count against `WORKSPACE_MONTHLY_COST_CAP_USD` ($25/workspace/mo).
 - When testing the **respondent** side, invite a *different* address than the
   project owner (the owner address is also the Brevo sender), e.g. another `+alias`.
+
+## 7. Integration tests (gating + RLS)
+
+`tests/integration/` exercises the security boundary that unit tests can't reach —
+the edge-function gates (401/403/402/409) and Postgres RLS tenant-isolation — against
+a real local stack. It needs Docker + the Supabase CLI.
+
+```bash
+supabase start            # boots Postgres + Auth + the served edge functions, applies migrations
+# map the printed credentials into the env the harness reads:
+export SUPABASE_URL=$(supabase status -o env | grep '^API_URL=' | cut -d'"' -f2)
+export SUPABASE_ANON_KEY=$(supabase status -o env | grep '^ANON_KEY=' | cut -d'"' -f2)
+export SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o env | grep '^SERVICE_ROLE_KEY=' | cut -d'"' -f2)
+npm run test:integration
+supabase stop
+```
+
+Without those env vars the suite **skips** (so `npm test` and Docker-less machines are
+unaffected). CI runs it automatically via `.github/workflows/integration.yml`.

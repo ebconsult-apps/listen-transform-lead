@@ -1,0 +1,52 @@
+name: Integration tests
+
+# Boots a local Supabase stack (Postgres + Auth + served edge functions) with the
+# migrations applied, then runs the gating + RLS integration suite against it.
+# Kept separate from the fast `CI` check so the required PR gate stays quick; this
+# job can be made required once it's proven stable.
+on:
+  pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # Boots Postgres + Auth + Kong + the edge runtime (which serves the functions)
+      # and applies every migration. Heavy services we don't need are excluded to
+      # speed up boot. AI_MODE is unset, so the edge functions use the stub engine.
+      - name: Start Supabase
+        run: supabase start -x studio,imgproxy,inbucket,realtime,vector,pgbouncer
+
+      # Map the local stack's credentials into the names the harness reads.
+      - name: Export stack env
+        run: |
+          supabase status -o env > stack.env
+          {
+            echo "SUPABASE_URL=$(grep -E '^API_URL=' stack.env | cut -d'\"' -f2)"
+            echo "SUPABASE_ANON_KEY=$(grep -E '^ANON_KEY=' stack.env | cut -d'\"' -f2)"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$(grep -E '^SERVICE_ROLE_KEY=' stack.env | cut -d'\"' -f2)"
+          } >> "$GITHUB_ENV"
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
