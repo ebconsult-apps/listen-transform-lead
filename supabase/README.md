@@ -95,6 +95,12 @@ are deployed by `supabase-deploy.yml`. The decision logic is unit-tested in
 in Stripe **test mode** below. Do all of this in **test mode** first, then repeat
 with live keys.
 
+> **Fast path:** `scripts/stripe-setup.mjs` does steps 1 + 4 (creates the prices +
+> the webhook endpoint) via the Stripe API and prints every env value to paste —
+> `STRIPE_SECRET_KEY=sk_test_… WEBHOOK_URL=…/functions/v1/stripe-webhook node
+> scripts/stripe-setup.mjs`. You still grab the API keys and set the env yourself
+> (steps 2–3, 5–6).
+
 1. **Products + Prices** (Stripe dashboard → Products): create recurring prices for
    **Solo / Team / Business** and a one-off price for the **single-report unlock**.
    Copy each Price ID (`price_…`).
