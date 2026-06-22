@@ -43,7 +43,14 @@ jobs:
           # holds ANTHROPIC_API_KEY and enforces the cost cap) instead of running
           # the in-browser stub. Requires the edge function deployed with AI_MODE=live.
           VITE_AI_MODE: live
-          VITE_BILLING_ENABLED: "false"
+          # Billing is gated by repo Actions Variables so it can be flipped without a
+          # code change. billing.ts treats any non-"false" value as enabled; the price
+          # IDs (public, ship in the bundle by design) drive the checkout calls.
+          VITE_BILLING_ENABLED: ${{ vars.VITE_BILLING_ENABLED }}
+          VITE_STRIPE_PRICE_SOLO: ${{ vars.VITE_STRIPE_PRICE_SOLO }}
+          VITE_STRIPE_PRICE_TEAM: ${{ vars.VITE_STRIPE_PRICE_TEAM }}
+          VITE_STRIPE_PRICE_BUSINESS: ${{ vars.VITE_STRIPE_PRICE_BUSINESS }}
+          VITE_STRIPE_PRICE_UNLOCK: ${{ vars.VITE_STRIPE_PRICE_UNLOCK }}
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
