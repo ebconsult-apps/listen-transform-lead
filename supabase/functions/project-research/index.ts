@@ -13,10 +13,21 @@ import { corsHeaders, json } from "../_shared/cors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
 import { NEVER_FABRICATE_BANNER } from "../_shared/clear/prompts.ts";
 import type { GapFlag, IntakeInput } from "../_shared/clear/types.ts";
+import {
+  capForTier,
+  exceedsCostCap,
+  isPaidTier,
+  loadTierCaps,
+} from "../_shared/billing/cost-cap.ts";
+import {
+  checkIntakeBudget,
+  estimateIntakeInputTokens,
+  projectedCostUsd,
+} from "../_shared/clear/intake-budget.ts";
+import { modelForPhase, PHASE_MAX_OUTPUT, priceFor } from "../_shared/clear/pricing.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const COST_CAP = Number(Deno.env.get("WORKSPACE_MONTHLY_COST_CAP_USD") ?? "25");
 const AI_MODE = Deno.env.get("AI_MODE") ?? "stub";
 // When set, only this workspace may promote into the shared library; others read it.
 const OPERATOR_WORKSPACE_ID = Deno.env.get("OPERATOR_WORKSPACE_ID") ?? "";
@@ -171,29 +182,12 @@ Deno.serve(async (req) => {
       admin.from("entitlements").select("tier").eq("workspace_id", project.workspace_id).maybeSingle(),
       admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
     ]);
-    const paidTier = ent && ["solo", "team", "business"].includes(ent.tier);
-    if (!paidTier && !unlock?.unlocked) {
+    const tier = ent?.tier ?? "free";
+    if (!isPaidTier(tier) && !unlock?.unlocked) {
       return json({ error: "Payment required" }, 402);
     }
 
-    // Cost cap (live only): sum this calendar month's spend for the workspace.
-    if (AI_MODE === "live") {
-      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const { data: spend } = await admin
-        .from("runs")
-        .select("cost_usd, projects!inner(workspace_id)")
-        .gte("created_at", monthStart)
-        .eq("projects.workspace_id", project.workspace_id);
-      const total = (spend ?? []).reduce(
-        (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
-        0,
-      );
-      if (total >= COST_CAP) {
-        return json({ error: "Monthly cost cap reached for this workspace." }, 402);
-      }
-    }
-
-    // Build intake (challenge + documents).
+    // Build intake (challenge + documents) — needed by the input/spend guards.
     const [{ data: input }, { data: docs }] = await Promise.all([
       admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
       admin.from("documents").select("*").eq("project_id", projectId),
@@ -212,6 +206,32 @@ Deno.serve(async (req) => {
       useCase: project.use_case ?? undefined,
       documents,
     };
+
+    // Spend + input guards (live only): bound a single run (input budget +
+    // projected cost) and the calendar month (per-tier cap). Web-search/fetch
+    // fees are folded into each run's cost_usd by the engine.
+    if (AI_MODE === "live") {
+      const budget = checkIntakeBudget(documents);
+      if (!budget.ok) return json({ error: budget.reason }, 413);
+
+      const cap = capForTier(tier, loadTierCaps((k) => Deno.env.get(k)));
+      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+      const { data: spend } = await admin
+        .from("runs")
+        .select("cost_usd, projects!inner(workspace_id)")
+        .gte("created_at", monthStart)
+        .eq("projects.workspace_id", project.workspace_id);
+      const monthSpendUsd = (spend ?? []).reduce(
+        (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
+        0,
+      );
+      const price = priceFor(modelForPhase("research", (k) => Deno.env.get(k)));
+      const inputTokens = estimateIntakeInputTokens(intake.challenge, documents);
+      const projectedUsd = projectedCostUsd(inputTokens, PHASE_MAX_OUTPUT.research, price);
+      if (exceedsCostCap({ monthSpendUsd, projectedUsd, cap })) {
+        return json({ error: "Monthly cost cap reached for this workspace." }, 402);
+      }
+    }
 
     // Retrieve curated/promoted knowledge as candidate evidence (v1: simple fetch).
     const { data: kb } = await admin

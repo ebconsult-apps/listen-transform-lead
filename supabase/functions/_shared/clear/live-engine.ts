@@ -20,18 +20,22 @@ import {
   renderKnowledge,
   RESEARCH_PROMPT,
 } from "./prompts.ts";
+import {
+  priceFor,
+  WEB_FETCH_REQUEST_FEE_USD,
+  WEB_SEARCH_REQUEST_FEE_USD,
+} from "./pricing.ts";
 
-// Rough per-million-token prices (USD) for cost logging. Update alongside model
-// choices; these are only used for the cost cap + reporting, not billing.
-const PRICE: Record<string, { in: number; out: number }> = {
-  "claude-haiku-4-5": { in: 1, out: 5 },
-  "claude-sonnet-4-6": { in: 3, out: 15 },
-  "claude-opus-4-8": { in: 5, out: 25 },
-};
-
-function priceFor(model: string) {
-  return PRICE[model] ?? { in: 3, out: 15 };
-}
+// Per-request fees for Anthropic's server-side web tools (USD). These are billed
+// separately from tokens, so the Research phase under-reports its true cost
+// without them. Defaults live in pricing.ts; override per-deploy via env.
+// Confirm current rates at platform.claude.com/docs/pricing.
+const WEB_SEARCH_FEE_USD = Number(
+  Deno.env.get("WEB_SEARCH_REQUEST_FEE_USD") ?? WEB_SEARCH_REQUEST_FEE_USD,
+);
+const WEB_FETCH_FEE_USD = Number(
+  Deno.env.get("WEB_FETCH_REQUEST_FEE_USD") ?? WEB_FETCH_REQUEST_FEE_USD,
+);
 
 // Opus 4.8 rejects an explicit `temperature` (it self-regulates via adaptive
 // thinking); Sonnet/Haiku accept one. Gate it so a flagship Opus run can't 400.
@@ -136,9 +140,9 @@ export class LiveClearEngine implements ClearEngine {
    * the model can gather and cite real evidence. The server runs its own tool
    * loop; when it pauses (stop_reason "pause_turn") we re-send the accumulated
    * turn until it finishes — no extra "continue" message, the API resumes from
-   * the trailing server_tool_use block. Token counts are summed across hops.
-   * Web search also has a per-search cost not reflected here; the monthly
-   * workspace cost cap is the backstop.
+   * the trailing server_tool_use block. Token counts are summed across hops, and
+   * each web_search / web_fetch request adds its per-request fee to costUsd so
+   * the monthly cost cap reflects true spend (not just tokens).
    */
   private async callWithTools<T>(
     model: string,
@@ -161,6 +165,8 @@ export class LiveClearEngine implements ClearEngine {
     };
     let inTok = 0;
     let outTok = 0;
+    let webSearches = 0;
+    let webFetches = 0;
     // deno-lint-ignore no-explicit-any
     let res: any;
     let guard = 0;
@@ -168,6 +174,14 @@ export class LiveClearEngine implements ClearEngine {
       res = await this.client.messages.create(req);
       inTok += res.usage?.input_tokens ?? 0;
       outTok += res.usage?.output_tokens ?? 0;
+      // Tally server-side tool calls across hops so their per-request fees are
+      // billed (web search/fetch cost is not in the token usage figures).
+      for (const b of res.content ?? []) {
+        if (b?.type === "server_tool_use") {
+          if (b.name === "web_search") webSearches++;
+          else if (b.name === "web_fetch") webFetches++;
+        }
+      }
       if (res.stop_reason === "pause_turn") {
         req.messages.push({ role: "assistant", content: res.content });
         guard++;
@@ -178,7 +192,9 @@ export class LiveClearEngine implements ClearEngine {
       .map((b: { text?: string }) => b.text ?? "")
       .join("");
     const p = priceFor(model);
-    const costUsd = (inTok * p.in + outTok * p.out) / 1_000_000;
+    const toolFeesUsd =
+      webSearches * WEB_SEARCH_FEE_USD + webFetches * WEB_FETCH_FEE_USD;
+    const costUsd = (inTok * p.in + outTok * p.out) / 1_000_000 + toolFeesUsd;
     return { output: extractJson<T>(text), tokens: inTok + outTok, costUsd };
   }
 }
