@@ -1,8 +1,13 @@
 // POST /stripe-webhook — Stripe-signed events. Syncs subscriptions → entitlements
-// and one-off payments → project_unlocks. Deploy with --no-verify-jwt (Stripe
+// and one-off payments → project_unlocks. Deploy with verify_jwt=false (Stripe
 // authenticates via signature, not a Supabase JWT).
+//
+// The decision logic lives in ../_shared/billing/entitlements.ts (pure + unit-
+// tested); this handler verifies the signature, normalizes the event, and applies
+// the returned mutation via the service-role client.
 import Stripe from "npm:stripe@^17";
 import { createClient } from "npm:@supabase/supabase-js@^2";
+import { planForEvent, type NormalizedEvent, type PriceMap } from "../_shared/billing/entitlements.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
 const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
@@ -11,9 +16,37 @@ const admin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-function tierFromMetadata(meta: Record<string, string> | null): string | null {
-  const t = meta?.tier;
-  return t && ["solo", "team", "business"].includes(t) ? t : null;
+// Server-side price ids let a Billing-Portal plan change map back to a tier.
+const prices: PriceMap = {
+  solo: Deno.env.get("STRIPE_PRICE_SOLO") ?? undefined,
+  team: Deno.env.get("STRIPE_PRICE_TEAM") ?? undefined,
+  business: Deno.env.get("STRIPE_PRICE_BUSINESS") ?? undefined,
+};
+
+function normalize(event: Stripe.Event): NormalizedEvent {
+  if (event.type === "checkout.session.completed") {
+    const s = event.data.object as Stripe.Checkout.Session;
+    return {
+      type: event.type,
+      mode: s.mode,
+      metadata: s.metadata ?? null,
+      customerId: (s.customer as string) ?? null,
+      subscriptionId: (s.subscription as string) ?? null,
+      paymentIntent: (s.payment_intent as string) ?? null,
+    };
+  }
+  if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
+    const sub = event.data.object as Stripe.Subscription;
+    return {
+      type: event.type,
+      customerId: (sub.customer as string) ?? null,
+      subscriptionId: sub.id,
+      subStatus: sub.status,
+      periodEnd: sub.current_period_end ?? null,
+      priceId: sub.items?.data?.[0]?.price?.id ?? null,
+    };
+  }
+  return { type: event.type };
 }
 
 Deno.serve(async (req) => {
@@ -27,64 +60,36 @@ Deno.serve(async (req) => {
   }
 
   try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const s = event.data.object as Stripe.Checkout.Session;
-        const meta = s.metadata ?? {};
-        const workspaceId = meta.workspace_id;
+    const plan = planForEvent(normalize(event), prices);
 
-        if (s.mode === "payment" && meta.project_id) {
-          // One-off per-report unlock (the per-deliverable lever).
-          await admin.from("project_unlocks").upsert(
-            {
-              project_id: meta.project_id,
-              unlocked: true,
-              stripe_payment_intent: s.payment_intent as string,
-              unlocked_at: new Date().toISOString(),
-            },
-            { onConflict: "project_id" },
-          );
-          // Reflect on the project for the dashboard badge.
-          await admin.from("projects").update({ status: "paid" }).eq("id", meta.project_id);
-        } else if (s.mode === "subscription" && workspaceId) {
-          await admin.from("entitlements").upsert(
-            {
-              workspace_id: workspaceId,
-              stripe_customer_id: s.customer as string,
-              stripe_subscription_id: s.subscription as string,
-              tier: tierFromMetadata(meta) ?? "solo",
-              status: "active",
-            },
-            { onConflict: "workspace_id" },
-          );
-        }
-        break;
-      }
-
-      case "customer.subscription.updated":
-      case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
-        const active = sub.status === "active" || sub.status === "trialing";
-        // Look up the workspace by customer id.
+    if (plan?.kind === "unlock") {
+      await admin.from("project_unlocks").upsert(
+        {
+          project_id: plan.projectId,
+          unlocked: true,
+          stripe_payment_intent: plan.paymentIntent,
+          unlocked_at: new Date().toISOString(),
+        },
+        { onConflict: "project_id" },
+      );
+      await admin.from("projects").update({ status: "paid" }).eq("id", plan.projectId);
+    } else if (plan?.kind === "entitlement") {
+      if (plan.workspaceId) {
+        await admin
+          .from("entitlements")
+          .upsert({ workspace_id: plan.workspaceId, ...plan.patch }, { onConflict: "workspace_id" });
+      } else if (plan.byCustomer) {
         const { data: ent } = await admin
           .from("entitlements")
           .select("workspace_id")
-          .eq("stripe_customer_id", sub.customer as string)
+          .eq("stripe_customer_id", plan.byCustomer)
           .maybeSingle();
         if (ent) {
-          await admin
-            .from("entitlements")
-            .update({
-              status: sub.status,
-              tier: active ? undefined : "free",
-              stripe_subscription_id: sub.id,
-              current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
-            })
-            .eq("workspace_id", ent.workspace_id);
+          await admin.from("entitlements").update(plan.patch).eq("workspace_id", ent.workspace_id);
         }
-        break;
       }
     }
+
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
     });

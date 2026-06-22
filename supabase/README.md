@@ -86,13 +86,51 @@ cross-phase `assumption_gaps` log (all project-member read+write under RLS), and
 extends the `runs.phase` / `projects.status` enums. `project-run` is edited in
 place, so no change to the deploy workflow is required.
 
-## 4. Stripe
+## 4. Stripe — go-live runbook
 
-Create Products/Prices for Solo/Team/Business (recurring) and a one-off
-"full-report unlock". Put the Price IDs in the client env
-(`VITE_STRIPE_PRICE_SOLO`, `_TEAM`, `_BUSINESS`, `_UNLOCK`) and point a Stripe
-webhook at the deployed `stripe-webhook` URL (events:
-`checkout.session.completed`, `customer.subscription.*`).
+The `stripe-checkout` (creates Checkout / Billing-Portal sessions) and
+`stripe-webhook` (syncs payments → `entitlements` / `project_unlocks`) functions
+are deployed by `supabase-deploy.yml`. The decision logic is unit-tested in
+`functions/_shared/billing/entitlements.test.ts`; the signed HTTP path is verified
+in Stripe **test mode** below. Do all of this in **test mode** first, then repeat
+with live keys.
+
+1. **Products + Prices** (Stripe dashboard → Products): create recurring prices for
+   **Solo / Team / Business** and a one-off price for the **single-report unlock**.
+   Copy each Price ID (`price_…`).
+
+2. **Keys + secret:** grab the **publishable** + **secret** keys (Developers → API
+   keys). You'll get the **webhook signing secret** in step 4.
+
+3. **Set env:**
+   - Edge secrets — `supabase secrets set STRIPE_SECRET_KEY=sk_test_… \
+     STRIPE_WEBHOOK_SECRET=whsec_… STRIPE_PRICE_SOLO=price_… STRIPE_PRICE_TEAM=price_… \
+     STRIPE_PRICE_BUSINESS=price_…` (the price ids let the webhook follow a
+     Billing-Portal plan change → tier).
+   - Client (GitHub Actions **Variables**, inlined at build): `VITE_STRIPE_PUBLISHABLE_KEY`,
+     `VITE_STRIPE_PRICE_SOLO` / `_TEAM` / `_BUSINESS` / `_UNLOCK`, and `VITE_BILLING_ENABLED=true`.
+
+4. **Webhook endpoint** (Developers → Webhooks → Add endpoint): point it at the
+   deployed `…/functions/v1/stripe-webhook` URL; subscribe to
+   `checkout.session.completed`, `customer.subscription.updated`,
+   `customer.subscription.deleted`. Copy the signing secret into
+   `STRIPE_WEBHOOK_SECRET` (step 3).
+
+5. **Test (test mode):** in the app, subscribe from **/account/billing** or click a
+   project's paywall **unlock**, pay with card `4242 4242 4242 4242` (any future
+   expiry / CVC). Confirm the webhook flips `entitlements.tier` (subscription) or
+   `project_unlocks.unlocked` (one-off) and the full report unlocks. Use the Billing
+   Portal to change plan and confirm the tier follows. Local end-to-end:
+   `stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook` +
+   `stripe trigger checkout.session.completed`.
+
+6. **Go live:** swap to live keys/prices, recreate the webhook on the live endpoint,
+   and re-run a real card once.
+
+> **Fees / tax:** Stripe is pay-per-transaction (≈1.5% + €0.25 EEA cards, **+0.5%**
+> on subscriptions; verify current rates). Selling SaaS across the EU has VAT/OSS
+> obligations — consider enabling **Stripe Tax**. The prices in `src/config/billing.ts`
+> ($49/$299/$999) are hypotheses — validate before charging real customers.
 
 ## 5. Going live (M5)
 
