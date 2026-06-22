@@ -12,10 +12,23 @@ import type {
   InterventionCandidate,
   ResourceEnvelope,
 } from "../_shared/clear/types.ts";
+import {
+  capForTier,
+  exceedsCostCap,
+  exceedsFreeRunQuota,
+  isPaidTier,
+  loadFreeRunQuota,
+  loadTierCaps,
+} from "../_shared/billing/cost-cap.ts";
+import {
+  checkIntakeBudget,
+  estimateIntakeInputTokens,
+  projectedCostUsd,
+} from "../_shared/clear/intake-budget.ts";
+import { modelForPhase, PHASE_MAX_OUTPUT, priceFor } from "../_shared/clear/pricing.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const COST_CAP = Number(Deno.env.get("WORKSPACE_MONTHLY_COST_CAP_USD") ?? "25");
 const AI_MODE = Deno.env.get("AI_MODE") ?? "stub";
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
@@ -113,6 +126,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!membership) return json({ error: "Forbidden" }, 403);
 
+    // Workspace tier — drives the per-tier cost cap below and the paid-feature
+    // gate further down (fetched once, reused).
+    const { data: ent } = await admin
+      .from("entitlements")
+      .select("tier")
+      .eq("workspace_id", project.workspace_id)
+      .maybeSingle();
+    const tier = ent?.tier ?? "free";
+
     // Build intake
     const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }] =
       await Promise.all([
@@ -171,19 +193,43 @@ Deno.serve(async (req) => {
       research,
     };
 
-    // Cost cap (live only): sum this calendar month's spend for the workspace.
+    // Spend + input guards (live only): bound a single run (input budget +
+    // projected cost) and the calendar month (per-tier cap + free-tier quota).
     if (AI_MODE === "live") {
+      const budget = checkIntakeBudget(documents);
+      if (!budget.ok) return json({ error: budget.reason }, 413);
+
+      const cap = capForTier(tier, loadTierCaps((k) => Deno.env.get(k)));
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
       const { data: spend } = await admin
         .from("runs")
         .select("cost_usd, projects!inner(workspace_id)")
         .gte("created_at", monthStart)
         .eq("projects.workspace_id", project.workspace_id);
-      const total = (spend ?? []).reduce(
+      const monthSpendUsd = (spend ?? []).reduce(
         (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
         0,
       );
-      if (total >= COST_CAP) {
+
+      // Free tier is also capped by a monthly generation quota.
+      if (
+        exceedsFreeRunQuota({
+          tier,
+          monthRunCount: spend?.length ?? 0,
+          quota: loadFreeRunQuota((k) => Deno.env.get(k)),
+        })
+      ) {
+        return json(
+          { error: "Free plan monthly limit reached — upgrade to run more reports." },
+          402,
+        );
+      }
+
+      // Pre-emptive cap: reject if THIS run's projected cost would breach the cap.
+      const price = priceFor(modelForPhase(phase, (k) => Deno.env.get(k)));
+      const inputTokens = estimateIntakeInputTokens(intake.challenge, documents);
+      const projectedUsd = projectedCostUsd(inputTokens, PHASE_MAX_OUTPUT[phase] ?? 6000, price);
+      if (exceedsCostCap({ monthSpendUsd, projectedUsd, cap })) {
         return json({ error: "Monthly cost cap reached for this workspace." }, 402);
       }
     }
@@ -292,13 +338,14 @@ Deno.serve(async (req) => {
       return json({ ok: true, status: "teaser_ready" });
     }
 
-    // phase === "full" | "experiment" — both require entitlement server-side
-    const [{ data: ent }, { data: unlock }] = await Promise.all([
-      admin.from("entitlements").select("tier").eq("workspace_id", project.workspace_id).maybeSingle(),
-      admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
-    ]);
-    const paidTier = ent && ["solo", "team", "business"].includes(ent.tier);
-    if (!paidTier && !unlock?.unlocked) {
+    // phase === "full" | "experiment" — both require entitlement server-side.
+    // Tier was fetched above; only the per-project unlock remains to check.
+    const { data: unlock } = await admin
+      .from("project_unlocks")
+      .select("unlocked")
+      .eq("project_id", projectId)
+      .maybeSingle();
+    if (!isPaidTier(tier) && !unlock?.unlocked) {
       return json({ error: "Payment required" }, 402);
     }
 
