@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  collectDictationResults,
+  type DictationResultLike,
+} from "./dictation-results";
 
 /**
  * Browser-native voice dictation via the Web Speech API (`SpeechRecognition`).
@@ -55,6 +59,9 @@ export function useDictation({ onResult, onError }: UseDictationOptions): UseDic
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const shouldListenRef = useRef(false);
+  // How many leading final results we've already emitted this session. Reset to
+  // 0 on every fresh `recognition.start()` (each start clears the results list).
+  const emittedFinalCountRef = useRef(0);
   const onResultRef = useRef(onResult);
   const onErrorRef = useRef(onError);
 
@@ -104,17 +111,24 @@ export function useDictation({ onResult, onError }: UseDictationOptions): UseDic
     rec.maxAlternatives = 1;
 
     rec.onresult = (event) => {
-      let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+      // Snapshot the live results list, then dedupe against what we've already
+      // emitted this session. Mobile engines re-deliver finalized results on
+      // later events and don't reliably advance `resultIndex`, so emitting per
+      // `resultIndex` would repeat finals ("I want I want I want").
+      const results: DictationResultLike[] = [];
+      for (let i = 0; i < event.results.length; i += 1) {
         const result = event.results[i];
-        const transcript = result[0]?.transcript ?? "";
-        if (result.isFinal) {
-          const finalText = transcript.trim();
-          if (finalText) onResultRef.current(finalText);
-        } else {
-          interim += transcript;
-        }
+        results.push({
+          isFinal: result.isFinal,
+          transcript: result[0]?.transcript ?? "",
+        });
       }
+      const { finals, interim, emittedFinalCount } = collectDictationResults(
+        results,
+        emittedFinalCountRef.current,
+      );
+      emittedFinalCountRef.current = emittedFinalCount;
+      for (const finalText of finals) onResultRef.current(finalText);
       setInterimTranscript(interim);
     };
 
@@ -129,8 +143,11 @@ export function useDictation({ onResult, onError }: UseDictationOptions): UseDic
 
     rec.onend = () => {
       // The engine stops on its own after pauses; restart to stay continuous.
+      // Each restart begins a fresh results list, so reset the dedupe counter —
+      // otherwise the new session's leading finals would be skipped and lost.
       if (shouldListenRef.current) {
         try {
+          emittedFinalCountRef.current = 0;
           rec.start();
           return;
         } catch {
@@ -143,6 +160,7 @@ export function useDictation({ onResult, onError }: UseDictationOptions): UseDic
 
     recognitionRef.current = rec;
     shouldListenRef.current = true;
+    emittedFinalCountRef.current = 0;
     try {
       rec.start();
       setListening(true);
