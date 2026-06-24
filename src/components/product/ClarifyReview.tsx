@@ -4,6 +4,28 @@ import type { ClarifyOutput, KeyResult, Level } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
 import GapFlagList from "./GapFlagList";
 
+/** Module-scope so element identity is stable across renders (keeps focus while typing). */
+const KrField = ({
+  label,
+  value,
+  area,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  area?: boolean;
+  onChange: (v: string) => void;
+}) => (
+  <div>
+    <label className="block text-xs font-medium text-foreground/50 mb-1">{label}</label>
+    {area ? (
+      <textarea rows={2} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
+    ) : (
+      <input className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
+    )}
+  </div>
+);
+
 /**
  * Editable Clarify (OKR) review — the C→L checkpoint. The owner reviews and edits
  * the generated objective / Key Results / why, then approves. The approved
@@ -70,32 +92,41 @@ const ClarifyReview = ({
         {keyResults.map((kr, i) => (
           <div key={i} className="border border-border rounded-xl p-4">
             <div className="flex items-start gap-2">
-              <input
-                className="input font-medium"
-                value={kr.kr}
-                placeholder="Key result (outcome, measurable)"
-                onChange={(e) => setKr(i, { kr: e.target.value })}
-              />
-              <button onClick={() => removeKr(i)} className="text-foreground/40 hover:text-rose-600 p-1.5" title="Remove KR">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-foreground/50 mb-1">Key result</label>
+                <textarea
+                  className="input font-medium"
+                  rows={2}
+                  value={kr.kr}
+                  placeholder="Key result (outcome, measurable)"
+                  onChange={(e) => setKr(i, { kr: e.target.value })}
+                />
+              </div>
+              <button onClick={() => removeKr(i)} className="text-foreground/40 hover:text-rose-600 p-1.5 mt-6" title="Remove KR">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
-            <div className="grid sm:grid-cols-3 gap-2 mt-2">
-              <input className="input text-sm" value={kr.metric ?? ""} placeholder="Metric" onChange={(e) => setKr(i, { metric: e.target.value })} />
-              <input className="input text-sm" value={kr.baseline ?? ""} placeholder="Baseline" onChange={(e) => setKr(i, { baseline: e.target.value })} />
-              <input className="input text-sm" value={kr.target ?? ""} placeholder="Target" onChange={(e) => setKr(i, { target: e.target.value })} />
-              <input className="input text-sm" value={kr.timeline ?? ""} placeholder="Timeline" onChange={(e) => setKr(i, { timeline: e.target.value })} />
-              <input className="input text-sm" value={kr.owner ?? ""} placeholder="Owner (role)" onChange={(e) => setKr(i, { owner: e.target.value })} />
-              <select
-                className="input text-sm"
-                value={kr.confidence ?? ""}
-                onChange={(e) => setKr(i, { confidence: (e.target.value || undefined) as Level | undefined })}
-              >
-                <option value="">Confidence…</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
+            <div className="grid sm:grid-cols-2 gap-3 mt-3">
+              <KrField label="Metric" area value={kr.metric ?? ""} onChange={(v) => setKr(i, { metric: v })} />
+              <KrField label="Baseline" area value={kr.baseline ?? ""} onChange={(v) => setKr(i, { baseline: v })} />
+              <KrField label="Target" area value={kr.target ?? ""} onChange={(v) => setKr(i, { target: v })} />
+              <KrField label="Timeline" value={kr.timeline ?? ""} onChange={(v) => setKr(i, { timeline: v })} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3 mt-3">
+              <KrField label="Owner (role)" value={kr.owner ?? ""} onChange={(v) => setKr(i, { owner: v })} />
+              <div>
+                <label className="block text-xs font-medium text-foreground/50 mb-1">Confidence</label>
+                <select
+                  className="input text-sm"
+                  value={kr.confidence ?? ""}
+                  onChange={(e) => setKr(i, { confidence: (e.target.value || undefined) as Level | undefined })}
+                >
+                  <option value="">Confidence…</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
             </div>
           </div>
         ))}
