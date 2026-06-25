@@ -66,12 +66,15 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
         </p>
 
         {!isSupabaseConfigured ? (
-          <p className="text-sm text-center text-amber-600 bg-amber-50 rounded-lg p-3">
+          <p
+            role="status"
+            className="text-sm text-center text-amber-600 bg-amber-50 rounded-lg p-3"
+          >
             Supabase isn't configured yet. Set VITE_SUPABASE_URL and
             VITE_SUPABASE_ANON_KEY to enable sign-in.
           </p>
         ) : sent ? (
-          <div className="text-center">
+          <div className="text-center" role="status">
             <p className="font-medium mb-1">Check your email</p>
             <p className="text-sm text-foreground/60">
               We sent a magic link to <strong>{email}</strong>.
@@ -80,7 +83,11 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
         ) : (
           <>
             <form onSubmit={sendMagicLink} className="space-y-4">
+              <label htmlFor="login-email" className="sr-only">
+                Email address
+              </label>
               <input
+                id="login-email"
                 type="email"
                 required
                 placeholder="you@company.com"
