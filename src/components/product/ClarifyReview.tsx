@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Check, RefreshCw, Plus, Trash2, X } from "lucide-react";
 import type { ClarifyOutput, KeyResult, Level } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
@@ -15,16 +15,19 @@ const KrField = ({
   value: string;
   area?: boolean;
   onChange: (v: string) => void;
-}) => (
-  <div>
-    <label className="block text-xs font-medium text-foreground/50 mb-1">{label}</label>
-    {area ? (
-      <textarea rows={2} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
-    ) : (
-      <input className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
-    )}
-  </div>
-);
+}) => {
+  const id = useId();
+  return (
+    <div>
+      <label htmlFor={id} className="block text-xs font-medium text-foreground/50 mb-1">{label}</label>
+      {area ? (
+        <textarea id={id} rows={2} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
+      ) : (
+        <input id={id} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
+      )}
+    </div>
+  );
+};
 
 /**
  * Editable Clarify (OKR) review — the C→L checkpoint. The owner reviews and edits
@@ -76,14 +79,14 @@ const ClarifyReview = ({
         Nothing is diagnosed on top of a target you haven't signed off.
       </p>
 
-      <label className="block text-sm font-medium mb-1">Why it matters</label>
-      <textarea className="input mb-5" rows={4} value={whyItMatters} onChange={(e) => setWhy(e.target.value)} />
+      <label htmlFor="clarify-why" className="block text-sm font-medium mb-1">Why it matters</label>
+      <textarea id="clarify-why" className="input mb-5" rows={4} value={whyItMatters} onChange={(e) => setWhy(e.target.value)} />
 
-      <label className="block text-sm font-medium mb-1">Objective</label>
-      <textarea className="input mb-5" rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} />
+      <label htmlFor="clarify-objective" className="block text-sm font-medium mb-1">Objective</label>
+      <textarea id="clarify-objective" aria-required="true" className="input mb-5" rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} />
 
       <div className="flex items-center justify-between mb-2">
-        <label className="block text-sm font-medium">Key Results</label>
+        <span className="block text-sm font-medium">Key Results</span>
         <button onClick={addKr} className="text-xs text-primary inline-flex items-center gap-1 hover:underline">
           <Plus className="h-3.5 w-3.5" /> Add KR
         </button>
@@ -93,8 +96,9 @@ const ClarifyReview = ({
           <div key={i} className="border border-border rounded-xl p-4">
             <div className="flex items-start gap-2">
               <div className="flex-1">
-                <label className="block text-xs font-medium text-foreground/50 mb-1">Key result</label>
+                <label htmlFor={`kr-${i}-text`} className="block text-xs font-medium text-foreground/50 mb-1">Key result</label>
                 <textarea
+                  id={`kr-${i}-text`}
                   className="input font-medium"
                   rows={2}
                   value={kr.kr}
@@ -115,8 +119,9 @@ const ClarifyReview = ({
             <div className="grid sm:grid-cols-2 gap-3 mt-3">
               <KrField label="Owner (role)" value={kr.owner ?? ""} onChange={(v) => setKr(i, { owner: v })} />
               <div>
-                <label className="block text-xs font-medium text-foreground/50 mb-1">Confidence</label>
+                <label htmlFor={`kr-${i}-confidence`} className="block text-xs font-medium text-foreground/50 mb-1">Confidence</label>
                 <select
+                  id={`kr-${i}-confidence`}
                   className="input text-sm"
                   value={kr.confidence ?? ""}
                   onChange={(e) => setKr(i, { confidence: (e.target.value || undefined) as Level | undefined })}
