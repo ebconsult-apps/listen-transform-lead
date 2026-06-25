@@ -30,6 +30,7 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
  * before the latest approval — without clobbering anything.
  */
 export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
+  if (DEV_CAP && devActive()) return mockStore.getClarifyApprovedAt(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("phase_approvals")

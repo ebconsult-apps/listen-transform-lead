@@ -168,6 +168,16 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
   return clone(db.approvals[projectId] ?? null);
 }
 
+export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
+  await delay(READ_MS);
+  if (!db.approvals[projectId]) return null;
+  // Mock approvals carry no timestamp; approximate "approved at" with the latest
+  // Clarify run's time so downstream staleness checks stay consistent (and never
+  // read newer than the runs they gate).
+  const runs = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
+  return runs.length ? runs[runs.length - 1].created_at : null;
+}
+
 export async function approveClarify(projectId: string, output: ClarifyOutput): Promise<void> {
   db.approvals[projectId] = clone(output);
   await setProjectStatus(projectId, "clarify_approved");
