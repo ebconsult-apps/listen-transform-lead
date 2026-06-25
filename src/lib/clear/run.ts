@@ -253,8 +253,16 @@ export async function runFull(projectId: string): Promise<void> {
     if (!clarify) throw new Error("Approve Clarify before generating the full report.");
     const intake = await buildIntake(projectId);
     const engine = getClearEngine();
-    const teaser = await engine.runLeverageTeaser(intake, clarify);
-    const full = await engine.runLeverageFull(intake, clarify, teaser.output);
+    // Reuse the teaser from the Leverage phase rather than regenerating it (see
+    // project-run/index.ts: two sequential model calls time out the live run).
+    const runs = await listRuns(projectId);
+    let teaser = latestOutput<LeverageTeaser>(runs, "leverage_teaser");
+    if (!teaser) {
+      const t = await engine.runLeverageTeaser(intake, clarify);
+      await persistRun(projectId, "leverage_teaser", t.output, t.tokens, t.costUsd);
+      teaser = t.output;
+    }
+    const full = await engine.runLeverageFull(intake, clarify, teaser);
     await persistRun(projectId, "leverage_full", full.output, full.tokens, full.costUsd);
     await seedGapLog(projectId, "leverage_full", full.output.gapLog);
     await setProjectStatus(projectId, "full_ready");

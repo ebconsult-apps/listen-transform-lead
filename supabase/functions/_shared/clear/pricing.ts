@@ -26,8 +26,10 @@ export const WEB_FETCH_REQUEST_FEE_USD = 0.01;
 
 /**
  * Worst-case output tokens per run action (mirrors the max_tokens passed in
- * live-engine). Used by the pre-run cost estimate. The "full" action runs the
- * teaser (2500) AND the full report (6000) back-to-back, so it budgets both.
+ * live-engine). Used by the pre-run cost estimate. The "full" action normally
+ * reuses the persisted teaser and only generates the full report (6000), but we
+ * keep the combined teaser (2500) + full (6000) budget so the cost-cap estimate
+ * stays conservative for the fallback that regenerates the teaser.
  */
 export const PHASE_MAX_OUTPUT: Record<string, number> = {
   clarify: 3000,

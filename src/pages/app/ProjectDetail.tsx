@@ -4,12 +4,10 @@ import { ArrowLeft, Play, FileDown, RefreshCw, Pencil, AlertTriangle } from "luc
 import SEO from "@/components/SEO";
 import {
   getProject,
-  getProjectInput,
   getEntitlement,
   getUnlock,
   listRuns,
   type Project,
-  type ProjectInput,
 } from "@/lib/db";
 import { runClarify, runLeverage, runFull, latestOutput } from "@/lib/clear/run";
 import { approveClarify, getClarifyApproval, getClarifyApprovedAt } from "@/lib/clarify";
@@ -25,9 +23,10 @@ import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
 import ResearchTab from "@/components/product/ResearchTab";
 import ResearchValue from "@/components/product/ResearchValue";
-import PrepPromptCard from "@/components/product/PrepPromptCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
+import ReportBuildingLoader from "@/components/product/ReportBuildingLoader";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
+import { FULL_REPORT_STEPS } from "@/lib/clear/report-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
@@ -70,7 +69,6 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const [project, setProject] = useState<Project | null>(null);
-  const [projectInput, setProjectInput] = useState<ProjectInput | null>(null);
   const [clarifyRun, setClarifyRun] = useState<ClarifyOutput | null>(null);
   const [approval, setApproval] = useState<ClarifyOutput | null>(null);
   const [teaser, setTeaser] = useState<LeverageTeaser | null>(null);
@@ -91,15 +89,13 @@ const ProjectDetail = () => {
 
   const load = useCallback(async () => {
     if (!id) return;
-    const [proj, input, runs, approved, approvedAt] = await Promise.all([
+    const [proj, runs, approved, approvedAt] = await Promise.all([
       getProject(id),
-      getProjectInput(id),
       listRuns(id),
       getClarifyApproval(id),
       getClarifyApprovedAt(id),
     ]);
     setProject(proj);
-    setProjectInput(input);
     setClarifyRun(latestOutput<ClarifyOutput>(runs, "clarify"));
     setApproval(approved);
     setClarifyApprovedAt(approvedAt);
@@ -222,16 +218,6 @@ const ProjectDetail = () => {
   const fullStale = isStale(teaserAt, fullAt);
   const experimentStale = isStale(fullAt, experimentAt);
 
-  const ownerCtx = projectInput
-    ? {
-        challenge: projectInput.challenge,
-        stakeholders: projectInput.stakeholders ?? [],
-        timeline: projectInput.timeline ?? undefined,
-        targetGroup: project.target_group ?? undefined,
-        useCase: project.use_case ?? undefined,
-      }
-    : null;
-
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <SEO title={`${project.name}: CLEAR`} description="CLEAR project report." path={`/app/projects/${project.id}`} noindex />
@@ -253,15 +239,13 @@ const ProjectDetail = () => {
             </div>
           )}
         </div>
-        {hasClarify && (
-          <WorkflowStepper
-            steps={STEPS}
-            effectiveStep={effectiveStep}
-            done={stepDone}
-            unlocked={stepUnlocked}
-            onStepClick={onStepClick}
-          />
-        )}
+        <WorkflowStepper
+          steps={STEPS}
+          effectiveStep={effectiveStep}
+          done={stepDone}
+          unlocked={stepUnlocked}
+          onStepClick={onStepClick}
+        />
       </div>
 
       {/* Step 0 — not yet run: kick off Clarify */}
@@ -277,9 +261,13 @@ const ProjectDetail = () => {
             ) : (
               <>
                 <h2 className="heading-md mb-2">Start with Clarify</h2>
-                <p className="body-md mb-6">
-                  Define a sharp, measurable target first. You'll review and approve the OKRs before
-                  Leverage runs.
+                <p className="body-md mb-4">
+                  Clarify turns your challenge into a sharp, measurable target — one objective with a
+                  few key results. You review and approve it before anything is built on top.
+                </p>
+                <p className="body-md mb-6 text-foreground/60">
+                  Next: Leverage maps the barriers in your way, the full report turns them into a
+                  plan, and Experiment proposes interventions you can test.
                 </p>
                 <button onClick={onRunClarify} disabled={busy} className="btn-primary">
                   <Play className="h-4 w-4 mr-1.5" /> Run Clarify
@@ -287,7 +275,6 @@ const ProjectDetail = () => {
               </>
             )}
           </div>
-          {!isRunning && ownerCtx && <PrepPromptCard variant="owner" ctx={ownerCtx} />}
         </div>
       )}
 
@@ -400,10 +387,11 @@ const ProjectDetail = () => {
                   (showFull ? (
                     <FullReport full={full!} />
                   ) : isRunning && entitled ? (
-                    <div className="glass-card p-10 text-center">
-                      <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                      <p className="body-md">Generating your full report…</p>
-                    </div>
+                    <ReportBuildingLoader
+                      title="Building your full report"
+                      steps={FULL_REPORT_STEPS}
+                      estimate="This usually takes 30–60 seconds — you can keep this tab open while we work."
+                    />
                   ) : (
                     <div className="relative">
                       <div className="locked-blur" aria-hidden>
