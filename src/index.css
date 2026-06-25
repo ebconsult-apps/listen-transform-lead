@@ -45,11 +45,14 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* CLEAR phase accents (light-theme mapping of the deck's c1–c5) */
-    --phase-c: 220 80% 55%;   /* Clarify  */
-    --phase-l: 172 66% 45%;   /* Leverage */
-    --phase-e: 145 63% 45%;   /* Experiment */
-    --phase-a: 43 89% 55%;    /* Analyse  */
-    --phase-r: 351 95% 71%;   /* Refine   */
+    /* Desaturated + darkened so the per-phase chips/badges stay legible with
+       white text (WCAG AA) and read as muted semantic accents, not a rainbow.
+       One locked --primary blue still owns all CTAs/links/borders. */
+    --phase-c: 220 68% 46%;   /* Clarify */
+    --phase-l: 172 60% 31%;   /* Leverage */
+    --phase-e: 145 52% 33%;   /* Experiment */
+    --phase-a: 38 78% 35%;    /* Analyse */
+    --phase-r: 351 60% 50%;   /* Refine */
   }
 }
 

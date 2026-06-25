@@ -117,8 +117,8 @@ const Hero = () => {
         ref={bgPatternRef}
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(var(--primary, 0, 0, 255), 0.15) 0%, transparent 40%), 
-                            radial-gradient(circle at 80% 70%, rgba(var(--primary, 0, 0, 255), 0.1) 0%, transparent 40%)`,
+          backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary) / 0.5) 0%, transparent 45%),
+                            radial-gradient(circle at 80% 70%, hsl(var(--primary) / 0.35) 0%, transparent 45%)`,
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
