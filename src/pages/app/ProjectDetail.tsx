@@ -25,6 +25,7 @@ import ExperimentTab from "@/components/product/ExperimentTab";
 import ResearchTab from "@/components/product/ResearchTab";
 import ResearchValue from "@/components/product/ResearchValue";
 import PrepPromptCard from "@/components/product/PrepPromptCard";
+import ClarifyRunningCard from "@/components/product/ClarifyRunningCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -266,15 +267,11 @@ const ProjectDetail = () => {
       {/* Step 0 — not yet run: kick off Clarify */}
       {!hasClarify && (
         <div className="space-y-6 no-print">
-          <div className="glass-card p-10 text-center">
-            {isRunning ? (
-              <>
-                <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                <h2 className="heading-md mb-1">Running Clarify…</h2>
-                <p className="body-md">Defining your measurable target. This takes a few seconds.</p>
-              </>
-            ) : (
-              <>
+          {isRunning ? (
+            <ClarifyRunningCard />
+          ) : (
+            <>
+              <div className="glass-card p-10 text-center">
                 <h2 className="heading-md mb-2">Start with Clarify</h2>
                 <p className="body-md mb-6">
                   Define a sharp, measurable target first. You'll review and approve the OKRs before
@@ -283,10 +280,10 @@ const ProjectDetail = () => {
                 <button onClick={onRunClarify} disabled={busy} className="btn-primary">
                   <Play className="h-4 w-4 mr-1.5" /> Run Clarify
                 </button>
-              </>
-            )}
-          </div>
-          {!isRunning && ownerCtx && <PrepPromptCard variant="owner" ctx={ownerCtx} />}
+              </div>
+              {ownerCtx && <PrepPromptCard variant="owner" ctx={ownerCtx} />}
+            </>
+          )}
         </div>
       )}
 
