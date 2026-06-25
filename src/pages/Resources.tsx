@@ -267,8 +267,8 @@ const Resources = () => {
               organizational challenges.
             </p>
 
-            <div className="flex justify-center">
-              <Link to="/services" className="btn-primary mr-4">
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/services" className="btn-primary">
                 Explore Our Services
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
