@@ -295,9 +295,9 @@ const BookCall = () => {
                       </div>
                     )}
 
-                    <span className={isSubmitting ? "opacity-0" : ""}>
+                    <span className={`inline-flex items-center justify-center whitespace-nowrap ${isSubmitting ? "opacity-0" : ""}`}>
                       Request an invite
-                      <Send className="ml-2 h-4 w-4" />
+                      <Send className="ml-2 h-4 w-4 flex-shrink-0" />
                     </span>
                   </button>
                 </div>
