@@ -82,6 +82,37 @@ the function checks the signature instead.
    `SEND_EMAIL_HOOK_SECRET`. Custom SMTP is **not** required — Brevo's API is
    called from inside the hook.
 
+### Deliverability gotchas (learned the hard way)
+
+Two non-obvious traps will make magic-link emails silently fail or land in spam.
+Both are Brevo/DNS config, not code — but the symptoms point at the function.
+
+- **Keep Brevo "Authorised IPs" turned OFF.** Supabase edge functions egress from
+  rotating IPs (incl. IPv6), so a Brevo API IP allowlist
+  (https://app.brevo.com/security/authorised_ips) causes *intermittent*
+  `401 unauthorized` ("unrecognised IP address") from Brevo → the hook returns 500
+  → Supabase reports "Hook errored out" and the `/login` toast shows an opaque
+  `{}`. Tell-tale sign: `invite-respondents` works while `auth-email` randomly
+  fails, even though they share `BREVO_API_KEY`. The IP allowlist is for fixed-IP
+  servers; it's incompatible with edge functions. (The real reason is only in the
+  **function logs**, e.g. `auth-email: send failed: Brevo send failed (401): …` —
+  Supabase Auth swallows the hook's response body, so check
+  Functions → auth-email → **Logs**, not just Invocations.)
+
+- **Authenticate the sending domain or mail goes to spam.** A `200` from the hook
+  only means Brevo *accepted* the send; without DNS authentication on
+  `eb-consulting.se` it lands in spam. In Brevo → **Domains → authenticate**, then
+  add the records it shows to DNS (Loopia, in our case):
+  - DKIM: `brevo1._domainkey` / `brevo2._domainkey` CNAMEs →
+    `b1`/`b2.eb-consulting-se.dkim.brevo.com`
+  - DMARC: `_dmarc` TXT → `v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com`
+  - Brevo verification: `@` TXT → `brevo-code:…`
+  - SPF: the existing root SPF hard-fails (`-all`) and omits Brevo — **edit** it
+    (don't add a second SPF) to include `include:spf.brevo.com`.
+
+  The two DKIM CNAMEs are what actually move mail from spam to inbox (they let
+  Brevo sign as `eb-consulting.se` so DMARC aligns).
+
 ## 3b. Respondent collaboration
 
 Two functions enable email-invited respondents to contribute to a project:
