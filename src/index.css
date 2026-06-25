@@ -190,5 +190,23 @@ html {
   transition: opacity 400ms;
 }
 
-/* Import Inter var font */
+/* Import Inter var font (body) */
 @import url('https://rsms.me/inter/inter.css');
+
+/* Satoshi (headings / display) — self-hosted variable woff2, see public/fonts/satoshi/.
+   Replaces the previous Apple-only "SF Pro Display" stack that silently fell back to Inter,
+   so headings now render in Satoshi on every device. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}

@@ -1,0 +1,13 @@
+Font Family: Satoshi
+Designed by: Deni Anggara
+© 2023 Indian Type Foundry (ITF)
+Source: https://www.fontshare.com/fonts/satoshi
+
+Satoshi is distributed by Fontshare under the ITF Free Font License,
+which permits free use (personal and commercial) and embedding /
+self-hosting as web font files. Full license terms:
+https://www.fontshare.com/licenses/itf-ffl
+
+Vendored here as the variable woff2 files (weight axis 300–900, upright +
+italic) for self-hosting, to avoid a third-party font-CDN runtime
+dependency (performance + GDPR).
