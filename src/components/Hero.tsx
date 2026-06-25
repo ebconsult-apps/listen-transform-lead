@@ -1,9 +1,8 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { trackCTAClick, trackEvent } from '@/utils/analytics';
-import { BOOKING_URL } from "@/config/site";
 
 // ---------------------------------------------------------------------------
 // A/B Test: Hero headline variants
@@ -160,10 +159,10 @@ const Hero = () => {
             Take the Free Assessment
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
-          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary" onClick={() => trackCTAClick("book_discovery_call")}>
+          <Link to="/book-call" className="btn-secondary" onClick={() => trackCTAClick("book_discovery_call")}>
             Book a Discovery Call
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </a>
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
         </div>
       </div>
 

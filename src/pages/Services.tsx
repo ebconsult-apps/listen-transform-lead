@@ -1,9 +1,8 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Search, Layers, UserCircle, Mic, ExternalLink } from "lucide-react";
+import { ArrowRight, Search, Layers, UserCircle, Mic } from "lucide-react";
 import SEO from "@/components/SEO";
-import { BOOKING_URL } from "@/config/site";
 
 const Services = () => {
   useEffect(() => {
@@ -66,10 +65,10 @@ const Services = () => {
                 Best for: organizations that know something needs to change but aren't sure where to start.
               </p>
               <div className="flex items-center gap-4 mt-auto">
-                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                <Link to="/book-call" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
                   Book a Discovery Call
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
                 <Link to="/services/change-management" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
                   Learn more <ArrowRight className="ml-1 h-3 w-3" />
                 </Link>
@@ -93,10 +92,10 @@ const Services = () => {
                 Best for: leadership teams, executive cohorts, and individual senior leaders.
               </p>
               <div className="flex items-center gap-4 mt-auto">
-                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                <Link to="/book-call" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
                   Book a Discovery Call
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
                 <Link to="/services/leadership-development" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
                   Learn more <ArrowRight className="ml-1 h-3 w-3" />
                 </Link>
@@ -120,10 +119,10 @@ const Services = () => {
                 Best for: executives and leaders who want ongoing support, not a one-off engagement.
               </p>
               <div className="flex items-center gap-4 mt-auto">
-                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                <Link to="/book-call" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
                   Book a Discovery Call
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
                 <Link to="/services/executive-coaching" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
                   Learn more <ArrowRight className="ml-1 h-3 w-3" />
                 </Link>
@@ -146,10 +145,10 @@ const Services = () => {
                 Best for: conferences, leadership offsites, and team development events.
               </p>
               <div className="flex items-center gap-4 mt-auto">
-                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
+                <Link to="/book-call" className="text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center">
                   Inquire About Availability
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
                 <Link to="/services/speaking" className="text-foreground/50 hover:text-foreground/70 text-sm transition-colors inline-flex items-center">
                   Learn more <ArrowRight className="ml-1 h-3 w-3" />
                 </Link>

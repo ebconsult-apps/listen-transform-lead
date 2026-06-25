@@ -8,9 +8,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { ArrowRight, Check, Send } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useFormSubmit } from "@/hooks/use-form-submit";
-import { BOOKING_URL, CONVERSION_LABELS } from "@/config/site";
+import { CONVERSION_LABELS } from "@/config/site";
 import { z } from "zod";
 import type { AssessmentData } from "./AssessmentQuiz";
 
@@ -363,15 +364,10 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
         <p className="text-foreground/70 mb-6">
           Book a free discovery call to explore how the CLEAR framework can address your organization's specific challenges.
         </p>
-        <a
-          href={BOOKING_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary"
-        >
+        <Link to="/book-call" className="btn-primary">
           Book a Free Discovery Call
           <ArrowRight className="ml-2 h-4 w-4" />
-        </a>
+        </Link>
       </div>
     </div>
   );

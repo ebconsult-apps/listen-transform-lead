@@ -1,6 +1,5 @@
 
 import LandingPage from "@/components/LandingPage";
-import { BOOKING_URL } from "@/config/site";
 
 const MergerIntegration = () => {
   return (
@@ -20,7 +19,7 @@ const MergerIntegration = () => {
         role: "Housing Organisation",
       }}
       ctaText="Book a Free 30-Minute Discovery Call"
-      ctaLink={BOOKING_URL}
+      ctaLink="/book-call"
       showWhitepaperForm={false}
       seoTitle="Post-Merger Integration Consultant | Psychology-Based M&A Culture Integration"
       seoDescription="Mergers fail when leaders forget the people. Licensed psychologist Erik Bohjort helps organizations navigate post-merger culture integration using clinical behavioral science."

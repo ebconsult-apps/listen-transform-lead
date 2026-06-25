@@ -238,15 +238,25 @@ const NichePage = ({
               CLEAR framework can be tailored to your specific context and goals.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href={ctaPrimary.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary text-lg px-8 py-3"
-              >
-                {ctaPrimary.text}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              {ctaPrimary.href.startsWith("http") ? (
+                <a
+                  href={ctaPrimary.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary text-lg px-8 py-3"
+                >
+                  {ctaPrimary.text}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+              ) : (
+                <Link
+                  to={ctaPrimary.href}
+                  className="btn-primary text-lg px-8 py-3"
+                >
+                  {ctaPrimary.text}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
               <Link
                 to={ctaSecondary.href}
                 className="btn-secondary text-lg px-8 py-3"

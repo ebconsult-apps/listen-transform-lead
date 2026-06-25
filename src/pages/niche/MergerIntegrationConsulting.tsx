@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const MergerIntegrationConsulting = () => (
   <NichePage
@@ -55,7 +54,7 @@ const MergerIntegrationConsulting = () => (
           "In merger environments, overt resistance is rare\u2014people know that visible opposition is career-limiting. Instead, resistance goes underground: passive non-compliance, strategic information withholding, and quiet sabotage. CLEAR's foundation in psychological listening techniques creates safe channels for surfacing these concerns, allowing integration planners to address real obstacles rather than pretending they don't exist.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

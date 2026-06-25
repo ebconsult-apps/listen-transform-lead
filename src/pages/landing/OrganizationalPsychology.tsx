@@ -1,6 +1,5 @@
 
 import LandingPage from "@/components/LandingPage";
-import { BOOKING_URL } from "@/config/site";
 
 const OrganizationalPsychology = () => {
   return (
@@ -20,7 +19,7 @@ const OrganizationalPsychology = () => {
         role: "International Healthcare Provider",
       }}
       ctaText="Book a Free 30-Minute Discovery Call"
-      ctaLink={BOOKING_URL}
+      ctaLink="/book-call"
       showWhitepaperForm={false}
       seoTitle="Organizational Psychology Consultant | Behavioral Design | Psychometric Assessments"
       seoDescription="Licensed psychologist Erik Bohjort applies clinical-grade behavioral science to organizational challenges. Psychometric assessments, behavioral design, and evidence-based change."

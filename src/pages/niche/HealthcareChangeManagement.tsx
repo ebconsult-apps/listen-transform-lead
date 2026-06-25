@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const HealthcareChangeManagement = () => (
   <NichePage
@@ -50,7 +49,7 @@ const HealthcareChangeManagement = () => (
           "CLEAR's Experimentation phase is designed for high-stakes environments. In healthcare, this means testing changes in controlled conditions\u2014a single ward, a specific patient pathway, a limited time period\u2014with rigorous monitoring of both intended and unintended effects. Clinical staff participate in designing safety parameters for each pilot, and the Analysis phase uses methods familiar to anyone with clinical research training.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

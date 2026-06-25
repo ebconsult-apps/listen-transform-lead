@@ -1,6 +1,5 @@
 
 import LandingPage from "@/components/LandingPage";
-import { BOOKING_URL } from "@/config/site";
 
 const OrganizationalChange = () => {
   return (
@@ -14,7 +13,7 @@ const OrganizationalChange = () => {
       ]}
       solutionText="The CLEAR Change Framework combines behavioral psychology with systems thinking to drive change that actually sticks. Built on five proven steps \u2014 Clarity, Landscape, Experimentation, Adaptation, and Results \u2014 CLEAR helps you understand the real dynamics at play and engage the people who matter most."
       ctaText="Book a Free Discovery Call"
-      ctaLink={BOOKING_URL}
+      ctaLink="/book-call"
       showWhitepaperForm={false}
       seoTitle="Organizational Change That Works | CLEAR Framework"
       seoDescription="Stop the cycle of failed change initiatives. The CLEAR framework combines behavioral psychology and systems thinking for lasting organizational transformation."

@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const ChangeManagementEurope = () => (
   <NichePage
@@ -50,7 +49,7 @@ const ChangeManagementEurope = () => (
           "CLEAR doesn't prescribe a single transformation playbook. Its Experimentation phase explicitly tests interventions in specific local contexts before scaling. What works in the Stockholm office gets validated before rolling out to Milan. This reduces the risk of change failure and respects the legitimate differences between markets while maintaining strategic coherence.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",
