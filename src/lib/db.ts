@@ -2,6 +2,16 @@ import { requireSupabase } from "./supabase";
 import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
+export interface Profile {
+  id: string;
+  full_name: string | null;
+  created_at: string;
+  /** Set when the user accepts the Privacy Policy in the setup flow (null = not yet). */
+  privacy_accepted_at: string | null;
+  /** The PRIVACY_POLICY_VERSION the user accepted. */
+  privacy_policy_version: string | null;
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -235,6 +245,30 @@ export async function getMyWorkspace(): Promise<Workspace> {
     .single();
   if (error) throw error;
   return data as Workspace;
+}
+
+/** The signed-in user's profile row. RLS returns only their own, so no filter is needed. */
+export async function getMyProfile(): Promise<Profile | null> {
+  const sb = requireSupabase();
+  const { data, error } = await sb.from("profiles").select("*").maybeSingle();
+  if (error) throw error;
+  return (data as Profile) ?? null;
+}
+
+/** Record the current user's acceptance of the given Privacy Policy version. */
+export async function recordPrivacyAcceptance(version: string): Promise<void> {
+  const sb = requireSupabase();
+  const { data: auth } = await sb.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error("Not signed in.");
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      privacy_accepted_at: new Date().toISOString(),
+      privacy_policy_version: version,
+    })
+    .eq("id", userId);
+  if (error) throw error;
 }
 
 export async function listProjects(): Promise<Project[]> {
