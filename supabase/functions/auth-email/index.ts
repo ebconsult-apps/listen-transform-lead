@@ -14,6 +14,13 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 // the "whsec_<base64>" part, so drop the Supabase-specific "v1," version prefix.
 const HOOK_SECRET = (Deno.env.get("SEND_EMAIL_HOOK_SECRET") ?? "").replace("v1,", "");
 
+// Supabase Auth hooks expect failures as { error: { http_code, message } } and
+// surface `message` to the client (the /login toast) — a plain string error
+// renders as an opaque "{}" there, so always use this shape.
+function hookError(http_code: number, message: string): Response {
+  return json({ error: { http_code, message } }, http_code);
+}
+
 interface EmailData {
   token: string;
   token_hash: string;
@@ -69,8 +76,8 @@ function magicLinkEmail(d: EmailData) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-  if (!HOOK_SECRET) return json({ error: "SEND_EMAIL_HOOK_SECRET is not set" }, 500);
+  if (req.method !== "POST") return hookError(405, "Method not allowed");
+  if (!HOOK_SECRET) return hookError(500, "SEND_EMAIL_HOOK_SECRET is not set");
 
   const payload = await req.text();
   const headers = Object.fromEntries(req.headers);
@@ -86,7 +93,7 @@ Deno.serve(async (req) => {
     email_data = verified.email_data;
   } catch (_e) {
     // Bad / missing signature: someone other than Supabase Auth called us.
-    return json({ error: "Invalid signature" }, 401);
+    return hookError(401, "Invalid signature");
   }
 
   try {
@@ -97,7 +104,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     // Surface the failure so Supabase reports the email as undeliverable.
-    return json({ error: { http_code: 500, message: (e as Error).message } }, 500);
+    return hookError(500, (e as Error).message);
   }
 
   return json({}, 200);
