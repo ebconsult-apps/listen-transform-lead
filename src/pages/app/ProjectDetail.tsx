@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Play, FileDown, RefreshCw, Pencil, AlertTriangle } from "lucide-react";
 import SEO from "@/components/SEO";
@@ -65,6 +65,34 @@ const StaleBanner = ({
   </div>
 );
 
+// Clarify-stage secondary tabs: the primary review/Leverage content alongside a
+// Collaborate pane, mirroring the post-teaser Report/Research/Collaborate view so
+// owners can invite respondents before the leverage map exists. Module-scope (not
+// nested in ProjectDetail) so it isn't remounted on every parent render.
+const ClarifyStageTabs = ({
+  children,
+  collab,
+}: {
+  children: ReactNode;
+  collab: {
+    projectId: string;
+    lastRunAt: string | null;
+    onRerun: () => void | Promise<void>;
+    busy: boolean;
+  };
+}) => (
+  <Tabs defaultValue="clarify">
+    <TabsList className="mb-6 no-print">
+      <TabsTrigger value="clarify">Clarify</TabsTrigger>
+      <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
+    </TabsList>
+    <TabsContent value="clarify">{children}</TabsContent>
+    <TabsContent value="collaborate">
+      <CollaborateTab stage="clarify" {...collab} />
+    </TabsContent>
+  </Tabs>
+);
+
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -83,6 +111,7 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   // Per-phase "last produced at" timestamps, for non-destructive staleness checks.
+  const [clarifyAt, setClarifyAt] = useState<string | null>(null);
   const [clarifyApprovedAt, setClarifyApprovedAt] = useState<string | null>(null);
   const [teaserAt, setTeaserAt] = useState<string | null>(null);
   const [fullAt, setFullAt] = useState<string | null>(null);
@@ -109,6 +138,7 @@ const ProjectDetail = () => {
       const m = runs.filter((r) => r.phase === phase);
       return m.length ? m[m.length - 1].created_at : null;
     };
+    setClarifyAt(lastAt("clarify"));
     setTeaserAt(lastAt("leverage_teaser"));
     setFullAt(lastAt("leverage_full"));
     setExperimentAt(lastAt("experiment"));
@@ -290,42 +320,51 @@ const ProjectDetail = () => {
         </div>
       )}
 
-      {/* Step 1 — review / edit / approve Clarify (also the re-open-Clarify surface) */}
+      {/* Step 1 — review / edit / approve Clarify (also the re-open-Clarify surface).
+          Collaborate is available here too, so input can sharpen the OKRs first. */}
       {showReview && clarify && (
-        <ClarifyReview
-          initial={clarify}
-          busy={isRunning}
-          onApprove={onApproveClarify}
-          onReRun={onRunClarify}
-          onCancel={isApproved ? () => setActiveStep(null) : undefined}
-        />
+        <ClarifyStageTabs
+          collab={{ projectId: project.id, lastRunAt: clarifyAt, onRerun: onRunClarify, busy: isRunning }}
+        >
+          <ClarifyReview
+            initial={clarify}
+            busy={isRunning}
+            onApprove={onApproveClarify}
+            onReRun={onRunClarify}
+            onCancel={isApproved ? () => setActiveStep(null) : undefined}
+          />
+        </ClarifyStageTabs>
       )}
 
-      {/* Step 2 — approved, awaiting Leverage */}
+      {/* Step 2 — approved, awaiting Leverage (Collaborate still reachable here) */}
       {isApproved && !hasTeaser && effectiveStep === "leverage" && clarify && (
-        <div className="space-y-6">
-          <ClarifyCard clarify={clarify} />
-          <div className="glass-card p-8 text-center no-print">
-            {isRunning ? (
-              <>
-                <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                <p className="body-md">Generating Leverage…</p>
-              </>
-            ) : (
-              <>
-                <p className="body-md mb-5">Clarify is approved. Generate the Leverage map next.</p>
-                <div className="flex justify-center gap-2">
-                  <button onClick={onRegenerateLeverage} disabled={busy} className="btn-primary">
-                    <Play className="h-4 w-4 mr-1.5" /> Generate Leverage
-                  </button>
-                  <button onClick={() => setActiveStep("clarify")} disabled={busy} className="btn-secondary">
-                    <Pencil className="h-4 w-4 mr-1.5" /> Edit Clarify
-                  </button>
-                </div>
-              </>
-            )}
+        <ClarifyStageTabs
+          collab={{ projectId: project.id, lastRunAt: clarifyAt, onRerun: onRunClarify, busy: isRunning }}
+        >
+          <div className="space-y-6">
+            <ClarifyCard clarify={clarify} />
+            <div className="glass-card p-8 text-center no-print">
+              {isRunning ? (
+                <>
+                  <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
+                  <p className="body-md">Generating Leverage…</p>
+                </>
+              ) : (
+                <>
+                  <p className="body-md mb-5">Clarify is approved. Generate the Leverage map next.</p>
+                  <div className="flex justify-center gap-2">
+                    <button onClick={onRegenerateLeverage} disabled={busy} className="btn-primary">
+                      <Play className="h-4 w-4 mr-1.5" /> Generate Leverage
+                    </button>
+                    <button onClick={() => setActiveStep("clarify")} disabled={busy} className="btn-secondary">
+                      <Pencil className="h-4 w-4 mr-1.5" /> Edit Clarify
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </ClarifyStageTabs>
       )}
 
       {/* Steps 2–4 — teaser / full report / experiment, navigated via the stepper */}
@@ -430,7 +469,7 @@ const ProjectDetail = () => {
             </TabsContent>
 
             <TabsContent value="collaborate">
-              <CollaborateTab projectId={project.id} lastTeaserAt={teaserAt} onRerun={onRegenerateLeverage} busy={isRunning} />
+              <CollaborateTab projectId={project.id} stage="leverage" lastRunAt={teaserAt} onRerun={onRegenerateLeverage} busy={isRunning} />
             </TabsContent>
           </Tabs>
         ))}

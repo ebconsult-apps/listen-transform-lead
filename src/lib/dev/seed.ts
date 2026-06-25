@@ -218,6 +218,66 @@ function buildSeeded(): MockDb {
     db.assumptionGaps[id] = gapRows(id, "clarify", CLARIFY.gapLog, 6);
   }
 
+  // 3b — Clarify-stage collaboration: invitations + a submitted contribution before
+  // any leverage map exists. Exercises the Clarify-step Collaborate pane (Clarify-stage
+  // copy, no map-reaction section, "re-run Clarify to incorporate" CTA).
+  {
+    const id = "proj-collab-clarify";
+    add(
+      project(id, "Volunteer retention", "clarify_ready", "volunteers", "retention", 6),
+      input(
+        id,
+        "First-year volunteers drift away after a few shifts and stop signing up for new ones.",
+        [{ name: "Priya Shah", role: "Volunteer Coordinator" }],
+        "Before the autumn intake",
+      ),
+    );
+    db.runs[id] = [run(id, "clarify", CLARIFY, 6)];
+    // No approval → stays on the ClarifyReview surface (the un-approved state).
+    db.assumptionGaps[id] = gapRows(id, "clarify", CLARIFY.gapLog, 6);
+
+    const invSubmitted: ProjectInvitation = {
+      id: uid("inv"),
+      project_id: id,
+      email: "lead.volunteer@cause.example",
+      status: "submitted",
+      invited_by: MOCK_USER_ID,
+      note: "Your view on why people drop off would really help.",
+      created_at: daysAgoIso(5),
+      expires_at: daysAgoIso(-25),
+      last_sent_at: daysAgoIso(5),
+    };
+    const invPending: ProjectInvitation = {
+      ...invSubmitted,
+      id: uid("inv"),
+      email: "shift.manager@cause.example",
+      status: "pending",
+      note: null,
+    };
+    db.invitations[id] = [invSubmitted, invPending];
+
+    db.contributions[id] = [
+      {
+        id: uid("contrib"),
+        project_id: id,
+        invitation_id: invSubmitted.id,
+        respondent_name: "Lead Volunteer",
+        answers: {
+          perspective: "People join for the cause but the first few shifts feel disorganised and anonymous.",
+          barriers: "No one follows up after a first shift, and the rota tool is confusing to use.",
+          ideas: "A buddy for the first month and a simple text reminder before each shift.",
+        },
+        status: "submitted",
+        submitted_at: daysAgoIso(1),
+        created_at: daysAgoIso(5),
+        updated_at: daysAgoIso(1),
+      },
+    ];
+
+    // No teaser yet → no leverage-map reactions (the reaction summary stays hidden).
+    db.reactions[id] = [];
+  }
+
   // 4 — Teaser (free, paywalled): clarify+approval+teaser, no unlock → blurred Paywall.
   {
     const id = "proj-teaser";

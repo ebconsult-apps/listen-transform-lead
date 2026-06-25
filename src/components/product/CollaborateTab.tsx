@@ -29,15 +29,22 @@ const STATUS_LABEL: Record<string, string> = {
  * Owner view: invite respondents, track invitations, and read submitted
  * contributions + a per-point reaction summary. Surfaces a "re-run to incorporate"
  * CTA when input has been submitted since the last analysis run.
+ *
+ * `stage` adapts the framing: at "clarify" the copy is about sharpening the target
+ * (no leverage map exists yet, so the reaction summary self-hides); at "leverage"
+ * it's about validating the map. `lastRunAt` is the stage-appropriate baseline for
+ * the "new since the last run" CTA (the clarify run vs. the teaser run).
  */
 const CollaborateTab = ({
   projectId,
-  lastTeaserAt,
+  stage = "leverage",
+  lastRunAt,
   onRerun,
   busy,
 }: {
   projectId: string;
-  lastTeaserAt: string | null;
+  stage?: "clarify" | "leverage";
+  lastRunAt: string | null;
   onRerun: () => void | Promise<void>;
   busy: boolean;
 }) => {
@@ -74,9 +81,47 @@ const CollaborateTab = ({
 
   const newSinceRun = useMemo(
     () =>
-      submitted.filter((c) => c.submitted_at && (!lastTeaserAt || c.submitted_at > lastTeaserAt)).length,
-    [submitted, lastTeaserAt],
+      submitted.filter((c) => c.submitted_at && (!lastRunAt || c.submitted_at > lastRunAt)).length,
+    [submitted, lastRunAt],
   );
+
+  // Stage-aware framing. Leverage copy is kept verbatim; Clarify drops the
+  // map-reaction promise (no map yet) and frames around sharpening the target.
+  const introCopy =
+    stage === "clarify"
+      ? "A sharp target starts with the people closest to the challenge. Invite them to weigh in before you lock the OKRs — they confirm what matters, surface constraints you can't see from the inside, and their input folds straight into the next Clarify run."
+      : "Your leverage map is only as sharp as the input behind it. Inviting the people closest to the challenge validates what's right, surfaces barriers the analysis missed, and folds their real-world perspective into the next run.";
+
+  const benefits =
+    stage === "clarify"
+      ? [
+          {
+            title: "Contributions",
+            body: "They add the barriers, constraints, and real-world context you can't see from the inside.",
+          },
+          {
+            title: "Documents",
+            body: "They can attach notes, data, or reports that ground the target in reality.",
+          },
+          {
+            title: "A sharper target",
+            body: "Re-run Clarify and their input is woven in: the challenge gets sharper, hidden constraints surface, and the OKRs reflect the people they're for.",
+          },
+        ]
+      : [
+          {
+            title: "Reactions",
+            body: "Each respondent marks every leverage point resonates, not sure, or missing something, so you see which points hold up and which are off.",
+          },
+          {
+            title: "Contributions",
+            body: "They add the barriers, constraints, and ideas you can't see from the inside.",
+          },
+          {
+            title: "A sharper report",
+            body: "Re-run the analysis and their input is woven in: confirmed points gain confidence, missing barriers get added, weak assumptions get challenged.",
+          },
+        ];
 
   const reactionsByRank = useMemo(() => {
     const map = new Map<number, Record<string, number>>();
@@ -143,28 +188,11 @@ const CollaborateTab = ({
       {/* Invite */}
       <section className="glass-card p-6 sm:p-8">
         <h3 className="heading-md mb-1">Invite respondents</h3>
-        <p className="body-md mb-4">
-          Your leverage map is only as sharp as the input behind it. Inviting the people closest
-          to the challenge validates what's right, surfaces barriers the analysis missed, and folds
-          their real-world perspective into the next run.
-        </p>
+        <p className="body-md mb-4">{introCopy}</p>
         <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-5">
           <p className="text-sm font-medium mb-3">What you get back</p>
           <ul className="space-y-3">
-            {[
-              {
-                title: "Reactions",
-                body: "Each respondent marks every leverage point resonates, not sure, or missing something, so you see which points hold up and which are off.",
-              },
-              {
-                title: "Contributions",
-                body: "They add the barriers, constraints, and ideas you can't see from the inside.",
-              },
-              {
-                title: "A sharper report",
-                body: "Re-run the analysis and their input is woven in: confirmed points gain confidence, missing barriers get added, weak assumptions get challenged.",
-              },
-            ].map((step, i) => (
+            {benefits.map((step, i) => (
               <li key={i} className="flex items-start gap-3 text-sm">
                 <span className="h-6 w-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center flex-shrink-0">
                   {i + 1}
