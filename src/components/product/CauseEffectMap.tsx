@@ -101,7 +101,7 @@ const CauseEffectMap = ({
           <ul className="space-y-1.5 text-sm text-foreground/80">
             {actors.map((a, i) => (
               <li key={i}>
-                <span className="font-medium">{a.actor}</span> — {a.behavior}
+                <span className="font-medium">{a.actor}</span>: {a.behavior}
               </li>
             ))}
           </ul>

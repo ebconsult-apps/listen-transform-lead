@@ -24,39 +24,39 @@ const COPY = {
     owner: {
       title: "Prepare your inputs with AI",
       blurb:
-        "Sharper inputs → sharper analysis. Paste this prompt into your own AI assistant (Claude, ChatGPT, Copilot) along with your documents — it returns three briefs you can upload below.",
+        "Sharper inputs → sharper analysis. Paste this prompt into your own AI assistant (Claude, ChatGPT, Copilot) along with your documents. It returns three briefs you can upload below.",
     },
     respondent: {
       title: "Short on time? Prepare your input with AI",
       blurb:
-        "Paste this prompt into your own AI assistant along with any notes or documents — it helps you turn what you know into a clear contribution to paste below.",
+        "Paste this prompt into your own AI assistant along with any notes or documents. It helps you turn what you know into a clear contribution to paste below.",
     },
     show: "Show prompt",
     hide: "Hide prompt",
     copy: "Copy prompt",
     copied: "Copied",
-    copiedToast: "Prompt copied — paste it into your AI assistant.",
+    copiedToast: "Prompt copied. Paste it into your AI assistant.",
     copyError: "Couldn't copy to the clipboard.",
-    footer: "Nothing is sent to CLEAR — the prompt just guides your own AI tool.",
+    footer: "Nothing is sent to CLEAR. The prompt just guides your own AI tool.",
   },
   sv: {
     owner: {
       title: "Förbered ditt underlag med AI",
       blurb:
-        "Skarpare underlag → skarpare analys. Klistra in prompten i din egen AI-assistent (Claude, ChatGPT, Copilot) tillsammans med dina dokument — den ger tre underlag som du kan ladda upp nedan.",
+        "Skarpare underlag → skarpare analys. Klistra in prompten i din egen AI-assistent (Claude, ChatGPT, Copilot) tillsammans med dina dokument. Den ger tre underlag som du kan ladda upp nedan.",
     },
     respondent: {
       title: "Ont om tid? Förbered ditt bidrag med AI",
       blurb:
-        "Klistra in prompten i din egen AI-assistent tillsammans med anteckningar eller dokument — den hjälper dig att forma det du vet till ett tydligt bidrag att klistra in nedan.",
+        "Klistra in prompten i din egen AI-assistent tillsammans med anteckningar eller dokument. Den hjälper dig att forma det du vet till ett tydligt bidrag att klistra in nedan.",
     },
     show: "Visa prompt",
     hide: "Dölj prompt",
     copy: "Kopiera prompt",
     copied: "Kopierad",
-    copiedToast: "Prompt kopierad — klistra in den i din AI-assistent.",
+    copiedToast: "Prompt kopierad. Klistra in den i din AI-assistent.",
     copyError: "Kunde inte kopiera till urklipp.",
-    footer: "Inget skickas till CLEAR — prompten vägleder bara ditt eget AI-verktyg.",
+    footer: "Inget skickas till CLEAR. Prompten vägleder bara ditt eget AI-verktyg.",
   },
 } as const;
 

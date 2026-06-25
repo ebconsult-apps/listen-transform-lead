@@ -39,7 +39,7 @@ const Services = () => {
           <p className="body-lg max-w-3xl">
             Every engagement is built on the <Link to="/methodology" className="text-primary hover:text-primary/80 font-medium">CLEAR Change Framework</Link> and
             led by founder Erik Bohjort. Depending on scope, our team of senior consultants
-            can scale to match your organization's needs — from a focused diagnostic to a
+            can scale to match your organization's needs, from a focused diagnostic to a
             multi-country transformation program.
           </p>
         </div>
@@ -86,7 +86,7 @@ const Services = () => {
               </div>
               <p className="text-foreground/70 mb-4 flex-grow">
                 Psychology-backed programs that change how leaders think and act. Psychometric
-                assessment, structured coaching, and applied practice — not another workshop
+                assessment, structured coaching, and applied practice, not another workshop
                 they'll forget by Monday.
               </p>
               <p className="text-sm text-foreground/50 mb-6">
@@ -113,7 +113,7 @@ const Services = () => {
               </div>
               <p className="text-foreground/70 mb-4 flex-grow">
                 Strategic guidance for leaders navigating complex change. Regular sessions
-                combining psychological insight with systems thinking — a sounding board
+                combining psychological insight with systems thinking, a sounding board
                 with substance.
               </p>
               <p className="text-sm text-foreground/50 mb-6">

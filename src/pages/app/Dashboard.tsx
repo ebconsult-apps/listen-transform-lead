@@ -9,7 +9,7 @@ import { toast } from "sonner";
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   draft: "Draft",
   running: "Running…",
-  clarify_ready: "Clarify — review",
+  clarify_ready: "Clarify: review",
   clarify_approved: "Clarify approved",
   teaser_ready: "Teaser ready",
   paid: "Unlocked",
@@ -45,7 +45,7 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title="Dashboard — CLEAR" description="Your CLEAR projects." path="/app" noindex />
+      <SEO title="Dashboard: CLEAR" description="Your CLEAR projects." path="/app" noindex />
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="heading-lg">Your projects</h1>

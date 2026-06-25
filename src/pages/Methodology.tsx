@@ -47,7 +47,7 @@ const steps = [
     title: "Experimentation through Prototyping",
     phase: "Change",
     icon: <FlaskConical className="h-6 w-6 text-primary" />,
-    description: "Test interventions on a small scale before committing. Low-cost experiments at identified leverage points generate real data about what works — and what doesn't — before you go all-in.",
+    description: "Test interventions on a small scale before committing. Low-cost experiments at identified leverage points generate real data about what works, and what doesn't, before you go all-in.",
     activities: [
       "Design low-risk pilot projects",
       "Rapid prototyping at leverage points",
@@ -59,7 +59,7 @@ const steps = [
     title: "Analysis and Reflection",
     phase: "Refreeze",
     icon: <LineChart className="h-6 w-6 text-primary" />,
-    description: "Rigorously evaluate what happened against your key results. What worked? What didn't? What surprised you? Surprises are the most valuable — they reveal gaps in your understanding.",
+    description: "Rigorously evaluate what happened against your key results. What worked? What didn't? What surprised you? Surprises are the most valuable: they reveal gaps in your understanding.",
     activities: [
       "Structured review against key results",
       "Reflective discussions on surprises and failures",
@@ -71,7 +71,7 @@ const steps = [
     title: "Refinement and Scaling",
     phase: "Refreeze",
     icon: <RefreshCw className="h-6 w-6 text-primary" />,
-    description: "Feed learnings back into your objectives, systems understanding, and process. Scale what works. Begin the next cycle with renewed clarity. CLEAR is iterative — each pass gets sharper.",
+    description: "Feed learnings back into your objectives, systems understanding, and process. Scale what works. Begin the next cycle with renewed clarity. CLEAR is iterative: each pass gets sharper.",
     activities: [
       "Refine vision and objectives based on evidence",
       "Scale successful interventions organization-wide",
@@ -83,11 +83,11 @@ const steps = [
 const comparisons = [
   {
     name: "Kotter's 8-Step Model",
-    diff: "Linear and sequential. CLEAR is iterative — each cycle deepens understanding. CLEAR adds systems mapping and experimentation where Kotter prescribes fixed stages.",
+    diff: "Linear and sequential. CLEAR is iterative: each cycle deepens understanding. CLEAR adds systems mapping and experimentation where Kotter prescribes fixed stages.",
   },
   {
     name: "ADKAR",
-    diff: "Focuses on individual behavior change. CLEAR operates at the organizational system level — addressing structural dynamics, not just individual readiness.",
+    diff: "Focuses on individual behavior change. CLEAR operates at the organizational system level, addressing structural dynamics, not just individual readiness.",
   },
   {
     name: "Lean Change Management",
@@ -169,7 +169,7 @@ const Methodology = () => {
                     </div>
                     <div>
                       <div className="tag mb-1">{step.phase} Phase</div>
-                      <h3 className="text-xl font-bold">{step.letter} — {step.title}</h3>
+                      <h3 className="text-xl font-bold">{step.letter}: {step.title}</h3>
                     </div>
                   </div>
                   <p className="body-md mb-4">{step.description}</p>
@@ -195,7 +195,7 @@ const Methodology = () => {
               <h2 className="heading-md">CLEAR Is Cyclical</h2>
             </div>
             <p className="body-md">
-              After Refinement, you don't stop — you revisit Clarity with new understanding.
+              After Refinement, you don't stop, you revisit Clarity with new understanding.
               Each cycle sharpens your objectives, deepens your systems map, and improves your
               experiments. This is what separates CLEAR from linear models: the organization
               gets better at changing, not just at the specific change.

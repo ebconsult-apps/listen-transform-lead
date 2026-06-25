@@ -53,7 +53,7 @@ const Billing = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title="Billing — CLEAR" description="Manage your CLEAR subscription." path="/account/billing" noindex />
+      <SEO title="Billing: CLEAR" description="Manage your CLEAR subscription." path="/account/billing" noindex />
       <Link to="/app" className="inline-flex items-center text-sm text-foreground/50 hover:text-foreground mb-4">
         <ArrowLeft className="h-4 w-4 mr-1" /> Back to projects
       </Link>

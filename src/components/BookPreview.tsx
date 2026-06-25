@@ -77,7 +77,7 @@ const BookPreview = () => {
               </p>
 
               <p className="body-md max-w-2xl mx-auto mb-8">
-                Why do most change initiatives fail — even when the strategy is sound?
+                Why do most change initiatives fail, even when the strategy is sound?
                 The CLEAR Change Framework offers a proven, psychology-backed method
                 for leading organizational transformation that actually lasts. Drawing
                 on systems thinking, real-world case studies, and decades of consulting

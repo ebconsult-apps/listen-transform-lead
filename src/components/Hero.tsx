@@ -30,7 +30,7 @@ const HERO_VARIANTS: HeroVariant[] = [
     id: "behavioral_design",
     tag: "The CLEAR Change Framework",
     headline: <>Organizational Change Through <span className="text-primary">Behavioral Design</span></>,
-    subtitle: "70% of change initiatives fail because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real — not just on paper.",
+    subtitle: "70% of change initiatives fail because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real, not just on paper.",
   },
   {
     id: "psychological_design",
@@ -42,7 +42,7 @@ const HERO_VARIANTS: HeroVariant[] = [
     id: "behavior_change",
     tag: "The CLEAR Change Framework",
     headline: <><span className="text-primary">Behavior Change</span> by Design, Not by Decree</>,
-    subtitle: "Mandates don't change organizations — behavioral design does. Erik Bohjort is a licensed psychologist who applies nudging and behavioral economics to help organizations transform the way people actually work.",
+    subtitle: "Mandates don't change organizations. Behavioral design does. Erik Bohjort is a licensed psychologist who applies nudging and behavioral economics to help organizations transform the way people actually work.",
   },
   {
     id: "behavioral_economics",

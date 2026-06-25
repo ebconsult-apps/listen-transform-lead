@@ -96,7 +96,7 @@ const CollaborateTab = ({
       const failed = results.filter((r) => r.status === "email_failed" || r.status === "error");
       const already = results.filter((r) => r.status === "already_invited").length;
       if (sent) toast.success(`Sent ${sent} invitation${sent === 1 ? "" : "s"}.`);
-      if (already) toast.message(`${already} already invited — use Resend.`);
+      if (already) toast.message(`${already} already invited. Use Resend.`);
       if (failed.length) toast.error(`${failed.length} couldn't be emailed: ${failed[0].error ?? "unknown error"}`);
       setEmails("");
       setNote("");
@@ -135,7 +135,7 @@ const CollaborateTab = ({
       <section className="glass-card p-6 sm:p-8">
         <h3 className="heading-md mb-1">Invite respondents</h3>
         <p className="body-md mb-4">
-          Email people close to the challenge. They get a private link — no account needed — to react to the map
+          Email people close to the challenge. They get a private link, no account needed, to react to the map
           and add their input.
         </p>
         <textarea

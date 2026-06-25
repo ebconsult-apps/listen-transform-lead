@@ -43,7 +43,7 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <SEO
-        title={isSignup ? "Start free — CLEAR" : "Log in — CLEAR"}
+        title={isSignup ? "Start free: CLEAR" : "Log in: CLEAR"}
         description="Access your CLEAR self-serve behavioral analysis workspace."
         path={isSignup ? "/signup" : "/login"}
         noindex
@@ -61,7 +61,7 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
         </h1>
         <p className="text-sm text-foreground/60 text-center mb-6">
           {isSignup
-            ? "Start free — no credit card. We'll email you a magic link."
+            ? "Start free, no credit card. We'll email you a magic link."
             : "We'll email you a secure magic link. No password needed."}
         </p>
 

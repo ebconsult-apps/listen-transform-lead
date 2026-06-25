@@ -47,7 +47,7 @@ const SpeakingService = () => {
           <p className="body-lg max-w-3xl">
             Erik Bohjort delivers keynotes and conference talks on organizational change,
             behavioral design, and the psychology of leadership. His talks are grounded in
-            clinical psychology and real consulting experience — evidence-based, practical,
+            clinical psychology and real consulting experience: evidence-based, practical,
             and designed to change how your audience thinks about their own organizations.
           </p>
         </div>
@@ -74,7 +74,7 @@ const SpeakingService = () => {
                   Erik is a licensed psychologist who has spent his career at the intersection
                   of behavioral science and organizational change. He works with corporations,
                   state agencies, and international institutions to drive transformation that
-                  accounts for how people actually behave — not how we wish they would.
+                  accounts for how people actually behave, not how we wish they would.
                 </p>
                 <p className="text-foreground/70 mb-4">
                   He is the creator of the CLEAR Change Framework, a structured methodology for
@@ -98,10 +98,10 @@ const SpeakingService = () => {
           <div className="space-y-6">
             {[
               {
-                title: "Why 70% of Change Initiatives Fail — And What to Do About It",
+                title: "Why 70% of Change Initiatives Fail: And What to Do About It",
                 audience: "C-suite, HR leaders, change practitioners",
                 duration: "45-60 minutes",
-                desc: "The most-cited statistic in change management — unpacked by a psychologist. This talk goes beyond the usual platitudes to explain the behavioral science behind why organizations resist change, why communication campaigns don't work, and what the 30% who succeed do differently. Audiences leave with a new mental model for approaching transformation.",
+                desc: "The most-cited statistic in change management, unpacked by a psychologist. This talk goes beyond the usual platitudes to explain the behavioral science behind why organizations resist change, why communication campaigns don't work, and what the 30% who succeed do differently. Audiences leave with a new mental model for approaching transformation.",
                 icon: <Lightbulb className="h-6 w-6 text-primary" />,
               },
               {
@@ -115,7 +115,7 @@ const SpeakingService = () => {
                 title: "Behavioral Design for Organizations: Nudging at Scale",
                 audience: "OD professionals, innovation teams, HR tech conferences",
                 duration: "45-60 minutes",
-                desc: "How to apply behavioral design principles — the same science behind consumer product design — to organizational systems. From meeting design to performance management to culture change, this talk shows how small design interventions create outsized behavioral shifts.",
+                desc: "How to apply behavioral design principles, the same science behind consumer product design, to organizational systems. From meeting design to performance management to culture change, this talk shows how small design interventions create outsized behavioral shifts.",
                 icon: <Globe className="h-6 w-6 text-primary" />,
               },
             ].map((talk, i) => (
@@ -159,12 +159,12 @@ const SpeakingService = () => {
           <h2 className="heading-lg mb-6">What to Expect</h2>
           <div className="space-y-4">
             {[
-              "Evidence-based — every claim backed by research, every insight field-tested in real organizations",
-              "Interactive when appropriate — not a lecture, but a thinking session that engages the room",
-              "Actionable — audiences leave with frameworks and mental models they can apply immediately",
-              "No fluff — no motivational platitudes, no 'just believe in yourself,' no empty energy",
-              "Tailored — Erik researches your audience and adapts content, examples, and depth to fit",
-              "Professional logistics — clear communication on tech requirements, timing, and preparation",
+              "Evidence-based: every claim backed by research, every insight field-tested in real organizations",
+              "Interactive when appropriate: not a lecture, but a thinking session that engages the room",
+              "Actionable: audiences leave with frameworks and mental models they can apply immediately",
+              "No fluff: no motivational platitudes, no 'just believe in yourself,' no empty energy",
+              "Tailored: Erik researches your audience and adapts content, examples, and depth to fit",
+              "Professional logistics: clear communication on tech requirements, timing, and preparation",
             ].map((item, i) => (
               <div key={i} className="flex gap-3 items-start">
                 <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
@@ -211,7 +211,7 @@ const SpeakingService = () => {
           <div className="glass-card p-8 md:p-12 text-center">
             <h2 className="heading-md mb-4">Check Availability</h2>
             <p className="body-md text-foreground/70 mb-8 max-w-xl mx-auto">
-              Tell me about your event — audience, theme, date — and I'll let you know
+              Tell me about your event, audience, theme, date, and I'll let you know
               if it's a fit. No obligation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

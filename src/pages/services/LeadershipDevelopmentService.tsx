@@ -41,7 +41,7 @@ const LeadershipDevelopmentService = () => {
           <p className="body-lg max-w-3xl">
             Most leadership programs change what leaders know. They don't change how leaders
             lead. Erik Bohjort is a licensed psychologist who designs development programs
-            around how people actually change behavior — using psychometric assessment,
+            around how people actually change behavior, using psychometric assessment,
             evidence-based coaching, and structured frameworks.
           </p>
         </div>
@@ -58,7 +58,7 @@ const LeadershipDevelopmentService = () => {
               },
               {
                 title: "Generic frameworks ignore individual psychology",
-                desc: "Every leader has a unique behavioral profile — different cognitive biases, stress responses, communication defaults, and blind spots. One-size-fits-all programs can't address what makes each leader effective or ineffective.",
+                desc: "Every leader has a unique behavioral profile: different cognitive biases, stress responses, communication defaults, and blind spots. One-size-fits-all programs can't address what makes each leader effective or ineffective.",
               },
               {
                 title: "No connection between assessment and development",
@@ -86,8 +86,8 @@ const LeadershipDevelopmentService = () => {
           </p>
           <div className="space-y-5">
             {[
-              { phase: "Psychometric Assessment", desc: "Rigorous profiling of each leader's behavioral patterns, decision-making tendencies, stress responses, and interpersonal dynamics. Not a personality quiz — clinical-grade tools that reveal what drives behavior under real conditions." },
-              { phase: "Structured Coaching", desc: "One-on-one and group coaching sessions that connect assessment data to specific, measurable behavioral goals. Each session builds on the last, creating a progression arc — not isolated conversations." },
+              { phase: "Psychometric Assessment", desc: "Rigorous profiling of each leader's behavioral patterns, decision-making tendencies, stress responses, and interpersonal dynamics. Not a personality quiz: clinical-grade tools that reveal what drives behavior under real conditions." },
+              { phase: "Structured Coaching", desc: "One-on-one and group coaching sessions that connect assessment data to specific, measurable behavioral goals. Each session builds on the last, creating a progression arc, not isolated conversations." },
               { phase: "Applied Practice", desc: "Real organizational challenges become the development vehicle. Leaders practice new behaviors in live situations with structured reflection, feedback loops, and accountability. This is where knowledge becomes capability." },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 items-start">

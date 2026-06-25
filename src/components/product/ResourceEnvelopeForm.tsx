@@ -26,7 +26,7 @@ const ResourceEnvelopeForm = ({
       <h3 className="heading-md mb-1">Resource envelope</h3>
       <p className="body-md mb-5">
         Experiments are screened against what you can actually spend. Tell us the rough budget,
-        people, and time available — leave a field blank and we'll assume a conservative default and
+        people, and time available. Leave a field blank and we'll assume a conservative default and
         flag it.
       </p>
       <div className="space-y-4">
@@ -36,7 +36,7 @@ const ResourceEnvelopeForm = ({
             className="input"
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
-            placeholder="e.g. Minimal — no new spend, existing tools"
+            placeholder="e.g. Minimal: no new spend, existing tools"
           />
         </div>
         <div>
