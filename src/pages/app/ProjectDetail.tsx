@@ -24,7 +24,9 @@ import ResearchTab from "@/components/product/ResearchTab";
 import ResearchValue from "@/components/product/ResearchValue";
 import ClarifyRunningCard from "@/components/product/ClarifyRunningCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
+import ReportBuildingLoader from "@/components/product/ReportBuildingLoader";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
+import { FULL_REPORT_STEPS } from "@/lib/clear/report-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
@@ -378,10 +380,11 @@ const ProjectDetail = () => {
                   (showFull ? (
                     <FullReport full={full!} />
                   ) : isRunning && entitled ? (
-                    <div className="glass-card p-10 text-center">
-                      <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                      <p className="body-md">Generating your full report…</p>
-                    </div>
+                    <ReportBuildingLoader
+                      title="Building your full report"
+                      steps={FULL_REPORT_STEPS}
+                      estimate="This usually takes 30–60 seconds — you can keep this tab open while we work."
+                    />
                   ) : (
                     <div className="relative">
                       <div className="locked-blur" aria-hidden>
