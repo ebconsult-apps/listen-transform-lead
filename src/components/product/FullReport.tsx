@@ -4,6 +4,7 @@ import CombMatrix from "./CombMatrix";
 import BehaviorTable from "./BehaviorTable";
 import CauseEffectMap from "./CauseEffectMap";
 import GapFlagList from "./GapFlagList";
+import ResearchGapsPanel from "./ResearchGapsPanel";
 
 /**
  * Paid Leverage sections: the full methodology chain — observable behaviors and
@@ -11,7 +12,16 @@ import GapFlagList from "./GapFlagList";
  * matrix with evidence provenance, the strongest barriers, why each lever works,
  * discovery activities, and the flagged gap log.
  */
-const FullReport = ({ full }: { full: LeverageFull }) => {
+const FullReport = ({
+  full,
+  projectId,
+  entitled = false,
+}: {
+  full: LeverageFull;
+  /** Provided in-app to surface the "Research these open questions" panel. */
+  projectId?: string;
+  entitled?: boolean;
+}) => {
   const behaviors = full.behaviors ?? [];
   const strongest = full.strongestBarriers ?? [];
   const flags = gapFlags(full);
@@ -97,6 +107,10 @@ const FullReport = ({ full }: { full: LeverageFull }) => {
           </ul>
         </div>
       </div>
+
+      {projectId && (
+        <ResearchGapsPanel projectId={projectId} entitled={entitled} phase="leverage_full" />
+      )}
     </div>
   );
 };

@@ -12,7 +12,7 @@ import Anthropic from "npm:@anthropic-ai/sdk@^0.32";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
 import { NEVER_FABRICATE_BANNER } from "../_shared/clear/prompts.ts";
-import type { GapFlag, IntakeInput } from "../_shared/clear/types.ts";
+import type { GapFlag, IntakeInput, ResearchFocusGap } from "../_shared/clear/types.ts";
 import {
   capForTier,
   exceedsCostCap,
@@ -34,6 +34,15 @@ const OPERATOR_WORKSPACE_ID = Deno.env.get("OPERATOR_WORKSPACE_ID") ?? "";
 const DEIDENTIFY_MODEL = Deno.env.get("DEIDENTIFY_MODEL") ?? "claude-haiku-4-5";
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+
+/** A guard failure with a specific HTTP status, mapped to a JSON response below. */
+class HttpError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
 
 // deno-lint-ignore no-explicit-any
 async function getMemberWorkspace(jwt: string, projectId: string): Promise<any> {
@@ -109,6 +118,198 @@ async function deidentify(finding: any): Promise<PromoteEntry> {
   }
 }
 
+/**
+ * Entitlement gate — research is a paid feature (mirrors the full/experiment gate
+ * in project-run). Free-tier workspaces without a project unlock can't run it.
+ * This is `canViewFull(entitlement, unlock)` enforced server-side. Returns the tier.
+ */
+// deno-lint-ignore no-explicit-any
+async function requireResearchEntitlement(project: any, projectId: string): Promise<string> {
+  const [{ data: ent }, { data: unlock }] = await Promise.all([
+    admin.from("entitlements").select("tier").eq("workspace_id", project.workspace_id).maybeSingle(),
+    admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
+  ]);
+  const tier = ent?.tier ?? "free";
+  if (!isPaidTier(tier) && !unlock?.unlocked) throw new HttpError("Payment required", 402);
+  return tier;
+}
+
+/**
+ * Gather cited evidence via the engine and persist it. Shared by the broad `run`
+ * action and the targeted `research-gaps` action; the only differences:
+ *  - broad run (linkGapIds = null): seed findings/questions/gaps idempotently
+ *    (skip when the project already has any) and re-seed the research gapLog.
+ *  - targeted run (linkGapIds = ids): ALWAYS append the findings, stamped with
+ *    source_gap_ids so they link back to the selected gaps; don't re-seed gaps
+ *    (the run researches gaps that already exist).
+ */
+async function gatherAndPersistEvidence(
+  // deno-lint-ignore no-explicit-any
+  project: any,
+  projectId: string,
+  tier: string,
+  opts: { focusGaps?: ResearchFocusGap[]; linkGapIds?: string[] | null },
+): Promise<{ findingIds: string[] }> {
+  const focusGaps = opts.focusGaps ?? [];
+  const linkGapIds = opts.linkGapIds ?? null;
+  const targeted = linkGapIds !== null;
+
+  // Build intake (challenge + documents) — needed by the input/spend guards.
+  const [{ data: input }, { data: docs }] = await Promise.all([
+    admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
+    admin.from("documents").select("*").eq("project_id", projectId),
+  ]);
+  const documents = (docs ?? [])
+    .filter((d: { extracted_text: string | null }) => d.extracted_text)
+    .map((d: { filename: string; extracted_text: string }) => ({
+      filename: d.filename,
+      text: d.extracted_text,
+    }));
+  const intake: IntakeInput = {
+    challenge: input?.challenge ?? "",
+    stakeholders: input?.stakeholders ?? [],
+    timeline: input?.timeline ?? undefined,
+    targetGroup: project.target_group ?? undefined,
+    useCase: project.use_case ?? undefined,
+    documents,
+  };
+
+  // Spend + input guards (live only): bound a single run (input budget +
+  // projected cost) and the calendar month (per-tier cap). Web-search/fetch
+  // fees are folded into each run's cost_usd by the engine.
+  if (AI_MODE === "live") {
+    const budget = checkIntakeBudget(documents);
+    if (!budget.ok) throw new HttpError(budget.reason, 413);
+
+    const cap = capForTier(tier, loadTierCaps((k) => Deno.env.get(k)));
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+    const { data: spend } = await admin
+      .from("runs")
+      .select("cost_usd, projects!inner(workspace_id)")
+      .gte("created_at", monthStart)
+      .eq("projects.workspace_id", project.workspace_id);
+    const monthSpendUsd = (spend ?? []).reduce(
+      (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
+      0,
+    );
+    const price = priceFor(modelForPhase("research", (k) => Deno.env.get(k)));
+    const inputTokens = estimateIntakeInputTokens(intake.challenge, documents);
+    const projectedUsd = projectedCostUsd(inputTokens, PHASE_MAX_OUTPUT.research, price);
+    if (exceedsCostCap({ monthSpendUsd, projectedUsd, cap })) {
+      throw new HttpError("Monthly cost cap reached for this workspace.", 402);
+    }
+  }
+
+  // Retrieve curated/promoted knowledge as candidate evidence (v1: simple fetch).
+  const { data: kb } = await admin
+    .from("knowledge_base")
+    .select("id, kind, title, summary, tags, citations")
+    .eq("review_status", "approved")
+    .order("kind", { ascending: true })
+    .limit(12);
+  // deno-lint-ignore no-explicit-any
+  const knowledgeEntries = (kb ?? []).map((e: any) => ({
+    id: e.id,
+    kind: e.kind,
+    title: e.title,
+    summary: e.summary,
+    tags: e.tags ?? {},
+    citations: e.citations ?? [],
+  }));
+
+  const engine = getClearEngine();
+  const res = await engine.runResearch(intake, { knowledgeEntries, focusGaps });
+  const out = res.output;
+
+  // Persist the raw run (uniform token/cost accounting + monthly cap).
+  await admin.from("runs").insert({
+    project_id: projectId,
+    phase: "research",
+    status: "done",
+    ai_mode: AI_MODE,
+    output: out,
+    tokens_used: res.tokens ?? 0,
+    cost_usd: res.costUsd ?? 0,
+  });
+
+  // Findings. Broad run seeds once (idempotent); targeted run always appends and
+  // links each finding to the selected gap(s) via source_gap_ids.
+  const findingIds: string[] = [];
+  if (out.findings?.length) {
+    let insertFindings = true;
+    if (!targeted) {
+      const { data: existingF } = await admin
+        .from("research_findings").select("id").eq("project_id", projectId).limit(1);
+      insertFindings = !(existingF && existingF.length);
+    }
+    if (insertFindings) {
+      const { data: inserted } = await admin
+        .from("research_findings")
+        .insert(
+          out.findings.map((f) => ({
+            project_id: projectId,
+            phase_target: f.phaseTarget ?? "leverage",
+            claim: f.claim,
+            detail: f.detail ?? null,
+            source_kind: f.sourceKind ?? "web",
+            citations: f.citations ?? [],
+            evidence_flag: f.evidenceFlag ?? "A",
+            confidence: f.confidence ?? null,
+            tags: f.tags ?? {},
+            status: "proposed",
+            source_gap_ids: targeted
+              ? (Array.isArray(f.sourceGapIds) && f.sourceGapIds.length ? f.sourceGapIds : linkGapIds)
+              : [],
+          })),
+        )
+        .select("id");
+      for (const r of inserted ?? []) findingIds.push(r.id);
+    }
+  }
+
+  // Follow-up questions (same idempotency rule as findings).
+  if (out.questions?.length) {
+    let insertQuestions = true;
+    if (!targeted) {
+      const { data: existingQ } = await admin
+        .from("research_questions").select("id").eq("project_id", projectId).limit(1);
+      insertQuestions = !(existingQ && existingQ.length);
+    }
+    if (insertQuestions) {
+      await admin.from("research_questions").insert(
+        out.questions.map((q) => ({
+          project_id: projectId,
+          question: q.question,
+          rationale: q.rationale ?? null,
+        })),
+      );
+    }
+  }
+
+  // Seed gap flags into the persistent cross-phase log (broad run only — a
+  // targeted run researches gaps that already exist). Idempotent on content.
+  if (!targeted) {
+    const flags: GapFlag[] = out.gapLog ?? [];
+    if (flags.length) {
+      const { data: existing } = await admin
+        .from("assumption_gaps").select("content").eq("project_id", projectId).eq("phase", "research");
+      const seen = new Set((existing ?? []).map((r: { content: string }) => r.content));
+      const rows = flags
+        .filter((f) => !seen.has(f.content))
+        .map((f) => ({
+          project_id: projectId,
+          phase: "research",
+          flag_type: f.type,
+          content: f.content,
+          source: f.source ?? null,
+        }));
+      if (rows.length) await admin.from("assumption_gaps").insert(rows);
+    }
+  }
+
+  return { findingIds };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -168,154 +369,57 @@ Deno.serve(async (req) => {
       return json({ ok: true, sharedFindingId: inserted.id });
     }
 
-    // ── run ──────────────────────────────────────────────────────────────────
+    // ── research-gaps (targeted, MECE) ────────────────────────────────────────
+    // Research one OR several owner-selected open questions together and link the
+    // findings back to those assumption_gaps. Reuses the same membership +
+    // entitlement + spend gates as the broad run.
+    if (action === "research-gaps") {
+      const projectId = body.projectId as string | undefined;
+      const gapIds = body.gapIds as string[] | undefined;
+      if (!projectId || !Array.isArray(gapIds) || !gapIds.length) {
+        return json({ error: "Bad request" }, 400);
+      }
+      const gate = await getMemberWorkspace(jwt, projectId);
+      if (gate.error) return gate.error;
+      const project = gate.project;
+      const tier = await requireResearchEntitlement(project, projectId);
+
+      // Resolve the selected gaps (scoped to this project) into focus context.
+      const { data: gapRows } = await admin
+        .from("assumption_gaps")
+        .select("id, flag_type, content, source")
+        .eq("project_id", projectId)
+        .in("id", gapIds);
+      if (!gapRows?.length) return json({ error: "No matching open questions." }, 400);
+      const focusGaps: ResearchFocusGap[] = gapRows.map(
+        (g: { id: string; flag_type: string; content: string; source: string | null }) => ({
+          id: g.id,
+          flagType: g.flag_type,
+          content: g.content,
+          source: g.source,
+        }),
+      );
+
+      const { findingIds } = await gatherAndPersistEvidence(project, projectId, tier, {
+        focusGaps,
+        linkGapIds: focusGaps.map((g) => g.id),
+      });
+      return json({ ok: true, findingIds });
+    }
+
+    // ── run (broad) ───────────────────────────────────────────────────────────
     if (action !== "run") return json({ error: "Bad request" }, 400);
     const projectId = body.projectId as string | undefined;
     if (!projectId) return json({ error: "Bad request" }, 400);
     const gate = await getMemberWorkspace(jwt, projectId);
     if (gate.error) return gate.error;
     const project = gate.project;
+    const tier = await requireResearchEntitlement(project, projectId);
 
-    // Entitlement gate — research is a paid feature (mirrors the full/experiment
-    // gate in project-run). Free-tier workspaces without a project unlock can't run it.
-    const [{ data: ent }, { data: unlock }] = await Promise.all([
-      admin.from("entitlements").select("tier").eq("workspace_id", project.workspace_id).maybeSingle(),
-      admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
-    ]);
-    const tier = ent?.tier ?? "free";
-    if (!isPaidTier(tier) && !unlock?.unlocked) {
-      return json({ error: "Payment required" }, 402);
-    }
-
-    // Build intake (challenge + documents) — needed by the input/spend guards.
-    const [{ data: input }, { data: docs }] = await Promise.all([
-      admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
-      admin.from("documents").select("*").eq("project_id", projectId),
-    ]);
-    const documents = (docs ?? [])
-      .filter((d: { extracted_text: string | null }) => d.extracted_text)
-      .map((d: { filename: string; extracted_text: string }) => ({
-        filename: d.filename,
-        text: d.extracted_text,
-      }));
-    const intake: IntakeInput = {
-      challenge: input?.challenge ?? "",
-      stakeholders: input?.stakeholders ?? [],
-      timeline: input?.timeline ?? undefined,
-      targetGroup: project.target_group ?? undefined,
-      useCase: project.use_case ?? undefined,
-      documents,
-    };
-
-    // Spend + input guards (live only): bound a single run (input budget +
-    // projected cost) and the calendar month (per-tier cap). Web-search/fetch
-    // fees are folded into each run's cost_usd by the engine.
-    if (AI_MODE === "live") {
-      const budget = checkIntakeBudget(documents);
-      if (!budget.ok) return json({ error: budget.reason }, 413);
-
-      const cap = capForTier(tier, loadTierCaps((k) => Deno.env.get(k)));
-      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-      const { data: spend } = await admin
-        .from("runs")
-        .select("cost_usd, projects!inner(workspace_id)")
-        .gte("created_at", monthStart)
-        .eq("projects.workspace_id", project.workspace_id);
-      const monthSpendUsd = (spend ?? []).reduce(
-        (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
-        0,
-      );
-      const price = priceFor(modelForPhase("research", (k) => Deno.env.get(k)));
-      const inputTokens = estimateIntakeInputTokens(intake.challenge, documents);
-      const projectedUsd = projectedCostUsd(inputTokens, PHASE_MAX_OUTPUT.research, price);
-      if (exceedsCostCap({ monthSpendUsd, projectedUsd, cap })) {
-        return json({ error: "Monthly cost cap reached for this workspace." }, 402);
-      }
-    }
-
-    // Retrieve curated/promoted knowledge as candidate evidence (v1: simple fetch).
-    const { data: kb } = await admin
-      .from("knowledge_base")
-      .select("id, kind, title, summary, tags, citations")
-      .eq("review_status", "approved")
-      .order("kind", { ascending: true })
-      .limit(12);
-    // deno-lint-ignore no-explicit-any
-    const knowledgeEntries = (kb ?? []).map((e: any) => ({
-      id: e.id,
-      kind: e.kind,
-      title: e.title,
-      summary: e.summary,
-      tags: e.tags ?? {},
-      citations: e.citations ?? [],
-    }));
-
-    const engine = getClearEngine();
-    const res = await engine.runResearch(intake, { knowledgeEntries });
-    const out = res.output;
-
-    // Persist the raw run (uniform token/cost accounting + monthly cap).
-    await admin.from("runs").insert({
-      project_id: projectId,
-      phase: "research",
-      status: "done",
-      ai_mode: AI_MODE,
-      output: out,
-      tokens_used: res.tokens ?? 0,
-      cost_usd: res.costUsd ?? 0,
-    });
-
-    // Seed proposed findings + open questions (idempotent: skip if any exist).
-    const { data: existingF } = await admin
-      .from("research_findings").select("id").eq("project_id", projectId).limit(1);
-    if (!(existingF && existingF.length) && out.findings?.length) {
-      await admin.from("research_findings").insert(
-        out.findings.map((f) => ({
-          project_id: projectId,
-          phase_target: f.phaseTarget ?? "leverage",
-          claim: f.claim,
-          detail: f.detail ?? null,
-          source_kind: f.sourceKind ?? "web",
-          citations: f.citations ?? [],
-          evidence_flag: f.evidenceFlag ?? "A",
-          confidence: f.confidence ?? null,
-          tags: f.tags ?? {},
-          status: "proposed",
-        })),
-      );
-    }
-    const { data: existingQ } = await admin
-      .from("research_questions").select("id").eq("project_id", projectId).limit(1);
-    if (!(existingQ && existingQ.length) && out.questions?.length) {
-      await admin.from("research_questions").insert(
-        out.questions.map((q) => ({
-          project_id: projectId,
-          question: q.question,
-          rationale: q.rationale ?? null,
-        })),
-      );
-    }
-
-    // Seed gap flags into the persistent cross-phase log (idempotent on content).
-    const flags: GapFlag[] = out.gapLog ?? [];
-    if (flags.length) {
-      const { data: existing } = await admin
-        .from("assumption_gaps").select("content").eq("project_id", projectId).eq("phase", "research");
-      const seen = new Set((existing ?? []).map((r: { content: string }) => r.content));
-      const rows = flags
-        .filter((f) => !seen.has(f.content))
-        .map((f) => ({
-          project_id: projectId,
-          phase: "research",
-          flag_type: f.type,
-          content: f.content,
-          source: f.source ?? null,
-        }));
-      if (rows.length) await admin.from("assumption_gaps").insert(rows);
-    }
-
+    await gatherAndPersistEvidence(project, projectId, tier, { linkGapIds: null });
     return json({ ok: true });
   } catch (e) {
+    if (e instanceof HttpError) return json({ error: e.message }, e.status);
     return json({ error: (e as Error).message }, 500);
   }
 });

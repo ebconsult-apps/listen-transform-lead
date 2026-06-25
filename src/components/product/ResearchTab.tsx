@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Microscope, Check, X, Library, RefreshCw, ExternalLink, HelpCircle } from "lucide-react";
+import { Microscope, Check, X, Library, RefreshCw, HelpCircle } from "lucide-react";
 import type { ResearchFindingRow, ResearchQuestionRow } from "@/lib/db";
 import type { ClarifyOutput, LeverageFull } from "@/lib/clear/types";
 import { runResearch } from "@/lib/clear/run";
 import { LoadingState } from "@/components/ui/data-states";
 import ResearchValue from "./ResearchValue";
+import ResearchFindingCard from "./ResearchFindingCard";
+import ResearchGapsPanel from "./ResearchGapsPanel";
 import {
   answerQuestion,
   confirmPromotion,
@@ -24,28 +26,17 @@ import { toast } from "sonner";
  * library for reuse on future projects. The agent's follow-up questions sit
  * alongside so the owner can close the gaps the evidence still leaves open.
  */
-const FLAG_STYLE: Record<string, string> = {
-  V: "bg-emerald-500/15 text-emerald-700",
-  A: "bg-amber-500/15 text-amber-700",
-  G: "bg-rose-500/15 text-rose-700",
-  NA: "bg-foreground/10 text-foreground/60",
-};
-const FLAG_LABEL: Record<string, string> = {
-  V: "Verified",
-  A: "Assumption",
-  G: "Gap",
-  NA: "N/A",
-};
-
 const ResearchTab = ({
   projectId,
   clarify,
   full,
+  entitled = true,
   onAfterRun,
 }: {
   projectId: string;
   clarify: ClarifyOutput | null;
   full: LeverageFull | null;
+  entitled?: boolean;
   onAfterRun?: () => Promise<void> | void;
 }) => {
   const [findings, setFindings] = useState<ResearchFindingRow[]>([]);
@@ -162,51 +153,13 @@ const ResearchTab = ({
         </button>
       </div>
 
+      <ResearchGapsPanel projectId={projectId} entitled={entitled} onResearched={load} />
+
       {active.length > 0 && (
         <div className="space-y-3">
           <h3 className="heading-md">Findings</h3>
           {active.map((f) => (
-            <div key={f.id} className="glass-card p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded ${FLAG_STYLE[f.evidence_flag] ?? FLAG_STYLE.NA}`}>
-                    {FLAG_LABEL[f.evidence_flag] ?? f.evidence_flag}
-                  </span>
-                  <span className="text-xs uppercase tracking-wide text-foreground/40">{f.phase_target}</span>
-                  {typeof f.confidence === "number" && (
-                    <span className="text-xs text-foreground/40">· {f.confidence}% confidence</span>
-                  )}
-                  {f.status === "accepted" && (
-                    <span className="text-xs font-medium text-emerald-700">· Accepted</span>
-                  )}
-                  {f.status === "promoted" && (
-                    <span className="inline-flex items-center text-xs font-medium text-primary">
-                      <Library className="h-3 w-3 mr-1" /> In shared library
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <p className="body-md mt-2 font-medium">{f.claim}</p>
-              {f.detail && <p className="text-sm text-foreground/70 mt-1">{f.detail}</p>}
-
-              {f.citations?.length > 0 && (
-                <ul className="mt-2 space-y-1">
-                  {f.citations.map((c, i) => (
-                    <li key={i} className="text-xs text-foreground/60">
-                      {c.url ? (
-                        <a href={c.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center hover:text-primary">
-                          {c.title} <ExternalLink className="h-3 w-3 ml-1" />
-                        </a>
-                      ) : (
-                        <span>{c.title}</span>
-                      )}
-                      {c.note && <span className="text-foreground/40">: {c.note}</span>}
-                    </li>
-                  ))}
-                </ul>
-              )}
-
+            <ResearchFindingCard key={f.id} finding={f}>
               <div className="flex gap-2 mt-4 flex-wrap">
                 {f.status === "proposed" && (
                   <>
@@ -249,7 +202,7 @@ const ResearchTab = ({
                   </div>
                 </div>
               )}
-            </div>
+            </ResearchFindingCard>
           ))}
         </div>
       )}

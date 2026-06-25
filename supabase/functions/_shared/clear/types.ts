@@ -243,6 +243,8 @@ export interface ResearchFinding {
   /** 0–100 */
   confidence: number;
   tags?: ResearchTags;
+  /** When this finding came from a targeted run, the selected gap id(s) it closes. */
+  sourceGapIds?: string[];
 }
 
 /** A targeted follow-up question the agent needs answered to close a gap. */
@@ -267,10 +269,23 @@ export interface KnowledgeEntry {
   citations?: Citation[];
 }
 
+/** An owner-selected open question a targeted research run must close. */
+export interface ResearchFocusGap {
+  id: string;
+  flagType: string;
+  content: string;
+  source?: string | null;
+}
+
 /** Extra context passed to the research engine beyond the intake. */
 export interface ResearchContext {
   /** Curated/shared knowledge-base entries retrieved as candidate evidence. */
   knowledgeEntries?: KnowledgeEntry[];
+  /**
+   * Owner-selected gaps a targeted run must close, MECE (each covered by ≥1
+   * finding, no overlap). Empty/absent = a broad run over the whole project.
+   */
+  focusGaps?: ResearchFocusGap[];
 }
 
 /** Standard envelope so every phase can report cost/usage uniformly. */

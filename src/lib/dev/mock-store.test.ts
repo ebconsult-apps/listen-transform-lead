@@ -45,4 +45,36 @@ describe("mock-store seeded dataset", () => {
     expect(profile?.privacy_accepted_at).not.toBeNull();
     expect(profile?.privacy_policy_version).toBe(PRIVACY_POLICY_VERSION);
   });
+
+  it("seeds proj-research with a finding already linked to a real gap id", async () => {
+    const [findings, gaps] = await Promise.all([
+      store.listFindings("proj-research"),
+      store.listAssumptionGaps("proj-research"),
+    ]);
+    const gapIds = new Set(gaps.map((g) => g.id));
+    const linked = findings.filter((f) => (f.source_gap_ids ?? []).length > 0);
+    expect(linked.length).toBeGreaterThan(0);
+    // Linked ids point at real gap rows (no dangling references in the seed).
+    expect(linked.every((f) => f.source_gap_ids.every((id) => gapIds.has(id)))).toBe(true);
+  });
+
+  it("researchGaps appends findings linked to the selected gaps, without clobbering existing ones", async () => {
+    const before = await store.listFindings("proj-research");
+    const beforeIds = new Set(before.map((f) => f.id));
+    const open = (await store.listAssumptionGaps("proj-research"))
+      .filter((g) => g.status === "open")
+      .slice(0, 2);
+    expect(open.length).toBeGreaterThan(0);
+
+    await store.researchGaps("proj-research", open.map((g) => g.id));
+
+    const after = await store.listFindings("proj-research");
+    const added = after.filter((f) => !beforeIds.has(f.id));
+    // Existing findings are preserved AND new linked ones were appended.
+    expect(after.length).toBe(before.length + added.length);
+    expect(added.length).toBeGreaterThan(0);
+    for (const f of added) {
+      expect(open.every((g) => f.source_gap_ids.includes(g.id))).toBe(true);
+    }
+  });
 });

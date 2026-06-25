@@ -16,6 +16,7 @@ import {
   EXPERIMENT_PROMPT,
   LEVERAGE_PROMPT,
   renderEnvelope,
+  renderGapFocus,
   renderIntake,
   renderKnowledge,
   RESEARCH_PROMPT,
@@ -124,11 +125,13 @@ export class LiveClearEngine implements ClearEngine {
   }
 
   runResearch(input: IntakeInput, ctx: ResearchContext) {
+    const focus = renderGapFocus(ctx.focusGaps ?? []);
     const user = [
       renderIntake(input),
       "",
       "CURATED KNOWLEDGE-BASE ENTRIES (cite by title where you use them):",
       renderKnowledge(ctx.knowledgeEntries ?? []),
+      ...(focus ? ["", focus] : []),
       "",
       "Use the web search and web fetch tools to find and CITE external evidence, then return the RESEARCH JSON.",
     ].join("\n");

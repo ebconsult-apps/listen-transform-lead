@@ -304,7 +304,7 @@ const ProjectDetail = () => {
       {/* Step 2 — approved, awaiting Leverage */}
       {isApproved && !hasTeaser && effectiveStep === "leverage" && clarify && (
         <div className="space-y-6">
-          <ClarifyCard clarify={clarify} />
+          <ClarifyCard clarify={clarify} projectId={project.id} entitled={canResearch} />
           <div className="glass-card p-8 text-center no-print">
             {isRunning ? (
               <>
@@ -344,6 +344,7 @@ const ProjectDetail = () => {
                 teaser={teaser}
                 full={full}
                 experimentOutput={experimentOutput}
+                entitled={canResearch}
                 onAfterRun={load}
               />
             ) : (
@@ -382,7 +383,7 @@ const ProjectDetail = () => {
                     busy={busy}
                   />
                 )}
-                <ClarifyCard clarify={clarify} />
+                <ClarifyCard clarify={clarify} projectId={project.id} entitled={canResearch} />
                 <div className="flex gap-2 no-print -mt-4">
                   <button onClick={() => setActiveStep("clarify")} disabled={busy} className="btn-secondary text-sm">
                     <Pencil className="h-3.5 w-3.5 mr-1.5" /> Edit Clarify
@@ -396,7 +397,7 @@ const ProjectDetail = () => {
 
                 {effectiveStep === "full" &&
                   (showFull ? (
-                    <FullReport full={full!} />
+                    <FullReport full={full!} projectId={project.id} entitled={canResearch} />
                   ) : isRunning && entitled ? (
                     <div className="glass-card p-10 text-center">
                       <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
@@ -417,7 +418,7 @@ const ProjectDetail = () => {
 
             <TabsContent value="research">
               {canResearch ? (
-                <ResearchTab projectId={project.id} clarify={clarify} full={full} onAfterRun={load} />
+                <ResearchTab projectId={project.id} clarify={clarify} full={full} entitled={canResearch} onAfterRun={load} />
               ) : (
                 <div className="glass-card p-6 sm:p-8">
                   <h3 className="heading-md mb-3">Research is part of a paid plan</h3>

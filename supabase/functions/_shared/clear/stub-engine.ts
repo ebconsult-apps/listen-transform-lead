@@ -53,9 +53,16 @@ export class StubClearEngine implements ClearEngine {
   }
   async runResearch(
     _input: IntakeInput,
-    _ctx: ResearchContext,
+    ctx: ResearchContext,
   ): Promise<EngineResult<ResearchOutput>> {
     await delay(1000);
+    if (ctx.focusGaps?.length) {
+      const ids = ctx.focusGaps.map((g) => g.id);
+      const findings = RESEARCH_FIXTURE.findings
+        .slice(0, Math.max(1, ids.length))
+        .map((f) => ({ ...f, sourceGapIds: ids }));
+      return { output: { findings, questions: [], gapLog: [] }, tokens: 0, costUsd: 0 };
+    }
     return { output: RESEARCH_FIXTURE, tokens: 0, costUsd: 0 };
   }
 }
