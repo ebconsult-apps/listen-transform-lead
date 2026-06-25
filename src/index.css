@@ -197,6 +197,15 @@ html {
   transition: opacity 400ms;
 }
 
+/* Indeterminate progress sweep — used by the Clarify "running" waiting state.
+   A ~40%-wide segment slides across its track on a loop (transform-only, so it
+   stays GPU-accelerated). Consumed via Tailwind's arbitrary animation utility,
+   gated behind motion-safe:. */
+@keyframes progress-sweep {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(260%); }
+}
+
 /* Import Inter var font (body) */
 @import url('https://rsms.me/inter/inter.css');
 
