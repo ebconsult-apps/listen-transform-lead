@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, Check, RotateCcw, Trash2, ArrowRightCircle } from "lucide-react";
-import type { AssumptionGapRow } from "@/lib/db";
 import type { FlagType } from "@/lib/clear/types";
 import { FLAG_LABEL } from "@/lib/clear/labels";
-import {
-  addAssumptionGap,
-  deleteAssumptionGap,
-  listAssumptionGaps,
-  setAssumptionGapStatus,
-} from "@/lib/experiment";
 import { FlagBadge } from "./GapFlagList";
-import { toast } from "sonner";
+import {
+  useAddAssumptionGap,
+  useAssumptionGaps,
+  useDeleteAssumptionGap,
+  useSetAssumptionGapStatus,
+} from "@/hooks/queries/useAssumptionGaps";
 
 const FLAG_TYPES: FlagType[] = [
   "assumption",
@@ -33,50 +31,26 @@ const statusClass: Record<string, string> = {
  * carry items forward.
  */
 const AssumptionsGapsLog = ({ projectId }: { projectId: string }) => {
-  const [rows, setRows] = useState<AssumptionGapRow[]>([]);
   const [type, setType] = useState<FlagType>("assumption");
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(true);
 
-  const load = () =>
-    listAssumptionGaps(projectId)
-      .then(setRows)
-      .catch((e) => toast.error((e as Error).message))
-      .finally(() => setLoading(false));
+  const { data: rows = [], isPending } = useAssumptionGaps(projectId);
+  const addGap = useAddAssumptionGap(projectId);
+  const setStatusMutation = useSetAssumptionGapStatus(projectId);
+  const deleteGap = useDeleteAssumptionGap(projectId);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
-
-  const add = async () => {
+  // Same handler names/signatures the JSX already calls, now backed by
+  // mutations whose onSuccess invalidates the gap list (no manual reload).
+  const add = () => {
     if (!content.trim()) return;
-    try {
-      await addAssumptionGap(projectId, { type, content: content.trim() });
-      setContent("");
-      await load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
+    addGap.mutate(
+      { type, content: content.trim() },
+      { onSuccess: () => setContent("") },
+    );
   };
-
-  const setStatus = async (id: string, status: "open" | "resolved" | "carried") => {
-    try {
-      await setAssumptionGapStatus(id, status);
-      await load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-  };
-
-  const remove = async (id: string) => {
-    try {
-      await deleteAssumptionGap(id);
-      await load();
-    } catch (e) {
-      toast.error((e as Error).message);
-    }
-  };
+  const setStatus = (id: string, status: "open" | "resolved" | "carried") =>
+    setStatusMutation.mutate({ id, status });
+  const remove = (id: string) => deleteGap.mutate(id);
 
   return (
     <div className="glass-card p-6 sm:p-8">
@@ -86,7 +60,7 @@ const AssumptionsGapsLog = ({ projectId }: { projectId: string }) => {
         Resolve items as you learn, or carry them into the next cycle.
       </p>
 
-      {loading ? (
+      {isPending ? (
         <p className="text-sm text-foreground/50">Loading…</p>
       ) : rows.length === 0 ? (
         <p className="text-sm text-foreground/50 mb-5">Nothing flagged yet.</p>
@@ -146,7 +120,7 @@ const AssumptionsGapsLog = ({ projectId }: { projectId: string }) => {
           onKeyDown={(e) => e.key === "Enter" && add()}
           placeholder="Add an assumption or open question…"
         />
-        <button onClick={add} disabled={!content.trim()} className="btn-secondary">
+        <button onClick={add} disabled={!content.trim() || addGap.isPending} className="btn-secondary">
           <Plus className="h-4 w-4 mr-1" /> Add
         </button>
       </div>
