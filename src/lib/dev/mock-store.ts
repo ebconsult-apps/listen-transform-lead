@@ -168,9 +168,28 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
   return clone(db.approvals[projectId] ?? null);
 }
 
+export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
+  await delay(READ_MS);
+  // Mock mode tracks no separate approval timestamp; treat approval as happening with
+  // the latest clarify run. Null when never approved, so the downstream staleness
+  // check (isStale) safely no-ops.
+  if (!db.approvals[projectId]) return null;
+  const clarifyRuns = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
+  return clarifyRuns.length ? clarifyRuns[clarifyRuns.length - 1].created_at : null;
+}
+
 export async function approveClarify(projectId: string, output: ClarifyOutput): Promise<void> {
   db.approvals[projectId] = clone(output);
   await setProjectStatus(projectId, "clarify_approved");
+}
+
+export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
+  await delay(READ_MS);
+  if (!db.approvals[projectId]) return null;
+  // No separate approved_at is tracked in the mock; the latest clarify run's time is a safe
+  // lower bound (it's never newer than downstream runs, so seeded states don't read as stale).
+  const runs = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
+  return runs.length ? runs[runs.length - 1].created_at : null;
 }
 
 // ── clear/run.ts (mock engine: reuse fixtures, mirror the stub orchestration) ────
