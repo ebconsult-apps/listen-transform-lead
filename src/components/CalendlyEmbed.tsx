@@ -1,9 +1,9 @@
-// Microsoft Bookings - Discovery Call
-// For inline embed alternative: <iframe src={BOOKING_URL} width="100%" height="700" scrolling="yes" style="border:0"></iframe>
+// Discovery Call CTA — links to the /book-call interstitial, which offers both
+// the Microsoft Bookings flow and a no-sign-in email request.
 
-import { Calendar, Mail, ExternalLink } from "lucide-react";
+import { Calendar, Mail, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { trackCTAClick } from "@/utils/analytics";
-import { BOOKING_URL } from "@/config/site";
 
 const CalendlyEmbed = () => {
   return (
@@ -20,16 +20,14 @@ const CalendlyEmbed = () => {
         challenges and explore how the CLEAR framework can help.
       </p>
 
-      <a
-        href={BOOKING_URL}
-        target="_blank"
-        rel="noopener noreferrer"
+      <Link
+        to="/book-call"
         className="btn-primary w-full justify-center mb-6"
         onClick={() => trackCTAClick("book_discovery_call")}
       >
         Book a Discovery Call
-        <ExternalLink className="ml-2 h-4 w-4" />
-      </a>
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Link>
 
       <div className="flex items-center gap-2 text-sm text-foreground/60">
         <Mail className="h-4 w-4" />

@@ -9,6 +9,9 @@ export async function sendBrevoEmail(opts: {
   subject: string;
   html: string;
   text?: string;
+  // Overrides the display name on the (verified) sender address — e.g. "CLEAR"
+  // for product/auth mail vs the default "Erik Bohjort" for personal invites.
+  fromName?: string;
 }): Promise<void> {
   if (!BREVO_API_KEY) throw new Error("BREVO_API_KEY is not set on the edge function");
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -19,7 +22,7 @@ export async function sendBrevoEmail(opts: {
       "api-key": BREVO_API_KEY,
     },
     body: JSON.stringify({
-      sender: SENDER,
+      sender: opts.fromName ? { ...SENDER, name: opts.fromName } : SENDER,
       to: [{ email: opts.to, name: opts.toName ?? opts.to }],
       subject: opts.subject,
       htmlContent: opts.html,

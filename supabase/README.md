@@ -49,15 +49,38 @@ supabase secrets set \
   EXPERIMENT_MODEL=claude-sonnet-4-6 \
   WORKSPACE_MONTHLY_COST_CAP_USD=25 \
   BREVO_API_KEY=xkeysib-... \
-  PUBLIC_APP_URL=https://clear-framework.com
+  PUBLIC_APP_URL=https://clear-framework.com \
+  SEND_EMAIL_HOOK_SECRET=v1,whsec_...
 
 supabase functions deploy project-run stripe-checkout stripe-webhook \
-  invite-respondents respondent
+  invite-respondents respondent auth-email
 ```
 
-`BREVO_API_KEY` powers respondent invitation emails (reuses the marketing-site
-Brevo account; sender is the already-verified `erik@eb-consulting.se`).
-`PUBLIC_APP_URL` is the base for tokenized `/respond/<token>` links.
+`BREVO_API_KEY` powers respondent invitation **and** auth (magic-link) emails
+(reuses the marketing-site Brevo account; sender is the already-verified
+`erik@eb-consulting.se`). `PUBLIC_APP_URL` is the base for tokenized
+`/respond/<token>` links. `SEND_EMAIL_HOOK_SECRET` authenticates the auth-email
+hook (see 3d).
+
+## 3d. Branded auth emails (magic link)
+
+By default Supabase Auth sends the login magic-link / signup confirmation from
+the generic `noreply@mail.app.supabase.io` with a bare template. The
+`auth-email` edge function replaces that with a branded CLEAR email sent through
+Brevo from `erik@eb-consulting.se` (sender name "CLEAR"). It's a Supabase Auth
+**Send Email Hook** — Supabase signs each request, so `verify_jwt = false` and
+the function checks the signature instead.
+
+1. **Generate the secret** and set it (already listed in step 3):
+   `SEND_EMAIL_HOOK_SECRET=v1,whsec_<base64>`. Generate the base64 part with
+   `openssl rand -base64 48`.
+2. **Deploy** `auth-email` (included in the deploy command above and in
+   `.github/workflows/supabase-deploy.yml`).
+3. **Enable the hook** — Supabase dashboard → **Authentication → Hooks → Send
+   Email Hook** → enable, set the URI to the deployed function
+   (`https://<ref>.supabase.co/functions/v1/auth-email`), and paste the **same**
+   `SEND_EMAIL_HOOK_SECRET`. Custom SMTP is **not** required — Brevo's API is
+   called from inside the hook.
 
 ## 3b. Respondent collaboration
 

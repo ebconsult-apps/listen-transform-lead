@@ -1,9 +1,8 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ExternalLink, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import SEO from "@/components/SEO";
-import { BOOKING_URL } from "@/config/site";
 
 const WorkshopsService = () => {
   useEffect(() => {
@@ -121,10 +120,10 @@ const WorkshopsService = () => {
               team development day, let's discuss what would make the biggest impact.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-primary">
+              <Link to="/book-call" className="btn-primary">
                 Check Availability
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
               <Link to="/services" className="btn-secondary">
                 View All Services
                 <ArrowRight className="ml-2 h-4 w-4" />

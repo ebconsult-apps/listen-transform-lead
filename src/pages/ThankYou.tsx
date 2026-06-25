@@ -1,9 +1,8 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle, ArrowRight, ExternalLink } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
-import { BOOKING_URL } from "@/config/site";
 
 const ThankYou = () => {
   useEffect(() => {
@@ -38,15 +37,10 @@ const ThankYou = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-              <a
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
+              <Link to="/book-call" className="btn-primary">
                 Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
               <Link to="/assessment" className="btn-secondary">
                 Take the Free Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />

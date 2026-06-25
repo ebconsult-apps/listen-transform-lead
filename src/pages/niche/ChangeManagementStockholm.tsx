@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const ChangeManagementStockholm = () => (
   <NichePage
@@ -59,7 +58,7 @@ const ChangeManagementStockholm = () => (
       result:
         "Within one quarter, cross-team collaboration scores improved by 40%, and the cycle time from idea to shipped feature dropped by 30%. The approach succeeded because it was co-designed by the people affected, not imposed from leadership.",
     }}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

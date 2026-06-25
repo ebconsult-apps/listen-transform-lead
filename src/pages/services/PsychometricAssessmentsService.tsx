@@ -1,9 +1,8 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowRight, CheckCircle, AlertTriangle } from "lucide-react";
 import SEO from "@/components/SEO";
-import { BOOKING_URL } from "@/config/site";
 
 const PsychometricAssessmentsService = () => {
   useEffect(() => {
@@ -113,10 +112,10 @@ const PsychometricAssessmentsService = () => {
                 Try the Free Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary">
+              <Link to="/book-call" className="btn-secondary">
                 Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </div>
           </div>
         </div>
