@@ -112,6 +112,10 @@
   .btn-secondary {
     @apply inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 active:scale-[0.98] rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-primary bg-transparent border border-primary/40 hover:border-primary hover:bg-primary/5 active:scale-[0.98] rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
   
   .section-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24;
