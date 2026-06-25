@@ -23,6 +23,7 @@ import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
 import ResearchTab from "@/components/product/ResearchTab";
+import ResearchValue from "@/components/product/ResearchValue";
 import PrepPromptCard from "@/components/product/PrepPromptCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
@@ -416,13 +417,13 @@ const ProjectDetail = () => {
 
             <TabsContent value="research">
               {canResearch ? (
-                <ResearchTab projectId={project.id} onAfterRun={load} />
+                <ResearchTab projectId={project.id} clarify={clarify} full={full} onAfterRun={load} />
               ) : (
-                <div className="glass-card p-10 text-center">
-                  <h3 className="heading-md mb-2">Research is part of a paid plan</h3>
-                  <p className="body-md">
-                    The research agent gathers cited evidence to strengthen your Clarify and Leverage
-                    analysis. Unlock the full report to use it.
+                <div className="glass-card p-6 sm:p-8">
+                  <h3 className="heading-md mb-3">Research is part of a paid plan</h3>
+                  <ResearchValue clarify={clarify} full={full} />
+                  <p className="body-md mt-4 text-foreground/60">
+                    Unlock the full report to run the research agent.
                   </p>
                 </div>
               )}

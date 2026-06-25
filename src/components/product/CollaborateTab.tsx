@@ -144,9 +144,38 @@ const CollaborateTab = ({
       <section className="glass-card p-6 sm:p-8">
         <h3 className="heading-md mb-1">Invite respondents</h3>
         <p className="body-md mb-4">
-          Email people close to the challenge. They get a private link, no account needed, to react to the map
-          and add their input.
+          Your leverage map is only as sharp as the input behind it. Inviting the people closest
+          to the challenge validates what's right, surfaces barriers the analysis missed, and folds
+          their real-world perspective into the next run.
         </p>
+        <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-5">
+          <p className="text-sm font-medium mb-3">What you get back</p>
+          <ul className="space-y-3">
+            {[
+              {
+                title: "Reactions",
+                body: "Each respondent marks every leverage point resonates, not sure, or missing something, so you see which points hold up and which are off.",
+              },
+              {
+                title: "Contributions",
+                body: "They add the barriers, constraints, and ideas you can't see from the inside.",
+              },
+              {
+                title: "A sharper report",
+                body: "Re-run the analysis and their input is woven in: confirmed points gain confidence, missing barriers get added, weak assumptions get challenged.",
+              },
+            ].map((step, i) => (
+              <li key={i} className="flex items-start gap-3 text-sm">
+                <span className="h-6 w-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center flex-shrink-0">
+                  {i + 1}
+                </span>
+                <span className="text-foreground/70">
+                  <span className="font-medium text-foreground/90">{step.title}</span> — {step.body}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
         <label htmlFor="invite-emails" className="sr-only">
           Email addresses
         </label>
@@ -173,6 +202,7 @@ const CollaborateTab = ({
         <button onClick={onInvite} disabled={sending} className="btn-primary mt-3">
           <Send className="h-4 w-4 mr-1.5" /> {sending ? "Sending…" : "Send invitations"}
         </button>
+        <p className="text-sm text-foreground/50 mt-2">No account needed — they get a private link.</p>
       </section>
 
       {/* Re-run CTA */}

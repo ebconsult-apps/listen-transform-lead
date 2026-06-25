@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Microscope, Check, X, Library, RefreshCw, ExternalLink, HelpCircle } from "lucide-react";
 import type { ResearchFindingRow, ResearchQuestionRow } from "@/lib/db";
+import type { ClarifyOutput, LeverageFull } from "@/lib/clear/types";
 import { runResearch } from "@/lib/clear/run";
 import { LoadingState } from "@/components/ui/data-states";
+import ResearchValue from "./ResearchValue";
 import {
   answerQuestion,
   confirmPromotion,
@@ -37,9 +39,13 @@ const FLAG_LABEL: Record<string, string> = {
 
 const ResearchTab = ({
   projectId,
+  clarify,
+  full,
   onAfterRun,
 }: {
   projectId: string;
+  clarify: ClarifyOutput | null;
+  full: LeverageFull | null;
   onAfterRun?: () => Promise<void> | void;
 }) => {
   const [findings, setFindings] = useState<ResearchFindingRow[]>([]);
@@ -139,16 +145,13 @@ const ResearchTab = ({
   return (
     <div className="space-y-6">
       <div className="glass-card p-6 sm:p-8">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-3">
           <Microscope className="h-5 w-5 text-primary" />
-          <h3 className="heading-md">Research</h3>
+          <h3 className="heading-md">Run research to turn your open questions into evidence</h3>
         </div>
-        <p className="body-md mb-5">
-          Gather cited external evidence, sector benchmarks, behavioural-science findings, real-world
-          examples, to turn the assumptions and gaps in Clarify and Leverage into verified facts.
-          Every finding carries a source; nothing is invented. Accept what holds up and it strengthens
-          your next report; promote a de-identified version to reuse it on future projects.
-        </p>
+        <div className="mb-5">
+          <ResearchValue clarify={clarify} full={full} />
+        </div>
         <button onClick={run} disabled={busy} className="btn-primary">
           {busy ? (
             <RefreshCw className="h-4 w-4 mr-1.5 animate-spin" />

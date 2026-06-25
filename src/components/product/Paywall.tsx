@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, ArrowRight } from "lucide-react";
+import { Lock, ArrowRight, Check } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PRICE_IDS, UNLOCK_PLAN } from "@/config/billing";
@@ -53,10 +53,38 @@ const Paywall = ({
         <Lock className="h-5 w-5 text-primary" />
       </div>
       <h3 className="heading-md mb-2">Unlock the full report</h3>
-      <p className="body-md max-w-md mx-auto mb-6">
-        See the full leverage map, COM-B barrier analysis with evidence, the gap
-        log, and recommended discovery activities, plus PDF & Markdown export.
+      <p className="body-md max-w-md mx-auto mb-4">
+        The teaser shows you the top leverage points. The full report gives you what
+        to do about them — and why.
       </p>
+      <ul className="text-left max-w-md mx-auto mb-5 space-y-2.5 text-sm">
+        {[
+          {
+            title: "Act on evidence, not hunches",
+            body: "the COM-B barrier analysis, each cell flagged Verified, Assumption, or Gap, so you know what's solid before you spend.",
+          },
+          {
+            title: "See exactly what's still unverified",
+            body: "the gap log separates what's confirmed from what's still an assumption, so nothing reads as fact without provenance.",
+          },
+          {
+            title: "Know your next move",
+            body: "concrete discovery activities, interviews, audits, surveys, you can run this week to close those gaps.",
+          },
+          {
+            title: "Unlock Research & Experiment",
+            body: "gather cited evidence and turn leverage points into testable interventions. Both stay locked until you unlock here.",
+          },
+        ].map((item, i) => (
+          <li key={i} className="flex items-start gap-2">
+            <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+            <span className="text-foreground/70">
+              <span className="font-medium text-foreground/90">{item.title}</span> — {item.body}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="text-sm text-foreground/50 mb-6">Plus PDF & Markdown export.</p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button onClick={unlock} disabled={loading} className="btn-primary">
           {loading ? "Starting checkout…" : `Unlock this report: ${UNLOCK_PLAN.price}`}
