@@ -24,7 +24,7 @@ const COPY = {
     owner: {
       title: "Prepare your inputs with AI",
       blurb:
-        "Sharper inputs → sharper analysis. Paste this prompt into your own AI assistant (Claude, ChatGPT, Copilot) along with your documents. It returns three briefs you can upload below.",
+        "Sharper inputs → sharper analysis. Paste this prompt into your own AI assistant (Claude, ChatGPT, Copilot) along with your documents. It returns a single evidence pack you can upload below.",
     },
     respondent: {
       title: "Short on time? Prepare your input with AI",
@@ -43,7 +43,7 @@ const COPY = {
     owner: {
       title: "Förbered ditt underlag med AI",
       blurb:
-        "Skarpare underlag → skarpare analys. Klistra in prompten i din egen AI-assistent (Claude, ChatGPT, Copilot) tillsammans med dina dokument. Den ger tre underlag som du kan ladda upp nedan.",
+        "Skarpare underlag → skarpare analys. Klistra in prompten i din egen AI-assistent (Claude, ChatGPT, Copilot) tillsammans med dina dokument. Den ger ett samlat underlag som du kan ladda upp nedan.",
     },
     respondent: {
       title: "Ont om tid? Förbered ditt bidrag med AI",
