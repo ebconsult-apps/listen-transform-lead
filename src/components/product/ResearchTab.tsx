@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Microscope, Check, X, Library, RefreshCw, ExternalLink, HelpCircle } from "lucide-react";
 import type { ResearchFindingRow, ResearchQuestionRow } from "@/lib/db";
 import { runResearch } from "@/lib/clear/run";
+import { LoadingState } from "@/components/ui/data-states";
 import {
   answerQuestion,
   confirmPromotion,
@@ -130,7 +131,7 @@ const ResearchTab = ({
     }
   };
 
-  if (loading) return <div className="animate-pulse text-foreground/50">Loading…</div>;
+  if (loading) return <LoadingState />;
 
   const active = findings.filter((f) => f.status !== "dismissed");
   const openQuestions = questions.filter((q) => q.status !== "dismissed");

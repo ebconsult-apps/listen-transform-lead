@@ -27,6 +27,7 @@ import PrepPromptCard from "@/components/product/PrepPromptCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
+import { LoadingState, ErrorState } from "@/components/ui/data-states";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,6 +44,7 @@ const ProjectDetail = () => {
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [teaserAt, setTeaserAt] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -66,11 +68,17 @@ const ProjectDetail = () => {
     setEntitled(canViewFull(ent, unlock));
   }, [id]);
 
-  useEffect(() => {
+  const reload = useCallback(() => {
+    setLoadError(null);
+    setLoading(true);
     load()
-      .catch((e) => toast.error(e.message))
+      .catch((e) => setLoadError((e as Error).message))
       .finally(() => setLoading(false));
   }, [load]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
 
   // Returning from a successful Stripe checkout → refresh entitlement + run full.
   useEffect(() => {
@@ -117,9 +125,22 @@ const ProjectDetail = () => {
   };
 
   if (loading) {
-    return <div className="max-w-3xl mx-auto px-6 py-10 animate-pulse text-foreground/50">Loading…</div>;
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <LoadingState />
+      </div>
+    );
   }
-  if (!project) return null;
+  if (loadError || !project) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <ErrorState
+          message={loadError ?? "This project couldn't be found."}
+          onRetry={reload}
+        />
+      </div>
+    );
+  }
 
   const clarify = approval ?? clarifyRun;
   const hasClarify = Boolean(clarify);

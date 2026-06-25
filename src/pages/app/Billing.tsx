@@ -6,6 +6,7 @@ import { getMyWorkspace, getEntitlement, type Entitlement } from "@/lib/db";
 import { openBillingPortal, startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PLANS, PRICE_IDS } from "@/config/billing";
 import { toast } from "sonner";
+import { LoadingState } from "@/components/ui/data-states";
 
 type PaidTier = "solo" | "team" | "business";
 
@@ -60,7 +61,7 @@ const Billing = () => {
       <h1 className="heading-lg mb-6">Billing</h1>
 
       {loading ? (
-        <div className="animate-pulse text-foreground/50">Loading…</div>
+        <LoadingState />
       ) : (
         <div className="space-y-6">
           <div className="glass-card p-8">

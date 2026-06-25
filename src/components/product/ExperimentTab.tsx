@@ -4,6 +4,7 @@ import type { ClarifyOutput, ExperimentOutput, LeverageFull, LeverageTeaser, Res
 import type { AssumptionGapRow, InterventionCandidateRow, TestCardRow } from "@/lib/db";
 import { setProjectStatus } from "@/lib/db";
 import { runExperiment } from "@/lib/clear/run";
+import { LoadingState } from "@/components/ui/data-states";
 import {
   createTestCard,
   getExperimentDesign,
@@ -119,7 +120,7 @@ const ExperimentTab = ({
   };
 
   if (loading) {
-    return <div className="animate-pulse text-foreground/50">Loading…</div>;
+    return <LoadingState />;
   }
 
   const hasCandidates = candidates.length > 0;
