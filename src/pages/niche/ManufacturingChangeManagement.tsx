@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const ManufacturingChangeManagement = () => (
   <NichePage
@@ -59,7 +58,7 @@ const ManufacturingChangeManagement = () => (
       result:
         "The modified MES implementation achieved 92% operator compliance within six weeks on the pilot line, compared to 35% in the original rollout. Downtime during the transition was reduced by 60%. The approach was then scaled across all production lines with local adaptations for each shift pattern.",
     }}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

@@ -1,6 +1,5 @@
 
 import LandingPage from "@/components/LandingPage";
-import { BOOKING_URL } from "@/config/site";
 
 const ChangeManagement = () => {
   return (
@@ -20,7 +19,7 @@ const ChangeManagement = () => {
         role: "Housing Organisation",
       }}
       ctaText="Book a Free 30-Minute Discovery Call"
-      ctaLink={BOOKING_URL}
+      ctaLink="/book-call"
       showWhitepaperForm={false}
       seoTitle="Change Management Consulting | Licensed Psychologist | CLEAR Framework"
       seoDescription="70% of change initiatives fail. Licensed psychologist Erik Bohjort uses the CLEAR framework to help organizations drive change that actually sticks. Book a free discovery call."

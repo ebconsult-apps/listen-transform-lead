@@ -1,9 +1,8 @@
 
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowRight, CheckCircle, AlertTriangle } from "lucide-react";
 import SEO from "@/components/SEO";
-import { BOOKING_URL } from "@/config/site";
 
 const ChangeManagementService = () => {
   useEffect(() => {
@@ -138,10 +137,10 @@ const ChangeManagementService = () => {
               whether the CLEAR approach is the right fit. No commitment, no pitch.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-primary">
+              <Link to="/book-call" className="btn-primary">
                 Book a Discovery Call
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
               <Link to="/assessment" className="btn-secondary">
                 Take the Free Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />

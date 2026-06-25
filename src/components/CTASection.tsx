@@ -2,7 +2,6 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { BOOKING_URL } from "@/config/site";
 
 const CTASection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -57,9 +56,9 @@ const CTASection = () => {
                 Take the Free Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-secondary">
+              <Link to="/book-call" className="btn-secondary">
                 Book a Discovery Call
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -19,6 +19,7 @@ const routes = [
   "/resources",
   "/contact",
   "/get-the-book",
+  "/book-call",
   "/booking-confirmed",
   "/assessment",
   "/lp/organizational-change",

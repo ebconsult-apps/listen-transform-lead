@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const OrganizationalPsychologyConsulting = () => (
   <NichePage
@@ -55,7 +54,7 @@ const OrganizationalPsychologyConsulting = () => (
           "Every recommendation in a CLEAR engagement is grounded in peer-reviewed research from organizational psychology, behavioral economics, and systems theory. When we suggest an intervention, we can point to the evidence base supporting it. This isn't about what feels right or what worked at another company\u2014it's about what the science shows actually drives behavior change.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",

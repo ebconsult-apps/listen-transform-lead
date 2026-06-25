@@ -28,6 +28,7 @@ import LeadershipDevelopment from "./pages/landing/LeadershipDevelopment";
 import OrganizationalPsychology from "./pages/landing/OrganizationalPsychology";
 import MergerIntegration from "./pages/landing/MergerIntegration";
 import BookingConfirmation from "./pages/BookingConfirmation";
+import BookCall from "./pages/BookCall";
 import Assessment from "./pages/Assessment";
 import ChangeManagementStockholm from "./pages/niche/ChangeManagementStockholm";
 import ChangeManagementEurope from "./pages/niche/ChangeManagementEurope";
@@ -122,6 +123,7 @@ const App = () => (
               <Route path="framework" element={<Framework />} />
               <Route path="methodology" element={<Methodology />} />
               <Route path="faq" element={<FAQ />} />
+              <Route path="book-call" element={<BookCall />} />
               <Route path="booking-confirmed" element={<BookingConfirmation />} />
               <Route path="thank-you" element={<ThankYou />} />
               <Route path="assessment" element={<Assessment />} />

@@ -1,6 +1,5 @@
 
 import LandingPage from "@/components/LandingPage";
-import { BOOKING_URL } from "@/config/site";
 
 const LeadershipDevelopment = () => {
   return (
@@ -20,7 +19,7 @@ const LeadershipDevelopment = () => {
         role: "Deep Tech Startup",
       }}
       ctaText="Book a Free 30-Minute Discovery Call"
-      ctaLink={BOOKING_URL}
+      ctaLink="/book-call"
       showWhitepaperForm={false}
       seoTitle="Leadership Development Program | Licensed Psychologist | Evidence-Based"
       seoDescription="Leadership workshops don't change behavior. Licensed psychologist Erik Bohjort designs evidence-based leadership programs using psychometric assessments and the CLEAR framework."

@@ -1,5 +1,4 @@
 import NichePage from "@/components/NichePage";
-import { BOOKING_URL } from "@/config/site";
 
 const SustainabilityChangeManagement = () => (
   <NichePage
@@ -50,7 +49,7 @@ const SustainabilityChangeManagement = () => (
           "CLEAR's iterative approach\u2014Experimentation followed by Analysis followed by Refinement\u2014builds sustainability practices that are tested and validated, not assumed. Each change is measured for genuine impact, not just compliance. This creates an evidence base that distinguishes authentic transformation from performative sustainability, protecting your organization from greenwashing accusations while building practices that actually reduce environmental harm.",
       },
     ]}
-    ctaPrimary={{ text: "Book a Free Discovery Call", href: BOOKING_URL }}
+    ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
       text: "Take the Change Readiness Assessment",
       href: "/assessment",
