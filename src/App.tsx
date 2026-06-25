@@ -61,7 +61,15 @@ import RespondentPortal from "./pages/respond/RespondentPortal";
 import DevPanel from "@/components/dev/DevPanel";
 import { DEV_ACCESS_ENABLED } from "@/lib/dev/config";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function RouteTracker() {
   const location = useLocation();

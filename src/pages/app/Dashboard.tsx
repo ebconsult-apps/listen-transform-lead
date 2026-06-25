@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, FileText } from "lucide-react";
 import SEO from "@/components/SEO";
-import { listProjects, type Project } from "@/lib/db";
 import type { ProjectStatus } from "@/lib/clear/types";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
+import { useProjects } from "@/hooks/queries/useProjects";
 
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   draft: "Draft",
@@ -33,22 +32,7 @@ const STATUS_CLASS: Record<ProjectStatus, string> = {
 };
 
 const Dashboard = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  const load = useCallback(() => {
-    setLoadError(null);
-    setLoading(true);
-    listProjects()
-      .then(setProjects)
-      .catch((e) => setLoadError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  const { data: projects = [], isPending, isError, error, refetch } = useProjects();
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -63,10 +47,10 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      {loading ? (
+      {isPending ? (
         <LoadingState />
-      ) : loadError ? (
-        <ErrorState message={loadError} onRetry={load} />
+      ) : isError ? (
+        <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : projects.length === 0 ? (
         <div className="glass-card p-12 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
