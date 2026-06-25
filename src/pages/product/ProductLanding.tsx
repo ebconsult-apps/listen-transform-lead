@@ -5,7 +5,7 @@ import Pipeline from "@/components/product/Pipeline";
 
 const USE_CASES = [
   { title: "Customer churn", body: "Move at-risk customers back to the behaviours that predict retention." },
-  { title: "Onboarding adoption", body: "Get new users to the activating action — and keep them there." },
+  { title: "Onboarding adoption", body: "Get new users to the activating action, and keep them there." },
   { title: "Compliance", body: "Lift adherence without relying on willpower or another reminder email." },
   { title: "Policy uptake", body: "Help citizens take the action a new policy depends on." },
 ];
@@ -14,15 +14,15 @@ const STEPS = [
   { icon: Upload, title: "Describe + upload", body: "Your challenge, stakeholders, timeline, and any documents." },
   { icon: Sparkles, title: "Clarify + Leverage", body: "Get measurable OKRs, a systems map, and the top leverage points." },
   { icon: Lock, title: "Unlock the full report", body: "COM-B barriers with evidence, gap log, and discovery activities." },
-  { icon: FileDown, title: "Export", body: "Share as PDF or Markdown — ready for your team." },
+  { icon: FileDown, title: "Export", body: "Share as PDF or Markdown, ready for your team." },
 ];
 
 const ProductLanding = () => {
   return (
     <div className="bg-background">
       <SEO
-        title="CLEAR — Behavioral insights, productized"
-        description="Move your target group's behavior — backed by science, without a six-figure consultancy. Self-serve behavioral analysis using the CLEAR framework."
+        title="CLEAR: Behavioral insights, productized"
+        description="Move your target group's behavior, backed by science, without a six-figure consultancy. Self-serve behavioral analysis using the CLEAR framework."
         path="/product"
       />
 
@@ -30,13 +30,13 @@ const ProductLanding = () => {
       <section className="section-container text-center">
         <span className="tag mb-6">Behavioral insights, productized</span>
         <h1 className="heading-xl max-w-4xl mx-auto mb-6">
-          Move your target group's behavior — backed by science, without a
+          Move your target group's behavior, backed by science, without a
           six-figure consultancy
         </h1>
         <p className="body-lg max-w-2xl mx-auto mb-8">
           Bring a behavior-change challenge, upload what you have, and get a
           clear objective, a systems map, and the highest-leverage points to act
-          on — in minutes, not months.
+          on, in minutes, not months.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link to="/login" className="btn-primary text-lg px-8 py-3">
@@ -92,7 +92,7 @@ const ProductLanding = () => {
       <section className="section-container pt-0">
         <div className="glass-card p-8 sm:p-12 text-center bg-primary/5">
           <p className="text-xl sm:text-2xl font-medium max-w-3xl mx-auto">
-            Built on the CLEAR Change Framework — the same behavioral-science
+            Built on the CLEAR Change Framework: the same behavioral-science
             method used in enterprise change programs, now self-serve.
           </p>
           <p className="text-sm text-foreground/50 mt-4">

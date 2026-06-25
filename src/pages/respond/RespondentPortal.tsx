@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
 import RespondentMap, { type PointReaction } from "@/components/product/RespondentMap";
 import PrepPromptCard from "@/components/product/PrepPromptCard";
+import { LoadingState } from "@/components/ui/data-states";
 import {
   RESPONDENT_PROMPTS,
   respondentLoad,
@@ -138,7 +139,7 @@ const RespondentPortal = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Share your input — CLEAR" description="Contribute to a CLEAR project." path="/respond" noindex />
+      <SEO title="Share your input: CLEAR" description="Contribute to a CLEAR project." path="/respond" noindex />
       <header className="border-b border-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-4">
           <span className="font-bold tracking-tight text-lg">CLEAR</span>
@@ -146,7 +147,7 @@ const RespondentPortal = () => {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
-        {loading && <div className="animate-pulse text-foreground/50">Loading…</div>}
+        {loading && <LoadingState />}
 
         {!loading && loadError && (
           <div className="glass-card p-8 text-center">
@@ -173,7 +174,7 @@ const RespondentPortal = () => {
               <h1 className="heading-lg mb-2">Help shape “{data.projectName}”</h1>
               <p className="body-md">
                 You've been invited to add your perspective. Review the current thinking, react to it, and share
-                your own input below. There are no wrong answers — this takes a few minutes.
+                your own input below. There are no wrong answers. This takes a few minutes.
               </p>
             </div>
 
@@ -186,7 +187,7 @@ const RespondentPortal = () => {
             ) : (
               <section className="glass-card p-6 sm:p-8">
                 <p className="body-md">
-                  The team is still preparing the analysis — your input below will help shape it.
+                  The team is still preparing the analysis. Your input below will help shape it.
                 </p>
               </section>
             )}
@@ -215,7 +216,7 @@ const RespondentPortal = () => {
               {RESPONDENT_PROMPTS.map((p) => (
                 <div key={p.key}>
                   <label className="block text-sm font-medium mb-2">
-                    {p.label} {p.hint && <span className="text-foreground/40 font-normal">— {p.hint}</span>}
+                    {p.label} {p.hint && <span className="text-foreground/40 font-normal">: {p.hint}</span>}
                   </label>
                   <textarea
                     rows={4}
@@ -236,7 +237,7 @@ const RespondentPortal = () => {
             {/* Documents */}
             <section className="glass-card p-6 sm:p-8">
               <h2 className="heading-md mb-2">Documents <span className="text-foreground/40 font-normal text-base">(optional)</span></h2>
-              <p className="body-md mb-4">Share anything relevant — notes, reports, spreadsheets.</p>
+              <p className="body-md mb-4">Share anything relevant: notes, reports, spreadsheets.</p>
               <label className="border-dashed border-2 border-border rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:bg-muted/50 transition-colors">
                 {uploading ? (
                   <Loader2 className="h-6 w-6 text-foreground/40 mb-2 animate-spin" />

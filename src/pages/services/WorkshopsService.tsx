@@ -41,7 +41,7 @@ const WorkshopsService = () => {
           <p className="body-lg max-w-3xl">
             Keynotes and interactive workshops on organizational change, behavioral design,
             systems thinking, and the CLEAR framework. Each session is designed by a licensed
-            psychologist and tailored to your audience and context — whether it's a 200-person
+            psychologist and tailored to your audience and context, whether it's a 200-person
             conference or a 12-person leadership offsite.
           </p>
         </div>
@@ -64,7 +64,7 @@ const WorkshopsService = () => {
               },
               {
                 title: "Behavioral Design for Leaders",
-                desc: "How to apply behavioral science principles to everyday leadership challenges — from nudging team behavior to designing meetings that produce real decisions.",
+                desc: "How to apply behavioral science principles to everyday leadership challenges: from nudging team behavior to designing meetings that produce real decisions.",
                 format: "Keynote (45-60 min) or Half-day workshop",
               },
               {
@@ -98,10 +98,10 @@ const WorkshopsService = () => {
           <h2 className="heading-lg mb-6">What Makes These Different</h2>
           <div className="space-y-4">
             {[
-              "Designed by a licensed psychologist — grounded in behavioral science, not pop frameworks",
-              "Interactive and applied — participants work on their own real challenges, not hypothetical cases",
-              "Evidence-based content — every claim is backed by research, every tool is field-tested",
-              "Tailored to your context — no off-the-shelf slide decks, every session is customized",
+              "Designed by a licensed psychologist: grounded in behavioral science, not pop frameworks",
+              "Interactive and applied: participants work on their own real challenges, not hypothetical cases",
+              "Evidence-based content: every claim is backed by research, every tool is field-tested",
+              "Tailored to your context: no off-the-shelf slide decks, every session is customized",
             ].map((item, i) => (
               <div key={i} className="flex gap-3 items-start">
                 <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
@@ -118,7 +118,7 @@ const WorkshopsService = () => {
             <h2 className="heading-md mb-4">Inquire About Availability</h2>
             <p className="body-md text-foreground/70 mb-8 max-w-xl mx-auto">
               Whether you're planning a conference keynote, a leadership offsite, or a
-              team development day — let's discuss what would make the biggest impact.
+              team development day, let's discuss what would make the biggest impact.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="btn-primary">

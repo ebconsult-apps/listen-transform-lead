@@ -93,7 +93,10 @@ const Contact = () => {
               <div className="glass-card p-8 md:p-10">
                 <h2 className="heading-md mb-6">Send a Message</h2>
                 {error && (
-                  <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+                  <div
+                    role="alert"
+                    className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg"
+                  >
                     {error}
                   </div>
                 )}

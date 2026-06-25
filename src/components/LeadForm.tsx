@@ -125,7 +125,10 @@ const LeadForm = () => {
       </p>
 
       {submitError && (
-        <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+        <div
+          role="alert"
+          className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg"
+        >
           {submitError}
         </div>
       )}
@@ -147,9 +150,14 @@ const LeadForm = () => {
             onChange={handleChange}
             className={inputClasses}
             placeholder="Your full name"
+            aria-required="true"
+            aria-invalid={!!errors.fullName}
+            aria-describedby={errors.fullName ? "lead-fullName-error" : undefined}
           />
           {errors.fullName && (
-            <p className="mt-1 text-sm text-destructive">{errors.fullName}</p>
+            <p id="lead-fullName-error" role="alert" className="mt-1 text-sm text-destructive">
+              {errors.fullName}
+            </p>
           )}
         </div>
 
@@ -169,9 +177,14 @@ const LeadForm = () => {
             onChange={handleChange}
             className={inputClasses}
             placeholder="your.email@company.com"
+            aria-required="true"
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "lead-email-error" : undefined}
           />
           {errors.email && (
-            <p className="mt-1 text-sm text-destructive">{errors.email}</p>
+            <p id="lead-email-error" role="alert" className="mt-1 text-sm text-destructive">
+              {errors.email}
+            </p>
           )}
         </div>
 
@@ -191,9 +204,14 @@ const LeadForm = () => {
             onChange={handleChange}
             className={inputClasses}
             placeholder="Your organization"
+            aria-required="true"
+            aria-invalid={!!errors.company}
+            aria-describedby={errors.company ? "lead-company-error" : undefined}
           />
           {errors.company && (
-            <p className="mt-1 text-sm text-destructive">{errors.company}</p>
+            <p id="lead-company-error" role="alert" className="mt-1 text-sm text-destructive">
+              {errors.company}
+            </p>
           )}
         </div>
 

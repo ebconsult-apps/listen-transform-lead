@@ -29,6 +29,7 @@ import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
+import { LoadingState, ErrorState } from "@/components/ui/data-states";
 
 // The four linear phases shown in the stepper. Research/Collaborate are auxiliary
 // (no ordering, no status gate) and stay as secondary tabs within the report view.
@@ -79,6 +80,7 @@ const ProjectDetail = () => {
   const [activeStep, setActiveStep] = useState<StepId | null>(null);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   // Per-phase "last produced at" timestamps, for non-destructive staleness checks.
   const [clarifyApprovedAt, setClarifyApprovedAt] = useState<string | null>(null);
   const [teaserAt, setTeaserAt] = useState<string | null>(null);
@@ -113,16 +115,22 @@ const ProjectDetail = () => {
     setEntitled(canViewFull(ent, unlock));
   }, [id]);
 
-  useEffect(() => {
+  const reload = useCallback(() => {
+    setLoadError(null);
+    setLoading(true);
     load()
-      .catch((e) => toast.error(e.message))
+      .catch((e) => setLoadError((e as Error).message))
       .finally(() => setLoading(false));
   }, [load]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
 
   // Returning from a successful Stripe checkout → refresh entitlement + run full.
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
-      toast.success("Payment received — generating your full report.");
+      toast.success("Payment received, generating your full report.");
       load();
     }
   }, [searchParams, load]);
@@ -164,9 +172,22 @@ const ProjectDetail = () => {
   };
 
   if (loading) {
-    return <div className="max-w-3xl mx-auto px-6 py-10 animate-pulse text-foreground/50">Loading…</div>;
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <LoadingState />
+      </div>
+    );
   }
-  if (!project) return null;
+  if (loadError || !project) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <ErrorState
+          message={loadError ?? "This project couldn't be found."}
+          onRetry={reload}
+        />
+      </div>
+    );
+  }
 
   const clarify = approval ?? clarifyRun;
   const hasClarify = Boolean(clarify);
@@ -211,7 +232,7 @@ const ProjectDetail = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title={`${project.name} — CLEAR`} description="CLEAR project report." path={`/app/projects/${project.id}`} noindex />
+      <SEO title={`${project.name}: CLEAR`} description="CLEAR project report." path={`/app/projects/${project.id}`} noindex />
 
       <div className="no-print">
         <Link to="/app" className="inline-flex items-center text-sm text-foreground/50 hover:text-foreground mb-4">

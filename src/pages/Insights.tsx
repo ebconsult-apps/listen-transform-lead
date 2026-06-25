@@ -8,14 +8,14 @@ const articles = [
   {
     slug: "why-change-initiatives-fail",
     title: "Why 70% of Change Initiatives Fail (And What the Research Actually Says)",
-    summary: "The statistic everyone quotes — but few understand. What does the research actually tell us about why organizational change fails, and what separates the 30% that succeed?",
+    summary: "The statistic everyone quotes, but few understand. What does the research actually tell us about why organizational change fails, and what separates the 30% that succeed?",
     category: "Change Management",
     readTime: "8 min read",
   },
   {
     slug: "adkar-vs-clear",
     title: "ADKAR vs CLEAR: Which Change Framework Is Right for Your Organization?",
-    summary: "A direct comparison of two change management approaches — one from project management, one from behavioral psychology. When to use each, and what they get right and wrong.",
+    summary: "A direct comparison of two change management approaches: one from project management, one from behavioral psychology. When to use each, and what they get right and wrong.",
     category: "Change Management",
     readTime: "10 min read",
   },
@@ -29,7 +29,7 @@ const articles = [
   {
     slug: "psychometric-assessments-leadership",
     title: "How Psychometric Assessments Actually Improve Leadership (A Psychologist's View)",
-    summary: "Most assessment programs collect data and never use it. Here's how to connect psychometric insights to actual behavior change — and what to avoid.",
+    summary: "Most assessment programs collect data and never use it. Here's how to connect psychometric insights to actual behavior change, and what to avoid.",
     category: "Leadership",
     readTime: "9 min read",
   },
@@ -43,7 +43,7 @@ const articles = [
   {
     slug: "why-leaders-are-poor-listeners",
     title: "Why Most Leaders Are Poor Listeners (And Don't Know It)",
-    summary: "Listening is the most overrated and underperformed leadership skill. Here's what genuine organizational listening looks like — and why it's the missing ingredient in most change programs.",
+    summary: "Listening is the most overrated and underperformed leadership skill. Here's what genuine organizational listening looks like, and why it's the missing ingredient in most change programs.",
     category: "Leadership",
     readTime: "6 min read",
   },
@@ -70,7 +70,7 @@ const Insights = () => {
           </h1>
           <p className="body-lg max-w-3xl">
             Evidence-based perspectives on organizational change, leadership development,
-            and applied behavioral psychology — from a licensed psychologist who works
+            and applied behavioral psychology, from a licensed psychologist who works
             in the field.
           </p>
         </div>

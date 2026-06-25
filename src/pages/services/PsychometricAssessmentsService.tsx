@@ -41,7 +41,7 @@ const PsychometricAssessmentsService = () => {
           <p className="body-lg max-w-3xl">
             Most organizations collect psychometric data and never use it. Erik Bohjort
             administers, interprets, and translates assessment results into actionable
-            development plans — with the clinical expertise to handle sensitive findings
+            development plans, with the clinical expertise to handle sensitive findings
             appropriately and the organizational experience to make the data matter.
           </p>
         </div>
@@ -54,15 +54,15 @@ const PsychometricAssessmentsService = () => {
             {[
               {
                 title: "Data without interpretation",
-                desc: "Teams receive a 30-page report full of scores, graphs, and personality types. Without a psychologist to contextualize the results, the data sits unused. Numbers don't create insight — trained interpretation does.",
+                desc: "Teams receive a 30-page report full of scores, graphs, and personality types. Without a psychologist to contextualize the results, the data sits unused. Numbers don't create insight. Trained interpretation does.",
               },
               {
                 title: "Entertainment, not development",
-                desc: "Many assessments become team-building entertainment: 'I'm a blue, you're a red.' Fun for a day, forgotten by Monday. Real psychometric tools reveal patterns that matter — decision-making under pressure, conflict style, cognitive biases — and connect them to specific growth goals.",
+                desc: "Many assessments become team-building entertainment: 'I'm a blue, you're a red.' Fun for a day, forgotten by Monday. Real psychometric tools reveal patterns that matter, decision-making under pressure, conflict style, cognitive biases, and connect them to specific growth goals.",
               },
               {
                 title: "No connection to organizational outcomes",
-                desc: "Individual assessments happen in isolation from the organizational context. A leadership profile means nothing without understanding the system the leader operates in — the culture, the politics, the strategic demands.",
+                desc: "Individual assessments happen in isolation from the organizational context. A leadership profile means nothing without understanding the system the leader operates in: the culture, the politics, the strategic demands.",
               },
             ].map((item, i) => (
               <div key={i} className="glass-card p-6 flex gap-4">
@@ -83,7 +83,7 @@ const PsychometricAssessmentsService = () => {
           <div className="space-y-5">
             {[
               { phase: "Leadership Profiling", desc: "Comprehensive assessment of leadership behavioral patterns, decision-making tendencies, stress responses, and interpersonal dynamics. Forms the foundation for targeted development programs." },
-              { phase: "Team Diagnostics", desc: "Map how a team functions as a system — communication patterns, role clarity, conflict dynamics, and collective blind spots. Reveals why some teams perform and others struggle despite individual talent." },
+              { phase: "Team Diagnostics", desc: "Map how a team functions as a system: communication patterns, role clarity, conflict dynamics, and collective blind spots. Reveals why some teams perform and others struggle despite individual talent." },
               { phase: "Change Readiness", desc: "Measure an organization's capacity for change across multiple dimensions. Identifies specific barriers and enablers before you invest in a transformation initiative. Start with the free online assessment to see the framework in action." },
               { phase: "Selection & Development", desc: "Evidence-based input for hiring, promotion, and succession decisions. Psychometric data provides objective insight that complements interview impressions and track records." },
             ].map((item, i) => (

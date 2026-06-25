@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus, FileText } from "lucide-react";
 import SEO from "@/components/SEO";
 import { listProjects, type Project } from "@/lib/db";
 import type { ProjectStatus } from "@/lib/clear/types";
-import { toast } from "sonner";
+import { LoadingState, ErrorState } from "@/components/ui/data-states";
 
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   draft: "Draft",
   running: "Running…",
-  clarify_ready: "Clarify — review",
+  clarify_ready: "Clarify: review",
   clarify_approved: "Clarify approved",
   teaser_ready: "Teaser ready",
   paid: "Unlocked",
@@ -35,17 +35,24 @@ const STATUS_CLASS: Record<ProjectStatus, string> = {
 const Dashboard = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoadError(null);
+    setLoading(true);
     listProjects()
       .then(setProjects)
-      .catch((e) => toast.error(e.message))
+      .catch((e) => setLoadError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    load();
+  }, [load]);
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title="Dashboard — CLEAR" description="Your CLEAR projects." path="/app" noindex />
+      <SEO title="Dashboard: CLEAR" description="Your CLEAR projects." path="/app" noindex />
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="heading-lg">Your projects</h1>
@@ -57,7 +64,9 @@ const Dashboard = () => {
       </div>
 
       {loading ? (
-        <div className="animate-pulse text-foreground/50">Loading…</div>
+        <LoadingState />
+      ) : loadError ? (
+        <ErrorState message={loadError} onRetry={load} />
       ) : projects.length === 0 ? (
         <div className="glass-card p-12 text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">

@@ -14,7 +14,7 @@ const ExecutiveCoachingService = () => {
     <div className="min-h-screen">
       <SEO
         title="Executive Coaching | Licensed Psychologist | Evidence-Based Approach"
-        description="Executive coaching from a licensed psychologist — not a certified coach. Clinically grounded, evidence-based coaching for senior leaders navigating complex challenges."
+        description="Executive coaching from a licensed psychologist, not a certified coach. Clinically grounded, evidence-based coaching for senior leaders navigating complex challenges."
         path="/services/executive-coaching"
         structuredData={{
           "@context": "https://schema.org",
@@ -41,7 +41,7 @@ const ExecutiveCoachingService = () => {
           <p className="body-lg max-w-3xl">
             Anyone can become a certified coach in a weekend. A licensed psychologist spends
             years training to understand how people think, resist change, make decisions under
-            pressure, and build — or destroy — trust. Erik Bohjort brings that clinical
+            pressure, and build, or destroy, trust. Erik Bohjort brings that clinical
             foundation to executive coaching for senior leaders who need more than motivation.
           </p>
         </div>
@@ -54,15 +54,15 @@ const ExecutiveCoachingService = () => {
             {[
               {
                 title: "Most coaches work with what you tell them",
-                desc: "They help you set goals, create accountability, and stay motivated. That's valuable — but it only works with the self-image you present. It doesn't reach the patterns you can't see yourself.",
+                desc: "They help you set goals, create accountability, and stay motivated. That's valuable, but it only works with the self-image you present. It doesn't reach the patterns you can't see yourself.",
               },
               {
                 title: "A psychologist works with what's underneath",
-                desc: "Confirmation bias, defensive routines, attachment patterns, stress responses — these shape how you lead every day, but they're invisible from the inside. Psychological training surfaces what self-reflection alone cannot.",
+                desc: "Confirmation bias, defensive routines, attachment patterns, stress responses. These shape how you lead every day, but they're invisible from the inside. Psychological training surfaces what self-reflection alone cannot.",
               },
               {
                 title: "The stakes demand rigor",
-                desc: "At the executive level, coaching conversations affect strategy, culture, and people's livelihoods. The person in the room with you should have the clinical training to handle what comes up — not just the certification.",
+                desc: "At the executive level, coaching conversations affect strategy, culture, and people's livelihoods. The person in the room with you should have the clinical training to handle what comes up, not just the certification.",
               },
             ].map((item, i) => (
               <div key={i} className="glass-card p-6 flex gap-4">
@@ -83,7 +83,7 @@ const ExecutiveCoachingService = () => {
           <div className="space-y-5">
             {[
               { phase: "Assessment", desc: "We start with a psychometric profile and structured intake. This gives us a shared map of your behavioral patterns, decision-making tendencies, and the specific areas where growth will have the most impact." },
-              { phase: "Structured Sessions", desc: "Regular one-on-one sessions (typically bi-weekly) with a clear developmental arc. Each session connects to real challenges you're navigating — not abstract exercises." },
+              { phase: "Structured Sessions", desc: "Regular one-on-one sessions (typically bi-weekly) with a clear developmental arc. Each session connects to real challenges you're navigating, not abstract exercises." },
               { phase: "Applied Learning", desc: "Between sessions, you practice specific behavioral shifts in live situations. We design experiments together, then debrief the results. This is where insight becomes capability." },
               { phase: "Honest Feedback", desc: "A psychologist's job is to tell you what you need to hear, not what you want to hear. If the CLEAR approach isn't the right fit, or if a different intervention would serve you better, you'll hear that directly." },
             ].map((item, i) => (

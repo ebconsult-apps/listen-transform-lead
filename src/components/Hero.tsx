@@ -30,7 +30,7 @@ const HERO_VARIANTS: HeroVariant[] = [
     id: "behavioral_design",
     tag: "The CLEAR Change Framework",
     headline: <>Organizational Change Through <span className="text-primary">Behavioral Design</span></>,
-    subtitle: "70% of change initiatives fail because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real — not just on paper.",
+    subtitle: "70% of change initiatives fail because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real, not just on paper.",
   },
   {
     id: "psychological_design",
@@ -42,7 +42,7 @@ const HERO_VARIANTS: HeroVariant[] = [
     id: "behavior_change",
     tag: "The CLEAR Change Framework",
     headline: <><span className="text-primary">Behavior Change</span> by Design, Not by Decree</>,
-    subtitle: "Mandates don't change organizations — behavioral design does. Erik Bohjort is a licensed psychologist who applies nudging and behavioral economics to help organizations transform the way people actually work.",
+    subtitle: "Mandates don't change organizations. Behavioral design does. Erik Bohjort is a licensed psychologist who applies nudging and behavioral economics to help organizations transform the way people actually work.",
   },
   {
     id: "behavioral_economics",
@@ -111,14 +111,14 @@ const Hero = () => {
   }, [variant]);
 
   return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[70dvh] flex items-center justify-center overflow-hidden">
       {/* Background pattern */}
       <div 
         ref={bgPatternRef}
         className="absolute inset-0 opacity-20 pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(circle at 20% 30%, rgba(var(--primary, 0, 0, 255), 0.15) 0%, transparent 40%), 
-                            radial-gradient(circle at 80% 70%, rgba(var(--primary, 0, 0, 255), 0.1) 0%, transparent 40%)`,
+          backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary) / 0.5) 0%, transparent 45%),
+                            radial-gradient(circle at 80% 70%, hsl(var(--primary) / 0.35) 0%, transparent 45%)`,
           backgroundSize: '100% 100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'

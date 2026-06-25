@@ -11,7 +11,7 @@ const Pricing = () => {
   return (
     <div className="bg-background">
       <SEO
-        title="Pricing — CLEAR self-serve"
+        title="Pricing: CLEAR self-serve"
         description="Start free, unlock a single full report one-off, or subscribe for unlimited behavioral analysis reports."
         path="/pricing"
       />
@@ -19,7 +19,7 @@ const Pricing = () => {
       <section className="section-container text-center">
         <h1 className="heading-xl mb-4">Simple, productized pricing</h1>
         <p className="body-lg max-w-2xl mx-auto">
-          The teaser is always free. Pay per-report or subscribe — whichever fits
+          The teaser is always free. Pay per-report or subscribe, whichever fits
           how often you ship change.
         </p>
       </section>
@@ -33,9 +33,9 @@ const Pricing = () => {
                 plan.highlight ? "ring-2 ring-primary" : ""
               }`}
             >
-              {plan.highlight && (
-                <span className="tag mb-3 self-start">Most popular</span>
-              )}
+              <div className="mb-3 h-6">
+                {plan.highlight && <span className="tag">Most popular</span>}
+              </div>
               <h3 className="text-lg font-semibold">{plan.name}</h3>
               <div className="mt-2 mb-4">
                 <span className="text-3xl font-bold">{plan.price}</span>
@@ -51,7 +51,7 @@ const Pricing = () => {
               </ul>
               <Link
                 to={plan.id === "free" ? "/signup" : dest}
-                className={plan.highlight ? "btn-primary w-full" : "btn-secondary w-full"}
+                className={plan.highlight ? "btn-primary w-full" : "btn-outline w-full"}
               >
                 {plan.cta}
               </Link>
@@ -61,29 +61,29 @@ const Pricing = () => {
 
         {/* One-off unlock + enterprise */}
         <div className="grid md:grid-cols-2 gap-6 mt-6">
-          <div className="glass-card p-6 bg-primary/5">
+          <div className="glass-card p-6 flex flex-col bg-primary/5">
             <h3 className="text-lg font-semibold">{UNLOCK_PLAN.name}</h3>
             <p className="text-3xl font-bold mt-2 mb-4">
               {UNLOCK_PLAN.price}{" "}
               <span className="text-sm font-normal text-foreground/50">{UNLOCK_PLAN.cadence}</span>
             </p>
-            <p className="text-sm text-foreground/70 mb-4">
-              No subscription. Unlock one full report when you need it — the
+            <p className="text-sm text-foreground/70 mb-4 flex-grow">
+              No subscription. Unlock one full report when you need it: the
               per-deliverable option.
             </p>
-            <Link to={dest} className="btn-secondary">
+            <Link to={dest} className="btn-outline w-full mt-auto">
               {UNLOCK_PLAN.cta}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
-          <div className="glass-card p-6">
+          <div className="glass-card p-6 flex flex-col">
             <h3 className="text-lg font-semibold">Enterprise</h3>
             <p className="text-3xl font-bold mt-2 mb-4">Custom</p>
-            <p className="text-sm text-foreground/70 mb-4">
+            <p className="text-sm text-foreground/70 mb-4 flex-grow">
               EU data residency guarantees, SSO, and volume pricing for
               organizations rolling out change at scale.
             </p>
-            <Link to="/contact" className="btn-secondary">
+            <Link to="/contact" className="btn-outline w-full mt-auto">
               Contact us
             </Link>
           </div>

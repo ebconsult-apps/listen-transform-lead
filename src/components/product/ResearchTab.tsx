@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Microscope, Check, X, Library, RefreshCw, ExternalLink, HelpCircle } from "lucide-react";
 import type { ResearchFindingRow, ResearchQuestionRow } from "@/lib/db";
 import { runResearch } from "@/lib/clear/run";
+import { LoadingState } from "@/components/ui/data-states";
 import {
   answerQuestion,
   confirmPromotion,
@@ -67,7 +68,7 @@ const ResearchTab = ({
       await runResearch(projectId);
       await load();
       await onAfterRun?.();
-      toast.success("Research complete — review the findings below.");
+      toast.success("Research complete. Review the findings below.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -103,7 +104,7 @@ const ResearchTab = ({
       await confirmPromotion(preview.id, preview.entry);
       setPreview(null);
       await load();
-      toast.success("Saved to the shared library — reusable on future projects.");
+      toast.success("Saved to the shared library: reusable on future projects.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -130,7 +131,7 @@ const ResearchTab = ({
     }
   };
 
-  if (loading) return <div className="animate-pulse text-foreground/50">Loading…</div>;
+  if (loading) return <LoadingState />;
 
   const active = findings.filter((f) => f.status !== "dismissed");
   const openQuestions = questions.filter((q) => q.status !== "dismissed");
@@ -143,8 +144,8 @@ const ResearchTab = ({
           <h3 className="heading-md">Research</h3>
         </div>
         <p className="body-md mb-5">
-          Gather cited external evidence — sector benchmarks, behavioural-science findings, real-world
-          examples — to turn the assumptions and gaps in Clarify and Leverage into verified facts.
+          Gather cited external evidence, sector benchmarks, behavioural-science findings, real-world
+          examples, to turn the assumptions and gaps in Clarify and Leverage into verified facts.
           Every finding carries a source; nothing is invented. Accept what holds up and it strengthens
           your next report; promote a de-identified version to reuse it on future projects.
         </p>
@@ -197,7 +198,7 @@ const ResearchTab = ({
                       ) : (
                         <span>{c.title}</span>
                       )}
-                      {c.note && <span className="text-foreground/40"> — {c.note}</span>}
+                      {c.note && <span className="text-foreground/40">: {c.note}</span>}
                     </li>
                   ))}
                 </ul>
@@ -230,7 +231,7 @@ const ResearchTab = ({
               {preview?.id === f.id && (
                 <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
                   <p className="text-xs font-medium text-primary mb-2">
-                    De-identified for the shared library — review before saving:
+                    De-identified for the shared library. Review before saving:
                   </p>
                   <p className="text-sm font-medium">{preview.entry.title}</p>
                   <p className="text-sm text-foreground/70 mt-1">{preview.entry.summary}</p>

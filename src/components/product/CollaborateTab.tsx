@@ -10,6 +10,7 @@ import {
 } from "@/lib/collab";
 import type { LeverageReaction, ProjectContribution, ProjectInvitation } from "@/lib/db";
 import { toast } from "sonner";
+import { LoadingState } from "@/components/ui/data-states";
 
 const REACTION_LABEL: Record<string, string> = {
   resonates: "resonates",
@@ -46,6 +47,7 @@ const CollaborateTab = ({
   const [emails, setEmails] = useState("");
   const [note, setNote] = useState("");
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     const [inv, contribs, rx] = await Promise.all([
@@ -59,7 +61,10 @@ const CollaborateTab = ({
   }, [projectId]);
 
   useEffect(() => {
-    load().catch((e) => toast.error(e.message));
+    setLoading(true);
+    load()
+      .catch((e) => toast.error(e.message))
+      .finally(() => setLoading(false));
   }, [load]);
 
   const submitted = useMemo(
@@ -96,7 +101,7 @@ const CollaborateTab = ({
       const failed = results.filter((r) => r.status === "email_failed" || r.status === "error");
       const already = results.filter((r) => r.status === "already_invited").length;
       if (sent) toast.success(`Sent ${sent} invitation${sent === 1 ? "" : "s"}.`);
-      if (already) toast.message(`${already} already invited — use Resend.`);
+      if (already) toast.message(`${already} already invited. Use Resend.`);
       if (failed.length) toast.error(`${failed.length} couldn't be emailed: ${failed[0].error ?? "unknown error"}`);
       setEmails("");
       setNote("");
@@ -129,13 +134,17 @@ const CollaborateTab = ({
 
   const contributionByInvitation = (id: string) => contributions.find((c) => c.invitation_id === id);
 
+  if (loading) {
+    return <LoadingState />;
+  }
+
   return (
     <div className="space-y-8">
       {/* Invite */}
       <section className="glass-card p-6 sm:p-8">
         <h3 className="heading-md mb-1">Invite respondents</h3>
         <p className="body-md mb-4">
-          Email people close to the challenge. They get a private link — no account needed — to react to the map
+          Email people close to the challenge. They get a private link, no account needed, to react to the map
           and add their input.
         </p>
         <textarea

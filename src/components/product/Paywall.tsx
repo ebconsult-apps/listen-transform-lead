@@ -46,11 +46,11 @@ const Paywall = ({
       <h3 className="heading-md mb-2">Unlock the full report</h3>
       <p className="body-md max-w-md mx-auto mb-6">
         See the full leverage map, COM-B barrier analysis with evidence, the gap
-        log, and recommended discovery activities — plus PDF & Markdown export.
+        log, and recommended discovery activities, plus PDF & Markdown export.
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button onClick={unlock} disabled={loading} className="btn-primary">
-          {loading ? "Starting checkout…" : `Unlock this report — ${UNLOCK_PLAN.price}`}
+          {loading ? "Starting checkout…" : `Unlock this report: ${UNLOCK_PLAN.price}`}
           <ArrowRight className="ml-2 h-4 w-4" />
         </button>
         <Link to="/pricing" className="btn-secondary">
@@ -62,7 +62,7 @@ const Paywall = ({
           onClick={onDevPreview}
           className="mt-5 text-xs text-foreground/40 hover:text-foreground/70 underline"
         >
-          Preview full report (dev only — bypasses payment)
+          Preview full report (dev only: bypasses payment)
         </button>
       )}
     </div>

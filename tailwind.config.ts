@@ -67,7 +67,7 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter var', 'sans-serif'],
-				display: ['SF Pro Display', 'Inter var', 'sans-serif'],
+				display: ['Satoshi', 'Inter var', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

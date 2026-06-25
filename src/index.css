@@ -45,11 +45,14 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* CLEAR phase accents (light-theme mapping of the deck's c1–c5) */
-    --phase-c: 220 80% 55%;   /* Clarify  */
-    --phase-l: 172 66% 45%;   /* Leverage */
-    --phase-e: 145 63% 45%;   /* Experiment */
-    --phase-a: 43 89% 55%;    /* Analyse  */
-    --phase-r: 351 95% 71%;   /* Refine   */
+    /* Desaturated + darkened so the per-phase chips/badges stay legible with
+       white text (WCAG AA) and read as muted semantic accents, not a rainbow.
+       One locked --primary blue still owns all CTAs/links/borders. */
+    --phase-c: 220 68% 46%;   /* Clarify */
+    --phase-l: 172 60% 31%;   /* Leverage */
+    --phase-e: 145 52% 33%;   /* Experiment */
+    --phase-a: 38 78% 35%;    /* Analyse */
+    --phase-r: 351 60% 50%;   /* Refine */
   }
 }
 
@@ -79,7 +82,7 @@
   }
   
   .nav-link {
-    @apply relative px-4 py-2.5 sm:py-2 text-foreground/80 hover:text-foreground transition-colors duration-200 ease-in-out;
+    @apply relative px-4 py-2.5 sm:py-2 text-foreground/80 hover:text-foreground rounded-md transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
   
   .nav-link:after {
@@ -95,7 +98,7 @@
   }
   
   .btn-primary {
-    @apply relative inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm transition-all duration-200 overflow-hidden;
+    @apply relative inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-white bg-primary hover:bg-primary/90 active:scale-[0.98] rounded-lg shadow-sm transition-all duration-200 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
   
   .btn-primary:before {
@@ -107,7 +110,11 @@
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors duration-200;
+    @apply inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 active:scale-[0.98] rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 sm:py-2.5 text-sm font-medium text-primary bg-transparent border border-primary/40 hover:border-primary hover:bg-primary/5 active:scale-[0.98] rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
   
   .section-container {
@@ -190,5 +197,23 @@ html {
   transition: opacity 400ms;
 }
 
-/* Import Inter var font */
+/* Import Inter var font (body) */
 @import url('https://rsms.me/inter/inter.css');
+
+/* Satoshi (headings / display) — self-hosted variable woff2, see public/fonts/satoshi/.
+   Replaces the previous Apple-only "SF Pro Display" stack that silently fell back to Inter,
+   so headings now render in Satoshi on every device. */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/satoshi/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
+}

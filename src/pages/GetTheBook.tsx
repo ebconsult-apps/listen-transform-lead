@@ -65,7 +65,7 @@ const GetTheBook = () => {
               <div className="tag">Coming Soon</div>
               <h1 className="heading-xl">The CLEAR Change Framework</h1>
               <p className="body-lg">
-                Most change initiatives fail — not because of bad strategy, but because organizations lack a
+                Most change initiatives fail, not because of bad strategy, but because organizations lack a
                 systematic approach to navigating complexity. This book gives you a proven, psychology-backed
                 framework for leading transformation that actually lasts.
               </p>
@@ -117,7 +117,7 @@ const GetTheBook = () => {
                 <div>
                   <h3 className="text-xl font-bold mb-2">The Five Phases of CLEAR Change</h3>
                   <p className="text-foreground/70">
-                    Walk through each phase — Clarity, Leverage, Experimentation, Analysis, and Refinement —
+                    Walk through each phase (Clarity, Leverage, Experimentation, Analysis, and Refinement)
                     with practical tools and diagnostics you can apply to your own organization.
                   </p>
                 </div>
@@ -130,7 +130,7 @@ const GetTheBook = () => {
                 <div>
                   <h3 className="text-xl font-bold mb-2">The CLEAR Change Framework in Action</h3>
                   <p className="text-foreground/70">
-                    Learn how to apply the CLEAR Change Framework to move from insight to action — turning what you
+                    Learn how to apply the CLEAR Change Framework to move from insight to action, turning what you
                     hear into Clarity, Leverage, Experimentation, Analysis, and Refinement.
                   </p>
                 </div>
@@ -255,14 +255,17 @@ const GetTheBook = () => {
               <CardHeader>
                 <CardTitle>Pre-Register for Launch Updates</CardTitle>
                 <CardDescription>
-                  We'll let you know the moment the book is available — plus early-bird offers and bonus content.
+                  We'll let you know the moment the book is available, plus early-bird offers and bonus content.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {!submitted ? (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
-                      <div className="p-4 mb-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+                      <div
+                        role="alert"
+                        className="p-4 mb-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg"
+                      >
                         {error}
                       </div>
                     )}

@@ -8,11 +8,11 @@ const ChangeManagement = () => {
       headline="Your Change Initiative Has a 70% Chance of Failing. Here's the Psychology Behind Why."
       subheadline="Most change programs are designed by strategists. They fail because of psychology. A licensed psychologist's framework changes the odds."
       problemStatements={[
-        "Your change program looked great on paper — but the organization isn't moving",
+        "Your change program looked great on paper, but the organization isn't moving",
         "Leadership is aligned at the top, yet middle management and frontline teams resist or disengage",
-        "You've tried workshops, town halls, and communication plans — nothing sticks because the real behavioral barriers are invisible",
+        "You've tried workshops, town halls, and communication plans. Nothing sticks because the real behavioral barriers are invisible",
       ]}
-      solutionText="The CLEAR Change Framework approaches organizational change the way a psychologist approaches behavior change — by understanding what actually drives people. Built on five phases (Clarity, Leverage, Experimentation, Analysis, Refinement), CLEAR combines behavioral science with systems thinking to surface hidden resistance, find the real leverage points, and create change that lasts beyond the project timeline."
+      solutionText="The CLEAR Change Framework approaches organizational change the way a psychologist approaches behavior change, by understanding what actually drives people. Built on five phases (Clarity, Leverage, Experimentation, Analysis, Refinement), CLEAR combines behavioral science with systems thinking to surface hidden resistance, find the real leverage points, and create change that lasts beyond the project timeline."
       testimonial={{
         quote:
           "What sets Erik apart is his ability to combine psychological insight with practical business acumen. Through our project together we created long term solutions for complex sustainability issues, and proved its efficiency.",

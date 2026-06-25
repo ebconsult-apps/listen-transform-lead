@@ -117,7 +117,10 @@ const WhitepaperGate = ({
                 Get your free copy
               </h3>
               {error && (
-                <div className="mb-4 p-3 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg text-sm">
+                <div
+                  role="alert"
+                  className="mb-4 p-3 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg text-sm"
+                >
                   {error}
                 </div>
               )}
@@ -178,13 +181,15 @@ const WhitepaperGate = ({
                 <div>
                   <button
                     type="button"
+                    role="checkbox"
+                    aria-checked={newsletter}
                     onClick={() => setNewsletter(!newsletter)}
-                    className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors cursor-pointer"
+                    className="flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground transition-colors cursor-pointer rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {newsletter ? (
-                      <CheckSquare className="h-4 w-4 text-primary" />
+                      <CheckSquare className="h-4 w-4 text-primary" aria-hidden="true" />
                     ) : (
-                      <Square className="h-4 w-4" />
+                      <Square className="h-4 w-4" aria-hidden="true" />
                     )}
                     Subscribe to newsletter for frameworks and insights
                   </button>

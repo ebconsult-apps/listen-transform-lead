@@ -26,7 +26,7 @@ const GapFlagList = ({ flags }: { flags: GapFlag[] }) => {
           <FlagBadge type={f.type} />
           <span className="text-foreground/80">
             {f.content}
-            {f.source && <span className="text-foreground/45"> — {f.source}</span>}
+            {f.source && <span className="text-foreground/45">, {f.source}</span>}
           </span>
         </li>
       ))}

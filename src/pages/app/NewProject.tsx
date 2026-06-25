@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, X, Upload } from "lucide-react";
 import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
 import PrepPromptCard from "@/components/product/PrepPromptCard";
+import PrivacyPolicyDialog from "@/components/product/PrivacyPolicyDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
 import { requireSupabase } from "@/lib/supabase";
-import { getMyWorkspace } from "@/lib/db";
+import { getMyWorkspace, getMyProfile, recordPrivacyAcceptance } from "@/lib/db";
 import { extractText } from "@/lib/extract-text";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -36,6 +39,30 @@ const NewProject = () => {
   const [stakeholders, setStakeholders] = useState([{ name: "", role: "" }]);
   const [files, setFiles] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
+
+  // Privacy Policy acceptance — recorded once per account, so the checkbox shows
+  // only until the user has accepted; after that, creation proceeds without it.
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [alreadyAccepted, setAlreadyAccepted] = useState(false);
+  const [agreeChecked, setAgreeChecked] = useState(false);
+  const [policyOpen, setPolicyOpen] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    getMyProfile()
+      .then((p) => {
+        if (active) setAlreadyAccepted(!!p?.privacy_accepted_at);
+      })
+      .catch(() => {
+        // Best-effort: if the profile can't be read, fall back to asking for consent.
+      })
+      .finally(() => {
+        if (active) setProfileLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const addStakeholder = () => setStakeholders((s) => [...s, { name: "", role: "" }]);
   const removeStakeholder = (i: number) =>
@@ -74,6 +101,11 @@ const NewProject = () => {
         .select()
         .single();
       if (pErr) throw pErr;
+
+      // Record Privacy Policy acceptance the first time, tied to a real creation.
+      if (!alreadyAccepted) {
+        await recordPrivacyAcceptance(PRIVACY_POLICY_VERSION);
+      }
 
       const { error: iErr } = await sb.from("project_inputs").insert({
         project_id: project.id,
@@ -122,7 +154,7 @@ const NewProject = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title="New project — CLEAR" description="Create a new CLEAR analysis." path="/app/projects/new" noindex />
+      <SEO title="New project: CLEAR" description="Create a new CLEAR analysis." path="/app/projects/new" noindex />
       <h1 className="heading-lg mb-6">New project</h1>
 
       <form onSubmit={submit} className="space-y-6">
@@ -137,7 +169,7 @@ const NewProject = () => {
             className="input"
             value={challenge}
             onChange={(e) => setChallenge(e.target.value)}
-            placeholder="Describe the challenge, the group, and what success looks like — type, or tap Dictate to speak…"
+            placeholder="Describe the challenge, the group, and what success looks like. Type, or tap Dictate to speak…"
           />
           <div className="mt-2">
             <DictationButton
@@ -233,10 +265,38 @@ const NewProject = () => {
           )}
         </div>
 
-        <button type="submit" disabled={saving} className="btn-primary w-full">
+        {profileLoaded && !alreadyAccepted && (
+          <div className="flex items-start gap-3 text-sm">
+            <Checkbox
+              id="privacy-accept"
+              checked={agreeChecked}
+              onCheckedChange={(v) => setAgreeChecked(v === true)}
+              className="mt-0.5"
+            />
+            <label htmlFor="privacy-accept" className="text-foreground/80 cursor-pointer select-none">
+              I have read and accept the{" "}
+              <button
+                type="button"
+                onClick={() => setPolicyOpen(true)}
+                className="text-primary underline hover:no-underline"
+              >
+                Privacy Policy
+              </button>
+              .
+            </label>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={saving || (!alreadyAccepted && !agreeChecked)}
+          className="btn-primary w-full"
+        >
           {saving ? "Creating…" : "Create project"}
         </button>
       </form>
+
+      <PrivacyPolicyDialog open={policyOpen} onOpenChange={setPolicyOpen} />
     </div>
   );
 };
@@ -244,7 +304,7 @@ const NewProject = () => {
 const Field = ({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) => (
   <div>
     <label className="block text-sm font-medium mb-2">
-      {label} {hint && <span className="text-foreground/40 font-normal">— {hint}</span>}
+      {label} {hint && <span className="text-foreground/40 font-normal">({hint})</span>}
     </label>
     {children}
   </div>

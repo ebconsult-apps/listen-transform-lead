@@ -135,7 +135,7 @@ const LeveragePriorityMap = ({ points }: { points: LeveragePoint[] }) => {
                 }
               }}
             >
-              <title>{`${p.point} — impact ${p.impact}, ease ${p.ease}, ${p.confidence}% confidence`}</title>
+              <title>{`${p.point}: impact ${p.impact}, ease ${p.ease}, ${p.confidence}% confidence`}</title>
               <circle cx={p.x} cy={p.y} r={p.r} fill={TEAL} fillOpacity={0.92} />
               <text x={p.x} y={p.y} textAnchor="middle" dominantBaseline="central" fill="white" style={{ fontSize: 15, fontWeight: 600 }}>
                 {p.rank}
