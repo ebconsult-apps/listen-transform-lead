@@ -5,6 +5,7 @@ import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
 import RespondentMap, { type PointReaction } from "@/components/product/RespondentMap";
 import PrepPromptCard from "@/components/product/PrepPromptCard";
+import { LoadingState } from "@/components/ui/data-states";
 import {
   RESPONDENT_PROMPTS,
   respondentLoad,
@@ -146,7 +147,7 @@ const RespondentPortal = () => {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
-        {loading && <div className="animate-pulse text-foreground/50">Loading…</div>}
+        {loading && <LoadingState />}
 
         {!loading && loadError && (
           <div className="glass-card p-8 text-center">

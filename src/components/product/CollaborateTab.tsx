@@ -10,6 +10,7 @@ import {
 } from "@/lib/collab";
 import type { LeverageReaction, ProjectContribution, ProjectInvitation } from "@/lib/db";
 import { toast } from "sonner";
+import { LoadingState } from "@/components/ui/data-states";
 
 const REACTION_LABEL: Record<string, string> = {
   resonates: "resonates",
@@ -46,6 +47,7 @@ const CollaborateTab = ({
   const [emails, setEmails] = useState("");
   const [note, setNote] = useState("");
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     const [inv, contribs, rx] = await Promise.all([
@@ -59,7 +61,10 @@ const CollaborateTab = ({
   }, [projectId]);
 
   useEffect(() => {
-    load().catch((e) => toast.error(e.message));
+    setLoading(true);
+    load()
+      .catch((e) => toast.error(e.message))
+      .finally(() => setLoading(false));
   }, [load]);
 
   const submitted = useMemo(
@@ -128,6 +133,10 @@ const CollaborateTab = ({
   };
 
   const contributionByInvitation = (id: string) => contributions.find((c) => c.invitation_id === id);
+
+  if (loading) {
+    return <LoadingState />;
+  }
 
   return (
     <div className="space-y-8">
