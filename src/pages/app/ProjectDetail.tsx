@@ -75,7 +75,7 @@ const ProjectDetail = () => {
   // Returning from a successful Stripe checkout → refresh entitlement + run full.
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
-      toast.success("Payment received — generating your full report.");
+      toast.success("Payment received, generating your full report.");
       load();
     }
   }, [searchParams, load]);
@@ -143,7 +143,7 @@ const ProjectDetail = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title={`${project.name} — CLEAR`} description="CLEAR project report." path={`/app/projects/${project.id}`} noindex />
+      <SEO title={`${project.name}: CLEAR`} description="CLEAR project report." path={`/app/projects/${project.id}`} noindex />
 
       <div className="no-print">
         <Link to="/app" className="inline-flex items-center text-sm text-foreground/50 hover:text-foreground mb-4">

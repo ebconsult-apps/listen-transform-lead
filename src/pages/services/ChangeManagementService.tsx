@@ -40,7 +40,7 @@ const ChangeManagementService = () => {
             Change Management Built on Clinical Psychology
           </h1>
           <p className="body-lg max-w-3xl">
-            70% of change initiatives fail. Not because the strategy is wrong — but because
+            70% of change initiatives fail. Not because the strategy is wrong, but because
             leaders underestimate the psychology of why people resist, disengage, and revert
             to old patterns. Erik Bohjort is a licensed psychologist who brings clinical-level
             understanding of human behavior to organizational transformation.
@@ -56,7 +56,7 @@ const ChangeManagementService = () => {
             {[
               {
                 title: "They treat symptoms, not root causes",
-                desc: "Workshops, town halls, and communication campaigns address the surface. The real barriers — fear, identity threat, loss of status, broken trust — sit underneath and go unaddressed.",
+                desc: "Workshops, town halls, and communication campaigns address the surface. The real barriers (fear, identity threat, loss of status, broken trust) sit underneath and go unaddressed.",
               },
               {
                 title: "They assume rational buy-in is enough",
@@ -64,7 +64,7 @@ const ChangeManagementService = () => {
               },
               {
                 title: "They impose top-down mandates on complex systems",
-                desc: "Organizations are living systems with feedback loops, power dynamics, and emergent behaviors. Linear project plans can't navigate that complexity — you need an adaptive, evidence-based approach.",
+                desc: "Organizations are living systems with feedback loops, power dynamics, and emergent behaviors. Linear project plans can't navigate that complexity. You need an adaptive, evidence-based approach.",
               },
             ].map((item, i) => (
               <div key={i} className="glass-card p-6 flex gap-4">
@@ -84,16 +84,16 @@ const ChangeManagementService = () => {
         <div className="section-container max-w-4xl">
           <h2 className="heading-lg mb-4">How the CLEAR Framework Works</h2>
           <p className="body-md text-foreground/70 mb-8 max-w-3xl">
-            CLEAR treats organizational change the way a psychologist treats behavior change — by
+            CLEAR treats organizational change the way a psychologist treats behavior change, by
             understanding what actually drives people, then designing interventions that work
             with human nature rather than against it.
           </p>
           <div className="space-y-5">
             {[
-              { phase: "Clarity", desc: "Map the real dynamics at play — not just the org chart, but the psychological landscape. Who feels threatened? Where is trust broken? What are the hidden incentives maintaining the status quo?" },
-              { phase: "Leverage", desc: "Identify the highest-impact intervention points. Systems thinking reveals where small changes create outsized effects — the leverage points that strategy decks miss." },
+              { phase: "Clarity", desc: "Map the real dynamics at play, not just the org chart, but the psychological landscape. Who feels threatened? Where is trust broken? What are the hidden incentives maintaining the status quo?" },
+              { phase: "Leverage", desc: "Identify the highest-impact intervention points. Systems thinking reveals where small changes create outsized effects: the leverage points that strategy decks miss." },
               { phase: "Experimentation", desc: "Test interventions at small scale before committing. Behavioral design principles ensure experiments are structured to produce genuine learning, not confirmation bias." },
-              { phase: "Analysis", desc: "Measure what actually changed — in behavior, not just in survey responses. Evidence-based evaluation using the rigor of psychological research methodology." },
+              { phase: "Analysis", desc: "Measure what actually changed, in behavior, not just in survey responses. Evidence-based evaluation using the rigor of psychological research methodology." },
               { phase: "Refinement", desc: "Adapt and scale what works. Discard what doesn't. Build organizational capability for ongoing change, not dependency on external consultants." },
             ].map((item, i) => (
               <div key={i} className="flex gap-4 items-start">
@@ -115,7 +115,7 @@ const ChangeManagementService = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               "Organizations where a change initiative has stalled or failed and you need to understand why",
-              "Leadership teams preparing for a major transformation — restructuring, merger, digital shift, culture change",
+              "Leadership teams preparing for a major transformation: restructuring, merger, digital shift, culture change",
               "HR and OD leaders who want an evidence-based alternative to conventional change consulting",
               "Executives who sense that the real barriers to change are behavioral, not strategic",
             ].map((item, i) => (

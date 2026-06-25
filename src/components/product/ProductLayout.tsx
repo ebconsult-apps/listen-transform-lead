@@ -57,7 +57,7 @@ const ProductLayout = () => {
 
       <footer className="bg-muted py-10 mt-16 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-foreground/50">
-          <p>© {new Date().getFullYear()} CLEAR — Behavioral insights, productized.</p>
+          <p>© {new Date().getFullYear()} CLEAR: Behavioral insights, productized.</p>
           <div className="flex gap-4">
             <Link to="/framework" className="hover:text-foreground transition-colors">
               Method

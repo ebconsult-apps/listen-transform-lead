@@ -20,7 +20,7 @@ const CauseEffectList = ({
           <ul className="space-y-1.5 text-sm text-foreground/80">
             {actors.map((a, i) => (
               <li key={i}>
-                <span className="font-medium">{a.actor}</span> — {a.behavior}
+                <span className="font-medium">{a.actor}</span>: {a.behavior}
               </li>
             ))}
           </ul>
@@ -38,7 +38,7 @@ const CauseEffectList = ({
                 <span className="font-mono text-xs text-foreground/45">
                   {e.from} →{e.polarity ? ` (${e.polarity})` : ""} {e.to}
                 </span>
-                {e.note && <span className="text-foreground/55">— {e.note}</span>}
+                {e.note && <span className="text-foreground/55">({e.note})</span>}
               </li>
             ))}
           </ul>

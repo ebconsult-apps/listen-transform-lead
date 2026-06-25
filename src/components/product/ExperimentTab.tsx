@@ -137,7 +137,7 @@ const ExperimentTab = ({
           <p className="body-md">
             Turn your top leverage points into the smallest tests that could disprove a hypothesis.
             We'll propose 2–3 minimal, reversible interventions per leverage point and screen them
-            with APEASE — then you decide what becomes a test card.
+            with APEASE, then you decide what becomes a test card.
           </p>
         </div>
         <ResourceEnvelopeForm initial={envelope} busy={busy} onGenerate={generate} />
@@ -152,7 +152,7 @@ const ExperimentTab = ({
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-5">
           <p className="font-medium text-primary">⏸ Experiments are running in the real world.</p>
           <p className="text-sm text-foreground/70 mt-1">
-            There is no simulating the data — enter results in Analyse once you have them (coming next).
+            There is no simulating the data. Enter results in Analyse once you have them (coming next).
           </p>
         </div>
       )}
@@ -184,7 +184,7 @@ const ExperimentTab = ({
         <p className="body-md mb-5">
           Adjust the APEASE screen as you learn. Three scores (1–5) rank ideas; three veto gates
           guard acceptability, safety, and equity. <strong>Any FAIL parks the idea regardless of its
-          score</strong> — a brilliant-but-unsafe idea must not win on points.
+          score</strong>: a brilliant-but-unsafe idea must not win on points.
         </p>
         <InterventionCandidatesTable candidates={candidates} onPromote={promote} onChange={load} />
       </div>

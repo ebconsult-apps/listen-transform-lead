@@ -65,14 +65,14 @@ const About = () => {
               <div className="glass-card p-8 md:p-10 mb-10">
                 <h2 className="heading-md mb-6">My Story</h2>
                 <p className="body-md mb-4">
-                  My journey into the world of transformative listening began with a simple observation: 
+                  My focus on transformative listening began with a simple observation: 
                   in most challenging situations, we do not listen enough. This insight has guided my 
                   professional path from academic and clinical psychology to practical application in the 
                   most demanding environments.
                 </p>
                 <p className="body-md mb-4">
                   As a licensed psychologist with a passion for solving complex challenges, I've had the privilege 
-                  of working with a diverse range of clients – from EU policymakers and global corporations to state 
+                  of working with a diverse range of clients, from EU policymakers and global corporations to state 
                   agencies, banks, and deep tech innovative startups.
                 </p>
                 <p className="body-md">
@@ -85,13 +85,13 @@ const About = () => {
               <div className="glass-card p-8 md:p-10 mb-10">
                 <h2 className="heading-md mb-6">Philosophy & Approach</h2>
                 <p className="body-md mb-4">
-                  I believe that genuine transformation – whether personal or organizational – begins with listening. 
+                  I believe that genuine transformation, whether personal or organizational, begins with listening. 
                   Not the passive hearing we often mistake for listening, but an active, engaged process that refines
                   knowledge and creates new insights, solutions and possibilities.
                 </p>
                 <p className="body-md mb-4">
                   My approach combines rigorous psychological principles with practical business acumen. I see myself 
-                  not as a distant expert, but as your guide – someone walking alongside you through challenges, helping 
+                  not as a distant expert, but as your guide, someone walking alongside you through challenges, helping 
                   you navigate complexity with clarity and confidence.
                 </p>
                 <p className="body-md">
@@ -104,8 +104,8 @@ const About = () => {
               <div className="glass-card p-8 md:p-10 mb-10">
                 <h2 className="heading-md mb-6">The Team</h2>
                 <p className="body-md mb-4">
-                  While Erik leads every engagement personally, he works with a curated network of
-                  senior consultants — each bringing deep expertise in their domain. This means we can
+                  While I lead every engagement personally, I work with a curated network of
+                  senior consultants, each bringing deep expertise in their domain. This means we can
                   scale to match your organization's needs without sacrificing quality or the personal
                   touch that defines our work.
                 </p>
@@ -162,7 +162,7 @@ const About = () => {
                 
                 <div className="mt-8">
                   <Link to="/contact" className="btn-primary w-full justify-center">
-                    Get In Touch
+                    Get in touch
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </div>
@@ -182,7 +182,7 @@ const About = () => {
               organization, let's explore how the CLEAR framework can help.
             </p>
             <Link to="/contact" className="btn-primary">
-              Start a Conversation
+              Get in touch
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>

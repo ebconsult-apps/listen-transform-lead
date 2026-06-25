@@ -45,7 +45,7 @@ const FullReport = ({ full }: { full: LeverageFull }) => {
       <div className="glass-card p-6 sm:p-8">
         <h3 className="heading-md mb-1">COM-B barrier analysis</h3>
         <p className="text-sm text-foreground/50 mb-4">
-          Each cell carries an evidence flag — Verified, Assumption, or Gap — so no assessment reads
+          Each cell carries an evidence flag (Verified, Assumption, or Gap) so no assessment reads
           as fact without provenance.
         </p>
         <CombMatrix cells={full.comb ?? []} />

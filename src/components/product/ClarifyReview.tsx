@@ -69,11 +69,11 @@ const ClarifyReview = ({
         <span className="phase-chip !h-7 !w-7 !text-xs" style={{ backgroundColor: "hsl(var(--phase-c))" }}>
           C
         </span>
-        <h3 className="heading-md">Clarify — review &amp; approve</h3>
+        <h3 className="heading-md">Clarify: review &amp; approve</h3>
       </div>
       <p className="body-md mb-6">
-        Edit the OKRs until they're right, then approve. Leverage runs on the version you approve —
-        nothing is diagnosed on top of a target you haven't signed off.
+        Edit the OKRs until they're right, then approve. Leverage runs on the version you approve.
+        Nothing is diagnosed on top of a target you haven't signed off.
       </p>
 
       <label className="block text-sm font-medium mb-1">Why it matters</label>

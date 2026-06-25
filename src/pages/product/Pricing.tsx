@@ -11,7 +11,7 @@ const Pricing = () => {
   return (
     <div className="bg-background">
       <SEO
-        title="Pricing — CLEAR self-serve"
+        title="Pricing: CLEAR self-serve"
         description="Start free, unlock a single full report one-off, or subscribe for unlimited behavioral analysis reports."
         path="/pricing"
       />
@@ -19,7 +19,7 @@ const Pricing = () => {
       <section className="section-container text-center">
         <h1 className="heading-xl mb-4">Simple, productized pricing</h1>
         <p className="body-lg max-w-2xl mx-auto">
-          The teaser is always free. Pay per-report or subscribe — whichever fits
+          The teaser is always free. Pay per-report or subscribe, whichever fits
           how often you ship change.
         </p>
       </section>
@@ -68,7 +68,7 @@ const Pricing = () => {
               <span className="text-sm font-normal text-foreground/50">{UNLOCK_PLAN.cadence}</span>
             </p>
             <p className="text-sm text-foreground/70 mb-4">
-              No subscription. Unlock one full report when you need it — the
+              No subscription. Unlock one full report when you need it: the
               per-deliverable option.
             </p>
             <Link to={dest} className="btn-secondary">

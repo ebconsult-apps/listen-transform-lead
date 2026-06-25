@@ -55,7 +55,7 @@ export function DictationButton({ onResult, className }: DictationButtonProps) {
           "inline-flex items-center gap-1.5 text-xs text-foreground/40",
           className,
         )}
-        title="Voice input isn't supported in this browser — type instead."
+        title="Voice input isn't supported in this browser. Type instead."
       >
         <MicOff className="h-4 w-4" />
         Voice input unavailable

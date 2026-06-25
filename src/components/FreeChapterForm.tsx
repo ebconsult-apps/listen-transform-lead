@@ -31,7 +31,7 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
     if (await submit({ name, email })) {
       toast({
         title: "Your chapter is ready!",
-        description: "Download it below — we've also emailed you a copy.",
+        description: "Download it below. We've also emailed you a copy.",
       });
       onSuccess?.();
     }

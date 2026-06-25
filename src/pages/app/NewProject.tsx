@@ -122,7 +122,7 @@ const NewProject = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <SEO title="New project — CLEAR" description="Create a new CLEAR analysis." path="/app/projects/new" noindex />
+      <SEO title="New project: CLEAR" description="Create a new CLEAR analysis." path="/app/projects/new" noindex />
       <h1 className="heading-lg mb-6">New project</h1>
 
       <form onSubmit={submit} className="space-y-6">
@@ -137,7 +137,7 @@ const NewProject = () => {
             className="input"
             value={challenge}
             onChange={(e) => setChallenge(e.target.value)}
-            placeholder="Describe the challenge, the group, and what success looks like — type, or tap Dictate to speak…"
+            placeholder="Describe the challenge, the group, and what success looks like. Type, or tap Dictate to speak…"
           />
           <div className="mt-2">
             <DictationButton
@@ -244,7 +244,7 @@ const NewProject = () => {
 const Field = ({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) => (
   <div>
     <label className="block text-sm font-medium mb-2">
-      {label} {hint && <span className="text-foreground/40 font-normal">— {hint}</span>}
+      {label} {hint && <span className="text-foreground/40 font-normal">({hint})</span>}
     </label>
     {children}
   </div>

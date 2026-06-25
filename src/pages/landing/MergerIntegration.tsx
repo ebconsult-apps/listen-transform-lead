@@ -6,11 +6,11 @@ const MergerIntegration = () => {
   return (
     <LandingPage
       headline="Mergers Fail When Leaders Focus on Systems and Forget the People"
-      subheadline="A licensed psychologist's approach to post-merger integration — because culture clashes don't resolve in spreadsheets."
+      subheadline="A licensed psychologist's approach to post-merger integration, because culture clashes don't resolve in spreadsheets."
       problemStatements={[
-        "The deal closed, but two cultures are now at war — and every week of friction is destroying the value you paid for",
+        "The deal closed, but two cultures are now at war, and every week of friction is destroying the value you paid for",
         "Your top talent is quietly interviewing elsewhere because no one addressed their anxiety, identity loss, or trust deficit",
-        "Integration milestones are green on the dashboard, but the organization feels paralyzed — because the real barriers are psychological, not operational",
+        "Integration milestones are green on the dashboard, but the organization feels paralyzed, because the real barriers are psychological, not operational",
       ]}
       solutionText="Post-merger integration is one of the most psychologically complex challenges an organization can face. Erik Bohjort applies clinical-level understanding of group dynamics, identity threat, and trust formation to the integration process. Using the CLEAR framework, he helps leadership teams surface hidden resistance, align competing cultures through structured listening, and build psychological safety fast enough to retain the people who matter most."
       testimonial={{

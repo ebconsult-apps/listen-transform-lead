@@ -98,7 +98,7 @@ const AssumptionsGapsLog = ({ projectId }: { projectId: string }) => {
               <span className={`flex-grow ${r.status === "resolved" ? "line-through text-foreground/40" : "text-foreground/80"}`}>
                 {r.content}
                 {r.phase && <span className="text-foreground/40"> · {r.phase}</span>}
-                {r.source && <span className="text-foreground/40"> — {r.source}</span>}
+                {r.source && <span className="text-foreground/40"> ({r.source})</span>}
               </span>
               <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap ${statusClass[r.status]}`}>
                 {r.status}
