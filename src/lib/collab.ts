@@ -5,6 +5,9 @@
 // new tables have no client write policies and respondents have no Supabase session.
 import { requireSupabase } from "@/lib/supabase";
 import { extractText } from "@/lib/extract-text";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type {
   LeverageReaction,
   ProjectContribution,
@@ -22,6 +25,7 @@ export const RESPONDENT_PROMPTS: { key: string; label: string; hint?: string }[]
 // ── Owner-side reads ─────────────────────────────────────────────────────────
 
 export async function listInvitations(projectId: string): Promise<ProjectInvitation[]> {
+  if (DEV_CAP && devActive()) return mockStore.listInvitations(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("project_invitations")
@@ -33,6 +37,7 @@ export async function listInvitations(projectId: string): Promise<ProjectInvitat
 }
 
 export async function listContributions(projectId: string): Promise<ProjectContribution[]> {
+  if (DEV_CAP && devActive()) return mockStore.listContributions(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("project_contributions")
@@ -44,6 +49,7 @@ export async function listContributions(projectId: string): Promise<ProjectContr
 }
 
 export async function listReactions(projectId: string): Promise<LeverageReaction[]> {
+  if (DEV_CAP && devActive()) return mockStore.listReactions(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("leverage_reactions")
@@ -67,6 +73,7 @@ export async function inviteRespondents(
   emails: string[],
   note?: string,
 ): Promise<InviteResult[]> {
+  if (DEV_CAP && devActive()) return mockStore.inviteRespondents(projectId, emails, note);
   const sb = requireSupabase();
   const { data, error } = await sb.functions.invoke("invite-respondents", {
     body: { action: "invite", projectId, emails, note },
@@ -76,6 +83,7 @@ export async function inviteRespondents(
 }
 
 export async function resendInvitation(invitationId: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.resendInvitation(invitationId);
   const sb = requireSupabase();
   const { error } = await sb.functions.invoke("invite-respondents", {
     body: { action: "resend", invitationId },
@@ -84,6 +92,7 @@ export async function resendInvitation(invitationId: string): Promise<void> {
 }
 
 export async function revokeInvitation(invitationId: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.revokeInvitation(invitationId);
   const sb = requireSupabase();
   const { error } = await sb.functions.invoke("invite-respondents", {
     body: { action: "revoke", invitationId },

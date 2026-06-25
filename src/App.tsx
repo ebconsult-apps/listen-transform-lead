@@ -57,6 +57,8 @@ import NewProject from "./pages/app/NewProject";
 import ProjectDetail from "./pages/app/ProjectDetail";
 import Billing from "./pages/app/Billing";
 import RespondentPortal from "./pages/respond/RespondentPortal";
+import DevPanel from "@/components/dev/DevPanel";
+import { DEV_ACCESS_ENABLED } from "@/lib/dev/config";
 
 const queryClient = new QueryClient();
 
@@ -142,6 +144,7 @@ const App = () => (
           </Routes>
           </AuthProvider>
           <CookieConsent />
+          {DEV_ACCESS_ENABLED && <DevPanel />}
         </BrowserRouter>
       </TooltipProvider>
     </HelmetProvider>

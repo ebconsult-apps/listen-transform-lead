@@ -1,4 +1,11 @@
 import { requireSupabase } from "./supabase";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+// Build-time gate, inlined so Vite/Rollup fold these guards in a normal production
+// build. When it folds to false the mock layer is unreferenced and the whole mock
+// graph (mock-store + seed) tree-shakes out (mock-store's only top-level is a
+// @__PURE__ initializer, so nothing keeps it alive).
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
@@ -236,6 +243,7 @@ export interface KnowledgeEntryRow {
 
 /** The first workspace the signed-in user belongs to (their personal one). */
 export async function getMyWorkspace(): Promise<Workspace> {
+  if (DEV_CAP && devActive()) return mockStore.getMyWorkspace();
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("workspaces")
@@ -249,6 +257,7 @@ export async function getMyWorkspace(): Promise<Workspace> {
 
 /** The signed-in user's profile row. RLS returns only their own, so no filter is needed. */
 export async function getMyProfile(): Promise<Profile | null> {
+  if (DEV_CAP && devActive()) return mockStore.getMyProfile();
   const sb = requireSupabase();
   const { data, error } = await sb.from("profiles").select("*").maybeSingle();
   if (error) throw error;
@@ -272,6 +281,7 @@ export async function recordPrivacyAcceptance(version: string): Promise<void> {
 }
 
 export async function listProjects(): Promise<Project[]> {
+  if (DEV_CAP && devActive()) return mockStore.listProjects();
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("projects")
@@ -282,6 +292,7 @@ export async function listProjects(): Promise<Project[]> {
 }
 
 export async function getProject(id: string): Promise<Project> {
+  if (DEV_CAP && devActive()) return mockStore.getProject(id);
   const sb = requireSupabase();
   const { data, error } = await sb.from("projects").select("*").eq("id", id).single();
   if (error) throw error;
@@ -289,6 +300,7 @@ export async function getProject(id: string): Promise<Project> {
 }
 
 export async function getProjectInput(id: string): Promise<ProjectInput | null> {
+  if (DEV_CAP && devActive()) return mockStore.getProjectInput(id);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("project_inputs")
@@ -300,6 +312,7 @@ export async function getProjectInput(id: string): Promise<ProjectInput | null> 
 }
 
 export async function listDocuments(projectId: string): Promise<DocumentRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listDocuments(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("documents")
@@ -311,6 +324,7 @@ export async function listDocuments(projectId: string): Promise<DocumentRow[]> {
 }
 
 export async function listRuns(projectId: string): Promise<Run[]> {
+  if (DEV_CAP && devActive()) return mockStore.listRuns(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("runs")
@@ -322,6 +336,7 @@ export async function listRuns(projectId: string): Promise<Run[]> {
 }
 
 export async function getEntitlement(workspaceId: string): Promise<Entitlement | null> {
+  if (DEV_CAP && devActive()) return mockStore.getEntitlement(workspaceId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("entitlements")
@@ -333,6 +348,7 @@ export async function getEntitlement(workspaceId: string): Promise<Entitlement |
 }
 
 export async function getUnlock(projectId: string): Promise<ProjectUnlock | null> {
+  if (DEV_CAP && devActive()) return mockStore.getUnlock(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("project_unlocks")
@@ -344,6 +360,7 @@ export async function getUnlock(projectId: string): Promise<ProjectUnlock | null
 }
 
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.setProjectStatus(id, status);
   const sb = requireSupabase();
   const { error } = await sb.from("projects").update({ status }).eq("id", id);
   if (error) throw error;

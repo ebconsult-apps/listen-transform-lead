@@ -80,4 +80,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Build-time literal for the dev/QA access gate. Defaults to false so the mock
+  // layer tree-shakes out of normal production builds; set VITE_DEV_BYPASS=true
+  // to keep it in a preview/staging build.
+  define: {
+    __DEV_BYPASS__: JSON.stringify((process.env.VITE_DEV_BYPASS ?? "false") === "true"),
+  },
 }));

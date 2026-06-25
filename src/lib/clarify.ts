@@ -6,9 +6,13 @@
  */
 import { requireSupabase } from "./supabase";
 import { setProjectStatus } from "./db";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type { ClarifyOutput } from "./clear/types";
 
 export async function getClarifyApproval(projectId: string): Promise<ClarifyOutput | null> {
+  if (DEV_CAP && devActive()) return mockStore.getClarifyApproval(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("phase_approvals")
@@ -22,6 +26,7 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
 
 /** Persist the owner-approved (possibly edited) Clarify and mark the project approved. */
 export async function approveClarify(projectId: string, output: ClarifyOutput): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.approveClarify(projectId, output);
   const sb = requireSupabase();
   const now = new Date().toISOString();
   const { error } = await sb
