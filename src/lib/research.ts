@@ -10,6 +10,9 @@
  * is the owner-confirmed, de-identified promotion path).
  */
 import { requireSupabase } from "./supabase";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type {
   KnowledgeEntryRow,
   ResearchFindingRow,
@@ -20,6 +23,7 @@ import type { ResearchFinding } from "./clear/types";
 
 // ── research_findings ─────────────────────────────────────────────────────────
 export async function listFindings(projectId: string): Promise<ResearchFindingRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listFindings(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("research_findings")
@@ -36,6 +40,7 @@ export async function updateFinding(
     Pick<ResearchFindingRow, "status" | "claim" | "detail" | "evidence_flag" | "phase_target">
   >,
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.updateFinding(id, patch);
   const sb = requireSupabase();
   const { error } = await sb
     .from("research_findings")
@@ -66,6 +71,7 @@ export async function listAcceptedResearch(projectId: string): Promise<ResearchF
 
 // ── research_questions ────────────────────────────────────────────────────────
 export async function listQuestions(projectId: string): Promise<ResearchQuestionRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listQuestions(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("research_questions")
@@ -77,6 +83,7 @@ export async function listQuestions(projectId: string): Promise<ResearchQuestion
 }
 
 export async function answerQuestion(id: string, answer: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.answerQuestion(id, answer);
   const sb = requireSupabase();
   const { error } = await sb
     .from("research_questions")
@@ -90,6 +97,7 @@ export async function answerQuestion(id: string, answer: string): Promise<void> 
 }
 
 export async function dismissQuestion(id: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.dismissQuestion(id);
   const sb = requireSupabase();
   const { error } = await sb
     .from("research_questions")
@@ -100,6 +108,7 @@ export async function dismissQuestion(id: string): Promise<void> {
 
 // ── knowledge_base (shared, de-identified library) ────────────────────────────
 export async function listKnowledgeBase(): Promise<KnowledgeEntryRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listKnowledgeBase();
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("knowledge_base")
@@ -119,6 +128,7 @@ export interface PromotePreview {
 
 /** Gate 1 — ask the edge function for a de-identified, generalised version. */
 export async function previewPromotion(findingId: string): Promise<PromotePreview> {
+  if (DEV_CAP && devActive()) return mockStore.previewPromotion(findingId);
   const sb = requireSupabase();
   const { data, error } = await sb.functions.invoke("project-research", {
     body: { action: "promote-preview", findingId },
@@ -129,6 +139,7 @@ export async function previewPromotion(findingId: string): Promise<PromotePrevie
 
 /** Gate 2 — owner confirms the de-identified text → write it to the shared library. */
 export async function confirmPromotion(findingId: string, entry: PromotePreview): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.confirmPromotion(findingId, entry);
   const sb = requireSupabase();
   const { error } = await sb.functions.invoke("project-research", {
     body: { action: "promote-confirm", findingId, entry },

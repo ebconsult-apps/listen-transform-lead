@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Lock, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PRICE_IDS, UNLOCK_PLAN } from "@/config/billing";
+import { devActive, DEV_ACCESS_ENABLED } from "@/lib/dev/config";
 import { toast } from "sonner";
 
 /**
@@ -19,6 +20,8 @@ const Paywall = ({
   onDevPreview?: () => void;
 }) => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const unlock = async () => {
     setLoading(true);
@@ -28,6 +31,12 @@ const Paywall = ({
         priceId: PRICE_IDS.unlock,
         projectId,
       });
+      if (devActive()) {
+        // Mock checkout unlocked the report in-memory; re-trigger the project's
+        // post-checkout reload (no real Stripe redirect happens in dev mode).
+        setLoading(false);
+        navigate(`${location.pathname}?checkout=success`, { replace: true });
+      }
     } catch (e) {
       toast.error(
         BILLING_ENABLED
@@ -57,7 +66,7 @@ const Paywall = ({
           Or subscribe
         </Link>
       </div>
-      {import.meta.env.DEV && onDevPreview && (
+      {DEV_ACCESS_ENABLED && onDevPreview && (
         <button
           onClick={onDevPreview}
           className="mt-5 text-xs text-foreground/40 hover:text-foreground/70 underline"

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { DEV_ACCESS_ENABLED, enterDevMode } from "@/lib/dev/config";
 import { toast } from "sonner";
 
 /**
@@ -13,6 +14,7 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const isSignup = mode === "signup";
 
@@ -66,10 +68,23 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
         </p>
 
         {!isSupabaseConfigured ? (
-          <p className="text-sm text-center text-amber-600 bg-amber-50 rounded-lg p-3">
-            Supabase isn't configured yet. Set VITE_SUPABASE_URL and
-            VITE_SUPABASE_ANON_KEY to enable sign-in.
-          </p>
+          <>
+            <p className="text-sm text-center text-amber-600 bg-amber-50 rounded-lg p-3">
+              Supabase isn't configured yet. Set VITE_SUPABASE_URL and
+              VITE_SUPABASE_ANON_KEY to enable sign-in.
+            </p>
+            {DEV_ACCESS_ENABLED && (
+              <button
+                onClick={() => {
+                  enterDevMode();
+                  navigate("/app");
+                }}
+                className="btn-secondary w-full mt-4"
+              >
+                Enter dev / QA mode (mock data)
+              </button>
+            )}
+          </>
         ) : sent ? (
           <div className="text-center">
             <p className="font-medium mb-1">Check your email</p>

@@ -8,8 +8,11 @@ import { requireSupabase } from "@/lib/supabase";
 import { getMyWorkspace } from "@/lib/db";
 import { extractText } from "@/lib/extract-text";
 import { useAuth } from "@/hooks/useAuth";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
 import { toast } from "sonner";
 
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 const TARGET_GROUPS = ["customers", "citizens", "tenants", "employees", "other"];
 const USE_CASES = ["churn", "onboarding", "compliance", "policy_uptake", "other"];
 const ACCEPT = ".pdf,.docx,.xlsx,.md,.txt,.csv";
@@ -58,6 +61,21 @@ const NewProject = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      if (DEV_CAP && devActive()) {
+        // Mock mode: create the project in-memory, skip storage upload + extract.
+        const id = mockStore.createProject({
+          name,
+          targetGroup,
+          useCase,
+          challenge,
+          stakeholders,
+          timeline: timeline || null,
+          documents: files.map((f) => ({ filename: f.name, mime: f.type || null, bytes: f.size })),
+        });
+        navigate(`/app/projects/${id}`);
+        return;
+      }
+
       const sb = requireSupabase();
       const ws = await getMyWorkspace();
 

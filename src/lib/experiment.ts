@@ -5,6 +5,9 @@
  * client Supabase session — no edge function required for the editing surface.
  */
 import { requireSupabase } from "./supabase";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type {
   AssumptionGapRow,
   ExperimentDesign,
@@ -29,6 +32,7 @@ export function apeaseFlagged(a: Apease): boolean {
 
 // ── experiment_designs ───────────────────────────────────────────────────────
 export async function getExperimentDesign(projectId: string): Promise<ExperimentDesign | null> {
+  if (DEV_CAP && devActive()) return mockStore.getExperimentDesign(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("experiment_designs")
@@ -44,6 +48,7 @@ export async function upsertExperimentDesign(
   envelope: ResourceEnvelope,
   status: "design" | "active" = "design",
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.upsertExperimentDesign(projectId, envelope, status);
   const sb = requireSupabase();
   const { error } = await sb.from("experiment_designs").upsert({
     project_id: projectId,
@@ -58,6 +63,7 @@ export async function setExperimentDesignStatus(
   projectId: string,
   status: "design" | "active",
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.setExperimentDesignStatus(projectId, status);
   const sb = requireSupabase();
   const { error } = await sb
     .from("experiment_designs")
@@ -68,6 +74,7 @@ export async function setExperimentDesignStatus(
 
 // ── intervention_candidates ──────────────────────────────────────────────────
 export async function listCandidates(projectId: string): Promise<InterventionCandidateRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listCandidates(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("intervention_candidates")
@@ -83,6 +90,7 @@ export async function updateCandidate(
   id: string,
   patch: Partial<Pick<InterventionCandidateRow, "apease" | "parked" | "title" | "description" | "barrier">>,
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.updateCandidate(id, patch);
   const sb = requireSupabase();
   const { error } = await sb
     .from("intervention_candidates")
@@ -98,6 +106,7 @@ export async function saveCandidateApease(id: string, apease: Apease): Promise<v
 
 // ── test_cards ───────────────────────────────────────────────────────────────
 export async function listTestCards(projectId: string): Promise<TestCardRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listTestCards(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("test_cards")
@@ -113,6 +122,7 @@ export async function createTestCard(
   projectId: string,
   card: Partial<Omit<TestCardRow, "id" | "project_id" | "created_at" | "updated_at">>,
 ): Promise<TestCardRow> {
+  if (DEV_CAP && devActive()) return mockStore.createTestCard(projectId, card);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("test_cards")
@@ -127,6 +137,7 @@ export async function updateTestCard(
   id: string,
   patch: Partial<Omit<TestCardRow, "id" | "project_id" | "created_at" | "updated_at">>,
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.updateTestCard(id, patch);
   const sb = requireSupabase();
   const { error } = await sb
     .from("test_cards")
@@ -136,6 +147,7 @@ export async function updateTestCard(
 }
 
 export async function deleteTestCard(id: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.deleteTestCard(id);
   const sb = requireSupabase();
   const { error } = await sb.from("test_cards").delete().eq("id", id);
   if (error) throw error;
@@ -143,6 +155,7 @@ export async function deleteTestCard(id: string): Promise<void> {
 
 // ── assumption_gaps (persistent, cross-phase log) ────────────────────────────
 export async function listAssumptionGaps(projectId: string): Promise<AssumptionGapRow[]> {
+  if (DEV_CAP && devActive()) return mockStore.listAssumptionGaps(projectId);
   const sb = requireSupabase();
   const { data, error } = await sb
     .from("assumption_gaps")
@@ -157,6 +170,7 @@ export async function addAssumptionGap(
   projectId: string,
   flag: GapFlag & { phase?: string },
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.addAssumptionGap(projectId, flag);
   const sb = requireSupabase();
   const { error } = await sb.from("assumption_gaps").insert({
     project_id: projectId,
@@ -172,6 +186,7 @@ export async function setAssumptionGapStatus(
   id: string,
   status: "open" | "resolved" | "carried",
 ): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.setAssumptionGapStatus(id, status);
   const sb = requireSupabase();
   const { error } = await sb
     .from("assumption_gaps")
@@ -181,6 +196,7 @@ export async function setAssumptionGapStatus(
 }
 
 export async function deleteAssumptionGap(id: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.deleteAssumptionGap(id);
   const sb = requireSupabase();
   const { error } = await sb.from("assumption_gaps").delete().eq("id", id);
   if (error) throw error;

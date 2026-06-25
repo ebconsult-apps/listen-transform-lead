@@ -10,7 +10,10 @@ import { listContributions, listReactions, summarizeRespondentInput } from "@/li
 import { apeaseParked, getExperimentDesign } from "@/lib/experiment";
 import { getClarifyApproval, pickClarify } from "@/lib/clarify";
 import { listAcceptedResearch } from "@/lib/research";
-import { AI_MODE, getClearEngine } from "./index";
+import { getClearEngine } from "./index";
+import { devActive, effectiveAiMode } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type {
   ClarifyOutput,
   GapFlag,
@@ -22,6 +25,18 @@ import type {
   ResearchQuestion,
   RunPhase,
 } from "./types";
+
+/**
+ * Live AI can't run on a mock session: the edge function needs a real JWT, and
+ * offline there is no function at all. Fail loudly instead of as a silent 401 so
+ * the dev/QA AI toggle is honest (the DevPanel also disables "live" accordingly).
+ */
+const LIVE_IN_MOCK =
+  "Live AI is unavailable in dev/mock mode — log in normally to use real Claude.";
+
+function guardLiveInMock() {
+  if (effectiveAiMode() === "live") throw new Error(LIVE_IN_MOCK);
+}
 
 async function buildIntake(projectId: string): Promise<IntakeInput> {
   const [project, input, docs, contributions, reactions, research] = await Promise.all([
@@ -67,7 +82,7 @@ async function persistRun(
     project_id: projectId,
     phase,
     status: "done",
-    ai_mode: AI_MODE,
+    ai_mode: effectiveAiMode(),
     output,
     tokens_used: tokens ?? 0,
     cost_usd: costUsd ?? 0,
@@ -143,7 +158,11 @@ async function approvedClarify(projectId: string): Promise<ClarifyOutput | null>
  *   Anthropic key and enforces the per-workspace cost cap server-side.
  */
 export async function runClarify(projectId: string): Promise<void> {
-  if (AI_MODE === "live") {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.runClarify(projectId);
+  }
+  if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "clarify" },
@@ -171,7 +190,11 @@ export async function runClarify(projectId: string): Promise<void> {
  * (possibly owner-edited) Clarify rather than regenerating it.
  */
 export async function runLeverage(projectId: string): Promise<void> {
-  if (AI_MODE === "live") {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.runLeverage(projectId);
+  }
+  if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "leverage" },
@@ -197,7 +220,11 @@ export async function runLeverage(projectId: string): Promise<void> {
 
 /** Generate the full report after the paywall is cleared (uses the approved Clarify). */
 export async function runFull(projectId: string): Promise<void> {
-  if (AI_MODE === "live") {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.runFull(projectId);
+  }
+  if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "full" },
@@ -229,7 +256,11 @@ export async function runFull(projectId: string): Promise<void> {
  * editable candidate rows + gap log, then parks at `experiment_design`.
  */
 export async function runExperiment(projectId: string): Promise<void> {
-  if (AI_MODE === "live") {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.runExperiment(projectId);
+  }
+  if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "experiment" },
@@ -320,7 +351,11 @@ async function seedQuestions(projectId: string, questions: ResearchQuestion[]) {
  * - stub: run the engine in-browser and write rows directly (member RLS).
  */
 export async function runResearch(projectId: string): Promise<void> {
-  if (AI_MODE === "live") {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.runResearch(projectId);
+  }
+  if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     const { error } = await sb.functions.invoke("project-research", {
       body: { action: "run", projectId },

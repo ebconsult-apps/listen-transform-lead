@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { devActive, useDevState } from "@/lib/dev/config";
 
 /**
  * Client-side gate for /app/* and /account/*. This is UX only — the real
@@ -9,6 +10,10 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
   const location = useLocation();
+  useDevState(); // re-evaluate when dev mode toggles
+
+  // Dev/QA mode bypasses the auth gate entirely (mock session + mock data).
+  if (devActive()) return <>{children}</>;
 
   if (!isSupabaseConfigured) {
     return (

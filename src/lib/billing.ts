@@ -1,4 +1,8 @@
 import { requireSupabase } from "./supabase";
+import { devActive } from "@/lib/dev/config";
+import * as mockStore from "@/lib/dev/mock-store";
+import { toast } from "sonner";
+const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 
 type CheckoutMode = "subscription" | "payment";
 
@@ -12,6 +16,16 @@ export async function startCheckout(opts: {
   tier?: string;
   projectId?: string;
 }): Promise<void> {
+  if (DEV_CAP && devActive()) {
+    // No Stripe in mock mode — simulate the unlock/tier change in the store.
+    mockStore.simulateCheckout({ tier: opts.tier, projectId: opts.projectId });
+    toast.success(
+      opts.projectId
+        ? "Dev: report unlocked (payment simulated)."
+        : "Dev: plan updated (payment simulated).",
+    );
+    return;
+  }
   const sb = requireSupabase();
   const { data, error } = await sb.functions.invoke("stripe-checkout", {
     body: {
@@ -28,6 +42,10 @@ export async function startCheckout(opts: {
 
 /** Open the Stripe customer portal (manage subscription). */
 export async function openBillingPortal(): Promise<void> {
+  if (DEV_CAP && devActive()) {
+    toast.message("Dev: the Stripe billing portal is stubbed in mock mode.");
+    return;
+  }
   const sb = requireSupabase();
   const { data, error } = await sb.functions.invoke("stripe-checkout", {
     body: { mode: "portal", returnUrl: window.location.href },
