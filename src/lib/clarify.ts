@@ -20,6 +20,23 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
   return (data?.output as ClarifyOutput) ?? null;
 }
 
+/**
+ * When Clarify was last approved (ISO string), or null if never. Used to flag
+ * downstream phases (Leverage/Full/Experiment) as outdated when they were generated
+ * before the latest approval — without clobbering anything.
+ */
+export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
+  const sb = requireSupabase();
+  const { data, error } = await sb
+    .from("phase_approvals")
+    .select("approved_at")
+    .eq("project_id", projectId)
+    .eq("phase", "clarify")
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.approved_at as string | null) ?? null;
+}
+
 /** Persist the owner-approved (possibly edited) Clarify and mark the project approved. */
 export async function approveClarify(projectId: string, output: ClarifyOutput): Promise<void> {
   const sb = requireSupabase();
