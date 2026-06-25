@@ -25,18 +25,18 @@ describe("buildOwnerPrepPrompt (EN)", () => {
     expect(out).toContain("Customer success lead");
   });
 
-  it("names the three C/L/E deliverable files", () => {
+  it("names the single consolidated evidence-pack file", () => {
     const out = buildOwnerPrepPrompt(base, "en");
-    expect(out).toContain("clarity-brief.md");
-    expect(out).toContain("leverage-evidence.md");
-    expect(out).toContain("experimentation-options.md");
+    expect(out).toContain("clear-evidence-pack.md");
   });
 
-  it("covers the COM-B components for the leverage deliverable", () => {
+  it("gathers raw evidence and does not do the analysis itself", () => {
     const out = buildOwnerPrepPrompt(base, "en");
-    expect(out).toContain("Capability");
-    expect(out).toContain("Opportunity");
-    expect(out).toContain("Motivation");
+    expect(out).toContain("evidence pack");
+    expect(out).toMatch(/behaviou?rs?/i);
+    // The secondary AI must NOT run the framework analysis — that's the engine's job.
+    expect(out).not.toContain("APEASE");
+    expect(out).not.toContain("Capability");
   });
 
   it("asks for the experimentation resource envelope", () => {
@@ -76,7 +76,7 @@ describe("buildOwnerPrepPrompt (SV)", () => {
     expect(sv).not.toEqual(en);
     // A Swedish function/word that won't appear in the English template.
     expect(sv).toMatch(/\b(du|dina|dokument|underlag)\b/i);
-    // Upload filenames stay in English so they map to the intake.
-    expect(sv).toContain("clarity-brief.md");
+    // Upload filename stays in English so it maps to the intake.
+    expect(sv).toContain("clear-evidence-pack.md");
   });
 });

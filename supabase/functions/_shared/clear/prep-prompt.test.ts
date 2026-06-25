@@ -25,11 +25,11 @@ describe("buildRespondentPrepPrompt (EN)", () => {
     expect(out).toContain("Unclear pricing at upgrade");
   });
 
-  it("covers barriers via COM-B", () => {
+  it("asks what gets in the way in plain terms, without COM-B labels", () => {
     const out = buildRespondentPrepPrompt(base, "en");
-    expect(out).toContain("Capability");
-    expect(out).toContain("Opportunity");
-    expect(out).toContain("Motivation");
+    expect(out).toMatch(/in the way|friction|barrier/i);
+    // COM-B categorisation is the LEVERAGE engine's job, not the stakeholder's AI.
+    expect(out).not.toContain("Capability");
   });
 
   it("asks for the respondent's perspective and ideas", () => {
