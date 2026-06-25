@@ -25,3 +25,8 @@ verify_jwt = true
 # Stripe authenticates the webhook via its signature, not a Supabase JWT.
 [functions.stripe-webhook]
 verify_jwt = false
+
+# Supabase Auth Send-Email hook: brands the magic-link / signup emails and routes
+# them through Brevo. Supabase signs the request (hook secret), so there's no JWT.
+[functions.auth-email]
+verify_jwt = false
