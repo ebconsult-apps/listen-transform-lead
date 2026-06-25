@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import * as store from "./mock-store";
+import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
 
 beforeEach(() => store.resetMockDb("seeded"));
 
@@ -37,5 +38,11 @@ describe("mock-store seeded dataset", () => {
   it("the empty dataset has no projects", async () => {
     store.resetMockDb("empty");
     expect(await store.listProjects()).toEqual([]);
+  });
+
+  it("reports the Privacy Policy as already accepted (so dev/QA New Project isn't gated)", async () => {
+    const profile = await store.getMyProfile();
+    expect(profile?.privacy_accepted_at).not.toBeNull();
+    expect(profile?.privacy_policy_version).toBe(PRIVACY_POLICY_VERSION);
   });
 });
