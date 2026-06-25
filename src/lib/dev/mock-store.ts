@@ -170,12 +170,12 @@ export async function getClarifyApproval(projectId: string): Promise<ClarifyOutp
 
 export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
   await delay(READ_MS);
+  // Mock mode tracks no separate approval timestamp; treat approval as happening with
+  // the latest clarify run. Null when never approved, so the downstream staleness
+  // check (isStale) safely no-ops.
   if (!db.approvals[projectId]) return null;
-  // Mock approvals carry no timestamp; approximate "approved at" with the latest
-  // Clarify run's time so downstream staleness checks stay consistent (and never
-  // read newer than the runs they gate).
-  const runs = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
-  return runs.length ? runs[runs.length - 1].created_at : null;
+  const clarifyRuns = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
+  return clarifyRuns.length ? clarifyRuns[clarifyRuns.length - 1].created_at : null;
 }
 
 export async function approveClarify(projectId: string, output: ClarifyOutput): Promise<void> {

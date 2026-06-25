@@ -3,25 +3,30 @@ import { Check, RefreshCw, Plus, Trash2, X } from "lucide-react";
 import type { ClarifyOutput, KeyResult, Level } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
 import GapFlagList from "./GapFlagList";
+import { AutoTextarea, FieldLabel, HINTS, OkrExplainer } from "./okr-help";
 
 /** Module-scope so element identity is stable across renders (keeps focus while typing). */
 const KrField = ({
   label,
   value,
   area,
+  hint,
+  optional,
   onChange,
 }: {
   label: string;
   value: string;
   area?: boolean;
+  hint: string;
+  optional?: boolean;
   onChange: (v: string) => void;
 }) => {
   const id = useId();
   return (
     <div>
-      <label htmlFor={id} className="block text-xs font-medium text-foreground/50 mb-1">{label}</label>
+      <FieldLabel htmlFor={id} label={label} hint={hint} optional={optional} small />
       {area ? (
-        <textarea id={id} rows={2} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
+        <AutoTextarea id={id} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
       ) : (
         <input id={id} className="input text-sm" value={value} onChange={(e) => onChange(e.target.value)} />
       )}
@@ -79,11 +84,13 @@ const ClarifyReview = ({
         Nothing is diagnosed on top of a target you haven't signed off.
       </p>
 
-      <label htmlFor="clarify-why" className="block text-sm font-medium mb-1">Why it matters</label>
-      <textarea id="clarify-why" className="input mb-5" rows={4} value={whyItMatters} onChange={(e) => setWhy(e.target.value)} />
+      <OkrExplainer className="mb-6" />
 
-      <label htmlFor="clarify-objective" className="block text-sm font-medium mb-1">Objective</label>
-      <textarea id="clarify-objective" aria-required="true" className="input mb-5" rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} />
+      <FieldLabel htmlFor="clarify-why" label="Why it matters" hint={HINTS.why} optional />
+      <AutoTextarea id="clarify-why" className="input mb-5" rows={3} value={whyItMatters} onChange={(e) => setWhy(e.target.value)} />
+
+      <FieldLabel htmlFor="clarify-objective" label="Objective" hint={HINTS.objective} required />
+      <AutoTextarea id="clarify-objective" aria-required="true" className="input mb-5" rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} />
 
       <div className="flex items-center justify-between mb-2">
         <span className="block text-sm font-medium">Key Results</span>
@@ -96,30 +103,30 @@ const ClarifyReview = ({
           <div key={i} className="border border-border rounded-xl p-4">
             <div className="flex items-start gap-2">
               <div className="flex-1">
-                <label htmlFor={`kr-${i}-text`} className="block text-xs font-medium text-foreground/50 mb-1">Key result</label>
-                <textarea
+                <FieldLabel htmlFor={`kr-${i}-text`} label="Key result" hint={HINTS.kr} required small />
+                <AutoTextarea
                   id={`kr-${i}-text`}
+                  aria-required="true"
                   className="input font-medium"
-                  rows={2}
                   value={kr.kr}
                   placeholder="Key result (outcome, measurable)"
                   onChange={(e) => setKr(i, { kr: e.target.value })}
                 />
               </div>
-              <button onClick={() => removeKr(i)} className="text-foreground/40 hover:text-rose-600 p-1.5 mt-6" title="Remove KR">
+              <button onClick={() => removeKr(i)} className="text-foreground/40 hover:text-rose-600 p-1.5 mt-7" title="Remove KR">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3 mt-3">
-              <KrField label="Metric" area value={kr.metric ?? ""} onChange={(v) => setKr(i, { metric: v })} />
-              <KrField label="Baseline" area value={kr.baseline ?? ""} onChange={(v) => setKr(i, { baseline: v })} />
-              <KrField label="Target" area value={kr.target ?? ""} onChange={(v) => setKr(i, { target: v })} />
-              <KrField label="Timeline" value={kr.timeline ?? ""} onChange={(v) => setKr(i, { timeline: v })} />
+            <div className="space-y-3 mt-3">
+              <KrField label="Metric" area hint={HINTS.metric} optional value={kr.metric ?? ""} onChange={(v) => setKr(i, { metric: v })} />
+              <KrField label="Baseline" area hint={HINTS.baseline} optional value={kr.baseline ?? ""} onChange={(v) => setKr(i, { baseline: v })} />
+              <KrField label="Target" area hint={HINTS.target} optional value={kr.target ?? ""} onChange={(v) => setKr(i, { target: v })} />
             </div>
-            <div className="grid sm:grid-cols-2 gap-3 mt-3">
-              <KrField label="Owner (role)" value={kr.owner ?? ""} onChange={(v) => setKr(i, { owner: v })} />
+            <div className="grid sm:grid-cols-3 gap-3 mt-3">
+              <KrField label="Timeline" hint={HINTS.timeline} optional value={kr.timeline ?? ""} onChange={(v) => setKr(i, { timeline: v })} />
+              <KrField label="Owner (role)" hint={HINTS.owner} optional value={kr.owner ?? ""} onChange={(v) => setKr(i, { owner: v })} />
               <div>
-                <label htmlFor={`kr-${i}-confidence`} className="block text-xs font-medium text-foreground/50 mb-1">Confidence</label>
+                <FieldLabel htmlFor={`kr-${i}-confidence`} label="Confidence" hint={HINTS.confidence} optional small />
                 <select
                   id={`kr-${i}-confidence`}
                   className="input text-sm"

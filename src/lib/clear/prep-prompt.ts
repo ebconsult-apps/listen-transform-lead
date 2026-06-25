@@ -3,14 +3,15 @@
  *
  * Produces a copy-pasteable prompt the project owner runs in their OWN AI
  * assistant (Claude / ChatGPT / Copilot) over their OWN documents. The assistant
- * returns three Markdown briefs — one per CLEAR phase — that the owner uploads
- * back into the intake, maximising the quality of the inputs the CLARIFY /
- * LEVERAGE / EXPERIMENT engine consumes.
+ * returns ONE Markdown evidence pack — raw, sourced material organised by CLEAR
+ * phase — that the owner uploads back into the intake. It deliberately does NOT
+ * perform the analysis: the secondary AI gathers and sources evidence, leaving
+ * the OKRs, barrier diagnosis and experiment design to the CLARIFY / LEVERAGE /
+ * EXPERIMENT engine that consumes the upload.
  *
  * Deterministic and dependency-free: no LLM call, no token cost, no data leaves
- * the app (the prompt is just text). The deliverables mirror the real engine
- * schemas in supabase/functions/_shared/clear/prompts.ts. The respondent-side
- * counterpart lives in that same _shared/clear tree (Deno) for the edge runtime.
+ * the app (the prompt is just text). The respondent-side counterpart lives in the
+ * _shared/clear tree (Deno) for the edge runtime.
  */
 import type { IntakeInput } from "./types";
 
@@ -47,7 +48,6 @@ function contextBlock(ctx: OwnerPrepContext, labels: ContextLabels): string {
 }
 
 function ownerEn(ctx: OwnerPrepContext): string {
-  const group = ctx.targetGroup?.trim() || "the target group";
   const context = contextBlock(ctx, {
     challenge: "Challenge",
     targetGroup: "Target group",
@@ -55,45 +55,47 @@ function ownerEn(ctx: OwnerPrepContext): string {
     timeline: "Timeline",
     stakeholders: "Key stakeholders",
   });
-  return `You are helping me prepare high-quality inputs for a behavioural-change analysis that uses the CLEAR framework (Clarity, Leverage, Experimentation). I will attach my own documents and data to this conversation.
+  return `You are helping me prepare the source material for a behavioural-change analysis that runs on the CLEAR framework (Clarity, Leverage, Experimentation). The analysis itself is done by a separate system — your job is NOT to do the analysis, but to give that system the cleanest, best-organised evidence to work from. I will attach my own documents and data to this conversation.
 
-Never invent facts, numbers, or quotes. When my material doesn't contain something, flag it as a gap instead of guessing.
+Do the gathering, not the thinking. Don't write objectives or OKRs, don't diagnose or rank barriers, don't design or score interventions — that is the analysis engine's job, and it does it better reasoning from raw evidence than from someone else's conclusions. Your job is to extract, organise and source what my material actually contains.
+
+Never invent facts, numbers, or quotes. When my material doesn't contain something, say so and list it as a gap — don't fill the hole.
 
 CONTEXT
 ${context}
 
 YOUR TASK
-Read everything I attach. Extract and synthesise only what my material actually supports, then produce THREE separate Markdown files I can download and upload into my CLEAR project — one per phase.
+Read everything I attach. Produce ONE Markdown file — an evidence pack — that I can download and upload into my CLEAR project. Organise it into the three sections below. Each section gathers the evidence one phase of the analysis will need; it does NOT pre-empt that phase's conclusions. Quote my material directly where you can, and cite the source document for every figure or quote.
 
-1) clarity-brief.md — CLARITY (a sharp, measurable OKR set)
-   - Why this matters: a short rallying paragraph, grounded in my data
-   - One overarching, behaviourally-focused objective — what success looks like, not how to get there
-   - 3–5 outcome-focused key results, each with a metric, baseline, target, timeline and owning role where my data supports it (leave a field out and record it under gaps if it doesn't)
-   - Gaps & unknowns: anything missing, assumed, or needing confirmation
+clear-evidence-pack.md
 
-2) leverage-evidence.md — LEVERAGE (diagnose the barriers, don't solve them yet)
-   - A plain-language summary of the system around this behaviour and its key actors
-   - The observable behaviours that drive the outcome (who does what, when, where, how often, with whom)
-   - Barriers and enablers mapped across COM-B — Capability (physical / psychological), Opportunity (physical / social), Motivation (reflective / automatic). For each: the current state, an evidence quote, the source document, and a tag of Verified, Assumption or Gap
-   - The 3–5 strongest barriers, and which leverage points look highest-impact versus easiest to change
-   - Gaps & unknowns: what discovery is still needed
+## 1. Goals & success signals  (raw material for the CLARIFY phase)
+   - The goals, mandates and definitions of success stated in my material — in my own words, quoted, with source. Don't compose an objective or key results; just surface what is already stated.
+   - Every metric, KPI, baseline, target, rate or trend that actually appears in my documents, with the number and where it came from.
+   - Why this matters now, and any deadline or time pressure mentioned.
+   - Gaps: goals or numbers that are implied but not stated (e.g. a target is referenced but no baseline is given).
 
-3) experimentation-options.md — EXPERIMENT (the smallest tests that could work, not a rollout)
-   - My resource envelope: the budget, people, and time available
-   - For each top leverage point: 2–3 small, preferably reversible interventions, each tied to the named COM-B barrier it addresses
-   - Screen every idea with APEASE — score Effectiveness, Practicability and Affordability 1–5, then gate Acceptability, Side-effects/Safety and Equity as pass / flag / fail (any fail parks the idea regardless of score)
-   - 3–6 testable hypotheses in the form "If we change X for ${group}, then Y, because Z", each with how I'd measure success
-   - Gaps & unknowns
+## 2. The system, behaviours & friction  (raw material for the LEVERAGE phase)
+   - A plain-language description of how things currently work and who is involved — the actors and their roles, drawn from my material.
+   - The observable behaviours my material describes — who does what, when, where, how often, with whom — reported as they appear, not interpreted. Do NOT sort them into categories or frameworks; the engine does that.
+   - Direct quotes and data points about what gets in the way, what people complain about, and what already works — verbatim where possible, each with its source.
+   - What has been tried before and what happened.
+   - Gaps: behaviours or causes that seem important but aren't evidenced in my material.
+
+## 3. Constraints, resources & ideas on the table  (raw material for the EXPERIMENT phase)
+   - The resource envelope as stated: the budget, people and time available.
+   - Any constraints that bound what's feasible — regulatory, brand, safety, equity, technical, political — and anything explicitly off-limits.
+   - Any intervention ideas people have ALREADY proposed, captured verbatim and labelled "proposed idea (unscreened)". Don't screen, score or rank them — just record them so the engine can evaluate them.
+   - Gaps: resource or constraint information the analysis will need but my material doesn't give (e.g. no budget stated).
 
 FORMAT
-- One Markdown file per deliverable, each under ~2,000 words.
-- Cite the source document for every figure or quote. Plain language, no preamble outside the files.
+- One Markdown file, roughly under 2,500 words. Use the three section headings above.
+- Plain language. Cite the source document for every figure or quote. No preamble or sign-off outside the file.
 
-When you're done, I'll upload these files into my CLEAR project so the analysis has the sharpest possible inputs.`;
+When you're done, I'll upload this evidence pack into my CLEAR project so the analysis works from the sharpest possible source material.`;
 }
 
 function ownerSv(ctx: OwnerPrepContext): string {
-  const group = ctx.targetGroup?.trim() || "målgruppen";
   const context = contextBlock(ctx, {
     challenge: "Utmaning",
     targetGroup: "Målgrupp",
@@ -101,41 +103,44 @@ function ownerSv(ctx: OwnerPrepContext): string {
     timeline: "Tidsram",
     stakeholders: "Viktiga intressenter",
   });
-  return `Du hjälper mig att förbereda underlag av hög kvalitet för en beteendeförändringsanalys som använder CLEAR-ramverket (Clarity, Leverage, Experimentation). Jag bifogar mina egna dokument och data i den här konversationen.
+  return `Du hjälper mig att förbereda källmaterialet för en beteendeförändringsanalys som körs med CLEAR-ramverket (Clarity, Leverage, Experimentation). Själva analysen görs av ett separat system — din uppgift är INTE att göra analysen, utan att ge det systemet det renaste, bäst organiserade underlaget att arbeta utifrån. Jag bifogar mina egna dokument och data i den här konversationen.
 
-Hitta aldrig på fakta, siffror eller citat. När mitt material inte innehåller något, flagga det som en lucka i stället för att gissa.
+Samla in, tänk inte åt systemet. Skriv inga mål eller OKR:er, diagnostisera eller rangordna inga hinder, utforma eller poängsätt inga interventioner — det är analysmotorns jobb, och den gör det bättre när den resonerar utifrån rådata än utifrån någon annans slutsatser. Din uppgift är att extrahera, organisera och källhänvisa det som mitt material faktiskt innehåller.
+
+Hitta aldrig på fakta, siffror eller citat. När mitt material inte innehåller något, säg det och notera det som en lucka — fyll inte hålet.
 
 KONTEXT
 ${context}
 
 DIN UPPGIFT
-Läs allt jag bifogar. Extrahera och sammanfatta endast det som mitt material faktiskt stödjer, och skapa sedan TRE separata Markdown-filer som jag kan ladda ner och ladda upp i mitt CLEAR-projekt — en per fas.
+Läs allt jag bifogar. Skapa EN Markdown-fil — en underlagssammanställning — som jag kan ladda ner och ladda upp i mitt CLEAR-projekt. Dela in den i de tre avsnitten nedan. Varje avsnitt samlar in det underlag som en fas av analysen behöver; det föregriper INTE den fasens slutsatser. Citera mitt material direkt där du kan, och ange källdokumentet för varje siffra eller citat.
 
-1) clarity-brief.md — CLARITY (en skarp, mätbar OKR-uppsättning)
-   - Varför det här är viktigt: ett kort, samlande stycke förankrat i mina data
-   - Ett övergripande, beteendefokuserat mål — hur framgång ser ut, inte hur vi tar oss dit
-   - 3–5 utfallsfokuserade nyckelresultat, vart och ett med mått, utgångsläge, mål, tidsram och ansvarig roll där mina data stödjer det (utelämna ett fält och notera det under luckor om de inte gör det)
-   - Luckor & osäkerheter: allt som saknas, antas eller behöver bekräftas
+clear-evidence-pack.md
 
-2) leverage-evidence.md — LEVERAGE (diagnostisera hindren, lös dem inte ännu)
-   - En sammanfattning på vanligt språk av systemet kring beteendet och dess nyckelaktörer
-   - De observerbara beteenden som driver utfallet (vem gör vad, när, var, hur ofta, med vem)
-   - Hinder och möjliggörare kartlagda enligt COM-B — Capability/Förmåga (fysisk / psykologisk), Opportunity/Möjlighet (fysisk / social), Motivation (reflektiv / automatisk). För varje: nuläge, ett citat som bevis, källdokumentet, och en märkning Verifierad, Antagande eller Lucka
-   - De 3–5 starkaste hindren, och vilka hävstångspunkter som ser mest effektfulla ut jämfört med lättast att förändra
-   - Luckor & osäkerheter: vilken upptäcktsfas som fortfarande behövs
+## 1. Mål & framgångssignaler  (råmaterial för CLARITY-fasen)
+   - De mål, uppdrag och definitioner av framgång som anges i mitt material — med mina egna ord, citerade, med källa. Formulera inget mål eller nyckelresultat; lyft bara fram det som redan är uttalat.
+   - Varje mått, KPI, utgångsläge, mål, andel eller trend som faktiskt förekommer i mina dokument, med siffran och var den kommer ifrån.
+   - Varför detta är viktigt nu, och eventuell deadline eller tidspress som nämns.
+   - Luckor: mål eller siffror som antyds men inte anges (t.ex. ett mål nämns men inget utgångsläge anges).
 
-3) experimentation-options.md — EXPERIMENT (minsta möjliga test, inte en utrullning)
-   - Mina resursramar: budget, personer och tid som finns tillgängliga
-   - För varje topp-hävstångspunkt: 2–3 små, helst reversibla interventioner, var och en kopplad till det namngivna COM-B-hinder den adresserar
-   - Sålla varje idé med APEASE — poängsätt Effekt, Genomförbarhet och Kostnadsbärighet 1–5, grinda sedan Acceptans, Bieffekter/Säkerhet och Rättvisa som pass / flagga / underkänd (en underkänd parkerar idén oavsett poäng)
-   - 3–6 testbara hypoteser i formen "Om vi ändrar X för ${group}, så händer Y, eftersom Z", var och en med hur jag skulle mäta framgång
-   - Luckor & osäkerheter
+## 2. Systemet, beteenden & friktion  (råmaterial för LEVERAGE-fasen)
+   - En beskrivning på vanligt språk av hur saker fungerar idag och vilka som är inblandade — aktörerna och deras roller, hämtat ur mitt material.
+   - De observerbara beteenden mitt material beskriver — vem gör vad, när, var, hur ofta, med vem — återgivna som de framträder, inte tolkade. Sortera dem INTE i kategorier eller ramverk; det gör motorn.
+   - Direkta citat och datapunkter om vad som står i vägen, vad folk klagar på och vad som redan fungerar — ordagrant där det går, var och en med sin källa.
+   - Vad som har provats tidigare och vad som hände.
+   - Luckor: beteenden eller orsaker som verkar viktiga men saknar stöd i mitt material.
+
+## 3. Begränsningar, resurser & idéer på bordet  (råmaterial för EXPERIMENT-fasen)
+   - Resursramen som den anges: budget, personer och tid som finns tillgängliga.
+   - Eventuella begränsningar som avgränsar vad som är genomförbart — regulatoriska, varumärkesmässiga, säkerhet, rättvisa, tekniska, politiska — och allt som uttryckligen är uteslutet.
+   - Eventuella interventionsidéer som folk REDAN har föreslagit, ordagrant återgivna och märkta "föreslagen idé (osållad)". Sålla, poängsätt eller rangordna dem inte — notera dem bara så att motorn kan utvärdera dem.
+   - Luckor: resurs- eller begränsningsinformation som analysen behöver men mitt material inte ger (t.ex. ingen budget anges).
 
 FORMAT
-- En Markdown-fil per leverabel, var och en under ~2 000 ord.
-- Ange källdokumentet för varje siffra eller citat. Vanligt språk, ingen inledning utanför filerna.
+- En Markdown-fil, ungefär under 2 500 ord. Använd de tre rubrikerna ovan.
+- Vanligt språk. Ange källdokumentet för varje siffra eller citat. Ingen inledning eller avslutning utanför filen.
 
-När du är klar laddar jag upp dina filer i mitt CLEAR-projekt så att analysen får skarpast möjliga underlag.`;
+När du är klar laddar jag upp den här underlagssammanställningen i mitt CLEAR-projekt så att analysen arbetar utifrån skarpast möjliga källmaterial.`;
 }
 
 /** Build the owner "prep your inputs" prompt in the requested language. */
