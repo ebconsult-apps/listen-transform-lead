@@ -77,7 +77,10 @@ function magicLinkEmail(d: EmailData) {
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return hookError(405, "Method not allowed");
-  if (!HOOK_SECRET) return hookError(500, "SEND_EMAIL_HOOK_SECRET is not set");
+  if (!HOOK_SECRET) {
+    console.error("auth-email: SEND_EMAIL_HOOK_SECRET is not set");
+    return hookError(500, "SEND_EMAIL_HOOK_SECRET is not set");
+  }
 
   const payload = await req.text();
   const headers = Object.fromEntries(req.headers);
@@ -91,8 +94,9 @@ Deno.serve(async (req) => {
     };
     user = verified.user;
     email_data = verified.email_data;
-  } catch (_e) {
+  } catch (e) {
     // Bad / missing signature: someone other than Supabase Auth called us.
+    console.error("auth-email: signature verification failed:", (e as Error).message);
     return hookError(401, "Invalid signature");
   }
 
@@ -103,7 +107,9 @@ Deno.serve(async (req) => {
       ...magicLinkEmail(email_data),
     });
   } catch (e) {
-    // Surface the failure so Supabase reports the email as undeliverable.
+    // Surface the failure so Supabase reports the email as undeliverable. GoTrue
+    // swallows the response body, so log the reason to make it visible.
+    console.error("auth-email: send failed:", (e as Error).message);
     return hookError(500, (e as Error).message);
   }
 
