@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
     const tier = ent?.tier ?? "free";
 
     // Build intake
-    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }] =
+    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }, { data: gaps }] =
       await Promise.all([
         admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
         admin.from("documents").select("*").eq("project_id", projectId),
@@ -147,6 +147,7 @@ Deno.serve(async (req) => {
           .select("*")
           .eq("project_id", projectId)
           .in("status", ["accepted", "promoted"]),
+        admin.from("assumption_gaps").select("*").eq("project_id", projectId),
       ]);
     const documents = (docs ?? [])
       .filter((d: { extracted_text: string | null }) => d.extracted_text)
@@ -160,6 +161,22 @@ Deno.serve(async (req) => {
     const respondentInput = summarizeRespondentInput(contributions ?? [], reactions ?? []);
     if (respondentInput) {
       documents.push({ filename: "Respondent contributions", text: respondentInput });
+    }
+
+    // Fold the owner's answers to flagged assumptions/gaps into intake so a re-run
+    // accounts for them. Attached files already arrive via the documents query.
+    const answeredGaps = (gaps ?? []).filter(
+      (g: { response: string | null }) => g.response && g.response.trim(),
+    );
+    if (answeredGaps.length) {
+      const text = answeredGaps
+        .map((g: { content: string; phase: string | null; response: string | null }) =>
+          `- ${g.content}${g.phase ? ` (${g.phase})` : ""}\n  Answer: ${g.response?.trim() ?? ""}`)
+        .join("\n");
+      documents.push({
+        filename: "Resolved assumptions & answers",
+        text: `[Owner answers to flagged assumptions/gaps]\n\n${text}`,
+      });
     }
 
     // Owner-accepted research findings flow in as cited "Verified" evidence.
