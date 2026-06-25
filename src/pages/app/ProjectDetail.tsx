@@ -22,6 +22,7 @@ import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
 import ResearchTab from "@/components/product/ResearchTab";
 import ResearchValue from "@/components/product/ResearchValue";
+import ClarifyRunningCard from "@/components/product/ClarifyRunningCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
 import ReportBuildingLoader from "@/components/product/ReportBuildingLoader";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
@@ -250,30 +251,24 @@ const ProjectDetail = () => {
       {/* Step 0 — not yet run: kick off Clarify */}
       {!hasClarify && (
         <div className="space-y-6 no-print">
-          <div className="glass-card p-10 text-center">
-            {isRunning ? (
-              <>
-                <RefreshCw className="h-6 w-6 text-primary mx-auto mb-3 animate-spin" />
-                <h2 className="heading-md mb-1">Running Clarify…</h2>
-                <p className="body-md">Defining your measurable target. This takes a few seconds.</p>
-              </>
-            ) : (
-              <>
-                <h2 className="heading-md mb-2">Start with Clarify</h2>
-                <p className="body-md mb-4">
-                  Clarify turns your challenge into a sharp, measurable target — one objective with a
-                  few key results. You review and approve it before anything is built on top.
-                </p>
-                <p className="body-md mb-6 text-foreground/60">
-                  Next: Leverage maps the barriers in your way, the full report turns them into a
-                  plan, and Experiment proposes interventions you can test.
-                </p>
-                <button onClick={onRunClarify} disabled={busy} className="btn-primary">
-                  <Play className="h-4 w-4 mr-1.5" /> Run Clarify
-                </button>
-              </>
-            )}
-          </div>
+          {isRunning ? (
+            <ClarifyRunningCard />
+          ) : (
+            <div className="glass-card p-10 text-center">
+              <h2 className="heading-md mb-2">Start with Clarify</h2>
+              <p className="body-md mb-4">
+                Clarify turns your challenge into a sharp, measurable target — one objective with a
+                few key results. You review and approve it before anything is built on top.
+              </p>
+              <p className="body-md mb-6 text-foreground/60">
+                Next: Leverage maps the barriers in your way, the full report turns them into a
+                plan, and Experiment proposes interventions you can test.
+              </p>
+              <button onClick={onRunClarify} disabled={busy} className="btn-primary">
+                <Play className="h-4 w-4 mr-1.5" /> Run Clarify
+              </button>
+            </div>
+          )}
         </div>
       )}
 

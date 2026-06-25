@@ -183,16 +183,6 @@ export async function approveClarify(projectId: string, output: ClarifyOutput): 
   await setProjectStatus(projectId, "clarify_approved");
 }
 
-export async function getClarifyApprovedAt(projectId: string): Promise<string | null> {
-  await delay(READ_MS);
-  // No separate approval timestamp is tracked in mock mode; approval happens at
-  // Clarify time, so the latest clarify run's created_at is a faithful proxy that
-  // keeps downstream staleness comparisons sane (never newer than later phases).
-  if (!db.approvals[projectId]) return null;
-  const clarifyRuns = (db.runs[projectId] ?? []).filter((r) => r.phase === "clarify");
-  return clarifyRuns.length ? clarifyRuns[clarifyRuns.length - 1].created_at : null;
-}
-
 // ── clear/run.ts (mock engine: reuse fixtures, mirror the stub orchestration) ────
 export async function runClarify(projectId: string): Promise<void> {
   await setProjectStatus(projectId, "running");
