@@ -35,6 +35,24 @@ describe("mock-store seeded dataset", () => {
     expect(runs.some((r) => r.phase === "clarify")).toBe(true);
   });
 
+  it("getClarifyApprovedAt: null until approved, an ISO timestamp once approved", async () => {
+    // a clarify run exists but no approval yet → null
+    expect(await store.getClarifyApprovedAt("proj-clarify-ready")).toBeNull();
+    // a seeded approved project → a valid ISO timestamp
+    const seededAt = await store.getClarifyApprovedAt("proj-clarify-approved");
+    expect(seededAt).toBeTruthy();
+    expect(() => new Date(seededAt as string).toISOString()).not.toThrow();
+    // write path: approving a freshly-run draft makes it report a timestamp
+    await store.runClarify("proj-draft");
+    await store.approveClarify("proj-draft", {
+      whyItMatters: "w",
+      objective: "o",
+      keyResults: [{ kr: "k" }],
+      gapLog: [],
+    });
+    expect(await store.getClarifyApprovedAt("proj-draft")).toBeTruthy();
+  });
+
   it("the empty dataset has no projects", async () => {
     store.resetMockDb("empty");
     expect(await store.listProjects()).toEqual([]);

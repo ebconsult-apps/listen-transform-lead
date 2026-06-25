@@ -84,6 +84,14 @@ export class LiveClearEngine implements ClearEngine {
       ...sampling,
       messages: [{ role: "user", content: user }],
     });
+    // A run that hits the token ceiling returns truncated JSON, which would fail
+    // downstream as an opaque "Model did not return JSON" parse error. Surface
+    // the real cause so it's actionable (raise max_tokens / trim the inputs).
+    if (res.stop_reason === "max_tokens") {
+      throw new Error(
+        `Model output hit the ${maxTokens}-token limit and was truncated before returning complete JSON.`,
+      );
+    }
     const text = res.content
       .filter((b) => b.type === "text")
       // deno-lint-ignore no-explicit-any
