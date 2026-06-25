@@ -4,6 +4,19 @@
 
 **URL**: https://lovable.dev/projects/640c5644-92b3-48d2-a323-e110229b85f4
 
+## Local development & QA
+
+This project has a **fully-mocked dev/QA mode** that lets you walk the entire app — every screen
+and report state — with **no Supabase, login, or Stripe**:
+
+- Run `npm run dev` with an empty `.env`, then on `/login` click **"Enter dev / QA mode (mock
+  data)"** (or use the floating **DEV** panel, bottom-right).
+- For a production-style preview, build with `VITE_DEV_BYPASS=true`.
+
+A **"DEV / QA MODE — mock data"** banner shows whenever it is active. See [`CLAUDE.md`](./CLAUDE.md)
+for architecture and the data-layer conventions, and [`.env.example`](./.env.example) for all
+environment variables.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
