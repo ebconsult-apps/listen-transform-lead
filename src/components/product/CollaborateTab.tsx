@@ -147,14 +147,23 @@ const CollaborateTab = ({
           Email people close to the challenge. They get a private link, no account needed, to react to the map
           and add their input.
         </p>
+        <label htmlFor="invite-emails" className="sr-only">
+          Email addresses
+        </label>
         <textarea
+          id="invite-emails"
           rows={2}
           className="input"
           placeholder="Email addresses, separated by commas or new lines"
           value={emails}
           onChange={(e) => setEmails(e.target.value)}
+          aria-required="true"
         />
+        <label htmlFor="invite-note" className="sr-only">
+          Personal note (optional)
+        </label>
         <textarea
+          id="invite-note"
           rows={2}
           className="input mt-2"
           placeholder="Add a personal note (optional)"

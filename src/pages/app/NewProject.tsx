@@ -158,12 +158,13 @@ const NewProject = () => {
       <h1 className="heading-lg mb-6">New project</h1>
 
       <form onSubmit={submit} className="space-y-6">
-        <Field label="Project name">
-          <input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Reduce trial churn" />
+        <Field label="Project name" htmlFor="np-name">
+          <input id="np-name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Reduce trial churn" />
         </Field>
 
-        <Field label="The behavior-change challenge" hint="What behavior do you want to move, and why?">
+        <Field label="The behavior-change challenge" hint="What behavior do you want to move, and why?" htmlFor="np-challenge">
           <textarea
+            id="np-challenge"
             required
             rows={5}
             className="input"
@@ -179,15 +180,15 @@ const NewProject = () => {
         </Field>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Target group">
-            <select className="input" value={targetGroup} onChange={(e) => setTargetGroup(e.target.value)}>
+          <Field label="Target group" htmlFor="np-target">
+            <select id="np-target" className="input" value={targetGroup} onChange={(e) => setTargetGroup(e.target.value)}>
               {TARGET_GROUPS.map((g) => (
                 <option key={g} value={g}>{g}</option>
               ))}
             </select>
           </Field>
-          <Field label="Use case">
-            <select className="input" value={useCase} onChange={(e) => setUseCase(e.target.value)}>
+          <Field label="Use case" htmlFor="np-usecase">
+            <select id="np-usecase" className="input" value={useCase} onChange={(e) => setUseCase(e.target.value)}>
               {USE_CASES.map((u) => (
                 <option key={u} value={u}>{u.replace(/_/g, " ")}</option>
               ))}
@@ -195,22 +196,24 @@ const NewProject = () => {
           </Field>
         </div>
 
-        <Field label="Timeline" hint="Optional">
-          <input className="input" value={timeline} onChange={(e) => setTimeline(e.target.value)} placeholder="e.g. Pilot within one quarter" />
+        <Field label="Timeline" hint="Optional" htmlFor="np-timeline">
+          <input id="np-timeline" className="input" value={timeline} onChange={(e) => setTimeline(e.target.value)} placeholder="e.g. Pilot within one quarter" />
         </Field>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Stakeholders</label>
+          <span className="block text-sm font-medium mb-2">Stakeholders</span>
           <div className="space-y-2">
             {stakeholders.map((s, i) => (
               <div key={i} className="flex gap-2">
                 <input
+                  aria-label={`Stakeholder ${i + 1} name`}
                   className="input"
                   placeholder="Name (optional)"
                   value={s.name}
                   onChange={(e) => updateStakeholder(i, "name", e.target.value)}
                 />
                 <input
+                  aria-label={`Stakeholder ${i + 1} role`}
                   className="input"
                   placeholder="Role"
                   value={s.role}
@@ -243,13 +246,13 @@ const NewProject = () => {
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <span className="block text-sm font-medium mb-2">
             Documents <span className="text-foreground/40 font-normal">(PDF/DOCX/XLSX/MD/TXT/CSV, ≤10 files / 50 MB)</span>
-          </label>
+          </span>
           <label className="glass-card border-dashed border-2 border-border flex flex-col items-center justify-center py-8 cursor-pointer hover:bg-muted/50 transition-colors">
             <Upload className="h-6 w-6 text-foreground/40 mb-2" />
             <span className="text-sm text-foreground/60">Click to add files</span>
-            <input type="file" multiple accept={ACCEPT} className="hidden" onChange={(e) => onFiles(e.target.files)} />
+            <input type="file" multiple accept={ACCEPT} aria-label="Add documents" className="hidden" onChange={(e) => onFiles(e.target.files)} />
           </label>
           {files.length > 0 && (
             <ul className="mt-3 space-y-1">
@@ -301,9 +304,19 @@ const NewProject = () => {
   );
 };
 
-const Field = ({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) => (
+const Field = ({
+  label,
+  hint,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  htmlFor?: string;
+  children: React.ReactNode;
+}) => (
   <div>
-    <label className="block text-sm font-medium mb-2">
+    <label htmlFor={htmlFor} className="block text-sm font-medium mb-2">
       {label} {hint && <span className="text-foreground/40 font-normal">({hint})</span>}
     </label>
     {children}

@@ -128,12 +128,18 @@ const AssumptionsGapsLog = ({ projectId }: { projectId: string }) => {
       )}
 
       <div className="flex flex-col sm:flex-row gap-2">
-        <select className="input sm:w-48 text-sm" value={type} onChange={(e) => setType(e.target.value as FlagType)}>
+        <select
+          aria-label="Flag type"
+          className="input sm:w-48 text-sm"
+          value={type}
+          onChange={(e) => setType(e.target.value as FlagType)}
+        >
           {FLAG_TYPES.map((t) => (
             <option key={t} value={t}>{FLAG_LABEL[t]}</option>
           ))}
         </select>
         <input
+          aria-label="New assumption or gap"
           className="input flex-grow text-sm"
           value={content}
           onChange={(e) => setContent(e.target.value)}
