@@ -65,7 +65,10 @@ const FreeChapterForm = ({ onSuccess, compact = false }: FreeChapterFormProps) =
   return (
     <form onSubmit={handleSubmit} className={compact ? "space-y-3" : "space-y-4"}>
       {error && (
-        <div className="p-3 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg text-sm">
+        <div
+          role="alert"
+          className="p-3 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg text-sm"
+        >
           {error}
         </div>
       )}

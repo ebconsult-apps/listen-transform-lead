@@ -262,7 +262,10 @@ const GetTheBook = () => {
                 {!submitted ? (
                   <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
-                      <div className="p-4 mb-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+                      <div
+                        role="alert"
+                        className="p-4 mb-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg"
+                      >
                         {error}
                       </div>
                     )}

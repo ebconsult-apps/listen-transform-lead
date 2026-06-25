@@ -254,7 +254,10 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
         </p>
 
         {submitError && (
-          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg">
+          <div
+            role="alert"
+            className="mb-6 p-4 bg-destructive/10 border border-destructive/30 text-destructive rounded-lg"
+          >
             {submitError}
           </div>
         )}
@@ -281,8 +284,15 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
                 onChange={handleChange}
                 className={inputClasses}
                 placeholder="Your full name"
+                aria-required="true"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "assess-name-error" : undefined}
               />
-              {errors.name && <p className="mt-1 text-sm text-destructive">{errors.name}</p>}
+              {errors.name && (
+                <p id="assess-name-error" role="alert" className="mt-1 text-sm text-destructive">
+                  {errors.name}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="assess-email" className="block text-sm font-medium text-foreground mb-2">
@@ -296,8 +306,15 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
                 onChange={handleChange}
                 className={inputClasses}
                 placeholder="your.email@company.com"
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "assess-email-error" : undefined}
               />
-              {errors.email && <p className="mt-1 text-sm text-destructive">{errors.email}</p>}
+              {errors.email && (
+                <p id="assess-email-error" role="alert" className="mt-1 text-sm text-destructive">
+                  {errors.email}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="assess-company" className="block text-sm font-medium text-foreground mb-2">
@@ -311,8 +328,15 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
                 onChange={handleChange}
                 className={inputClasses}
                 placeholder="Your organization"
+                aria-required="true"
+                aria-invalid={!!errors.company}
+                aria-describedby={errors.company ? "assess-company-error" : undefined}
               />
-              {errors.company && <p className="mt-1 text-sm text-destructive">{errors.company}</p>}
+              {errors.company && (
+                <p id="assess-company-error" role="alert" className="mt-1 text-sm text-destructive">
+                  {errors.company}
+                </p>
+              )}
             </div>
             <button
               type="submit"
