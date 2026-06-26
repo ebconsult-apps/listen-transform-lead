@@ -26,6 +26,7 @@ import fullFixture from "@/lib/clear/fixtures/leverage-full.json";
 import experimentFixture from "@/lib/clear/fixtures/experiment.json";
 import researchFixture from "@/lib/clear/fixtures/research.json";
 import { daysAgoIso, uid } from "./util";
+import { defaultPriority } from "@/lib/clear/labels";
 
 export const CLARIFY = clarifyFixture as unknown as ClarifyOutput;
 export const TEASER = teaserFixture as unknown as LeverageTeaser;
@@ -115,6 +116,7 @@ export function gapRows(
     source: f.source ?? null,
     status: "open",
     response: null,
+    priority: f.priority ?? defaultPriority(f.type),
     created_at: ts,
     updated_at: ts,
   }));

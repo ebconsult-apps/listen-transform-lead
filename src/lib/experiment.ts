@@ -15,6 +15,7 @@ import type {
   TestCardRow,
 } from "./db";
 import type { Apease, GapFlag, ResourceEnvelope } from "./clear/types";
+import { defaultPriority } from "./clear/labels";
 
 // ── APEASE helpers (methodology: any FAIL parks; scores sum 3–15) ─────────────
 export function apeaseSum(a: Apease): number {
@@ -161,6 +162,7 @@ export async function listAssumptionGaps(projectId: string): Promise<AssumptionG
     .from("assumption_gaps")
     .select("*")
     .eq("project_id", projectId)
+    .order("priority", { ascending: false })
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as AssumptionGapRow[];
@@ -178,6 +180,7 @@ export async function addAssumptionGap(
     flag_type: flag.type,
     content: flag.content,
     source: flag.source ?? null,
+    priority: flag.priority ?? defaultPriority(flag.type),
   });
   if (error) throw error;
 }

@@ -11,6 +11,7 @@ import { apeaseParked, getExperimentDesign, listAssumptionGaps } from "@/lib/exp
 import { getClarifyApproval, pickClarify } from "@/lib/clarify";
 import { listAcceptedResearch } from "@/lib/research";
 import { getClearEngine } from "./index";
+import { defaultPriority } from "./labels";
 import { devActive, effectiveAiMode } from "@/lib/dev/config";
 import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
@@ -125,6 +126,7 @@ async function seedGapLog(projectId: string, phase: RunPhase, flags?: GapFlag[])
       flag_type: f.type,
       content: f.content,
       source: f.source ?? null,
+      priority: f.priority ?? defaultPriority(f.type),
     }));
   if (rows.length) await sb.from("assumption_gaps").insert(rows);
 }

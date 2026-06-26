@@ -196,6 +196,8 @@ export interface AssumptionGapRow {
   status: AssumptionGapStatus;
   /** Owner's answer / supporting note for this item (mirrors research_questions.answer). */
   response: string | null;
+  /** Importance for the Open-questions focus flow; higher = surfaced first. */
+  priority: number;
   created_at: string;
   updated_at: string;
 }

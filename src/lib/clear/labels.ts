@@ -25,6 +25,29 @@ export const FLAG_LABEL: Record<FlagType, string> = {
   requires_confirmation: "Requires confirmation",
 };
 
+/**
+ * Default importance per flag type — higher = more urgent to put in front of the
+ * owner. Confirmation/blocking input first, then gaps (missing facts), then
+ * assumptions the model inferred, then soft user_input. Stored on the
+ * `assumption_gaps.priority` column so ordering is data-driven (and AI-rankable
+ * later); the SQL backfill in 20260626130000_assumption_gap_priority.sql mirrors
+ * these exact ranks. Used to seed `priority` whenever a flag is persisted without
+ * an explicit one.
+ */
+export const FLAG_PRIORITY: Record<FlagType, number> = {
+  requires_confirmation: 5,
+  needs_input: 4,
+  input_needed: 4,
+  gap: 3,
+  assumption: 2,
+  user_input: 1,
+};
+
+/** Derive the default `priority` for a flag type (0 for anything unexpected). */
+export function defaultPriority(type: FlagType): number {
+  return FLAG_PRIORITY[type] ?? 0;
+}
+
 export const COMB_LABEL: Record<ComBComponent, string> = {
   capability_physical: "Capability — Physical",
   capability_psychological: "Capability — Psychological",
