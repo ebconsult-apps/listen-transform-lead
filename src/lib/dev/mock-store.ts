@@ -54,6 +54,7 @@ import {
   questionRows,
 } from "./fixtures";
 import { delay, nowIso, uid } from "./util";
+import { defaultPriority } from "@/lib/clear/labels";
 
 const READ_MS = 200;
 const RUN_MS = 900;
@@ -484,8 +485,8 @@ export async function deleteTestCard(id: string): Promise<void> {
 export async function listAssumptionGaps(projectId: string): Promise<AssumptionGapRow[]> {
   await delay(READ_MS);
   return clone(
-    [...(db.assumptionGaps[projectId] ?? [])].sort((a, b) =>
-      a.created_at.localeCompare(b.created_at),
+    [...(db.assumptionGaps[projectId] ?? [])].sort(
+      (a, b) => b.priority - a.priority || a.created_at.localeCompare(b.created_at),
     ),
   );
 }
@@ -503,6 +504,7 @@ export async function addAssumptionGap(
     source: flag.source ?? null,
     status: "open",
     response: null,
+    priority: flag.priority ?? defaultPriority(flag.type),
     created_at: nowIso(),
     updated_at: nowIso(),
   };

@@ -5,8 +5,10 @@ import {
   COMB_LABEL,
   EVIDENCE_LABEL,
   FLAG_LABEL,
+  FLAG_PRIORITY,
   GATE_LABEL,
   GENRE_LABEL,
+  defaultPriority,
 } from "./labels";
 import type { ClarifyOutput } from "./types";
 
@@ -50,11 +52,25 @@ describe("combLabel", () => {
   });
 });
 
+describe("defaultPriority", () => {
+  it("ranks blocking input above inferred assumptions", () => {
+    expect(defaultPriority("requires_confirmation")).toBeGreaterThan(defaultPriority("gap"));
+    expect(defaultPriority("needs_input")).toBeGreaterThan(defaultPriority("assumption"));
+    expect(defaultPriority("gap")).toBeGreaterThan(defaultPriority("user_input"));
+  });
+  it("has a priority for every flag-label key", () => {
+    for (const type of Object.keys(FLAG_LABEL) as (keyof typeof FLAG_LABEL)[]) {
+      expect(defaultPriority(type)).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe("label maps are complete", () => {
   it("has a label for every COM-B component, evidence flag, flag type, gate, and genre", () => {
     expect(Object.keys(COMB_LABEL)).toHaveLength(6);
     expect(Object.keys(EVIDENCE_LABEL)).toHaveLength(4);
     expect(Object.keys(FLAG_LABEL)).toHaveLength(6);
+    expect(Object.keys(FLAG_PRIORITY)).toHaveLength(6);
     expect(Object.keys(GATE_LABEL)).toHaveLength(3);
     expect(Object.keys(GENRE_LABEL)).toHaveLength(6);
     // no empty labels

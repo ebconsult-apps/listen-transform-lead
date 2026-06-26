@@ -47,6 +47,8 @@ export interface GapFlag {
   content: string;
   /** Where the claim/placeholder came from, when relevant. */
   source?: string;
+  /** Optional explicit importance; falls back to defaultPriority(type) when unset. */
+  priority?: number;
 }
 
 // ── CLARIFY (full OKR) ───────────────────────────────────────────────────────
