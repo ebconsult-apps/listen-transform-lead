@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Pricing = () => {
   const { session } = useAuth();
-  const dest = session ? "/account/billing" : "/signup";
+  const dest = session ? "/account" : "/signup";
 
   return (
     <div className="bg-background">

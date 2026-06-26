@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { useEffect } from "react";
 import { initGoogleAds, trackPageView } from "@/utils/analytics";
@@ -56,7 +56,6 @@ import AuthCallback from "./pages/product/AuthCallback";
 import Dashboard from "./pages/app/Dashboard";
 import NewProject from "./pages/app/NewProject";
 import ProjectDetail from "./pages/app/ProjectDetail";
-import Billing from "./pages/app/Billing";
 import Account from "./pages/app/Account";
 import RespondentPortal from "./pages/respond/RespondentPortal";
 import DevPanel from "@/components/dev/DevPanel";
@@ -110,7 +109,8 @@ const App = () => (
               <Route path="/app/projects/new" element={<ProtectedRoute><NewProject /></ProtectedRoute>} />
               <Route path="/app/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
               <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
-              <Route path="/account/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
+              {/* Billing folded into /account; keep the path as a redirect for old links. */}
+              <Route path="/account/billing" element={<Navigate to="/account" replace />} />
             </Route>
 
             {/* Landing pages - no Layout wrapper (no nav/footer) */}
