@@ -67,9 +67,10 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           # Match whatever model the edge fn projected cost for. Defaults to the
-          # engine's Sonnet floor; set the RESEARCH_MODEL Actions variable here too
-          # if you override it as a Supabase edge secret.
-          RESEARCH_MODEL: ${{ vars.RESEARCH_MODEL || 'claude-sonnet-4-6' }}
+          # engine's cheapest-model e2e default (claude-haiku-4-5); set the
+          # RESEARCH_MODEL Actions variable here too if you override it as a
+          # Supabase edge secret.
+          RESEARCH_MODEL: ${{ vars.RESEARCH_MODEL || 'claude-haiku-4-5' }}
           # Web-tool per-request fees default to pricing.ts (0.01 each) when unset —
           # left unset here so the worker matches a non-overridden edge. If you
           # override WEB_SEARCH_REQUEST_FEE_USD / WEB_FETCH_REQUEST_FEE_USD on the

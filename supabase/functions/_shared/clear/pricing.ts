@@ -41,13 +41,14 @@ export const PHASE_MAX_OUTPUT: Record<string, number> = {
 /**
  * Resolve which model a phase will use, mirroring LiveClearEngine's env reads so
  * the pre-run estimate prices the same model the run will actually use. Defaults
- * to the Sonnet floor when the env var is unset.
+ * to the cheapest model (claude-haiku-4-5) when the env var is unset, matching
+ * LiveClearEngine's e2e-verification defaults.
  */
 export function modelForPhase(
   phase: string,
   getEnv: (key: string) => string | undefined,
 ): string {
-  const v = (key: string) => getEnv(key) ?? "claude-sonnet-4-6";
+  const v = (key: string) => getEnv(key) ?? "claude-haiku-4-5";
   switch (phase) {
     case "clarify":
       return v("CLARIFY_MODEL");
@@ -59,6 +60,6 @@ export function modelForPhase(
     case "research":
       return v("RESEARCH_MODEL");
     default:
-      return "claude-sonnet-4-6";
+      return "claude-haiku-4-5";
   }
 }
