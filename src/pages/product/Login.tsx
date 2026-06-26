@@ -36,10 +36,18 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
 
   const google = async () => {
     if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
+    // On success the browser is already navigating to Google; on error we stay
+    // on the page, so surface it (e.g. provider not enabled) instead of silently
+    // doing nothing.
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -118,8 +126,12 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
               <div className="h-px bg-border flex-grow" /> or{" "}
               <div className="h-px bg-border flex-grow" />
             </div>
-            <button onClick={google} className="btn-secondary w-full">
-              Continue with Google
+            <button
+              onClick={google}
+              disabled={loading}
+              className="btn-secondary w-full"
+            >
+              {loading ? "Redirecting…" : "Continue with Google"}
             </button>
           </>
         )}
