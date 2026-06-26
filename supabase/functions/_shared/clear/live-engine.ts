@@ -196,8 +196,13 @@ export class LiveClearEngine implements ClearEngine {
       max_tokens: maxTokens,
       system,
       tools: [
-        { type: "web_search_20260209", name: "web_search", max_uses: 6 },
-        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 6 },
+        // allowed_callers: ["direct"] keeps these as plain server tools driven by
+        // the pause_turn loop below. Without it, the _20260209 versions default to
+        // dynamic filtering (programmatic tool calling) — which only some models
+        // support (Haiku 4.5 returns a 400) and would route results through code
+        // execution instead of the direct server_tool_use blocks this loop tallies.
+        { type: "web_search_20260209", name: "web_search", max_uses: 6, allowed_callers: ["direct"] },
+        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 6, allowed_callers: ["direct"] },
       ],
       messages: [{ role: "user", content: user }],
     };
