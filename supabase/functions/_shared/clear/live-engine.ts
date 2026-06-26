@@ -57,17 +57,18 @@ function extractJson<T>(text: string): T {
 
 /**
  * LiveClearEngine — real Claude calls. Model ids come from env so they can be
- * upgraded without code changes. Every phase defaults to a deeper model worthy
- * of the methodology (Clarify defines the whole engagement, so it gets the
- * documents and a Sonnet floor); set LEVERAGE_MODEL=claude-opus-4-8 for a
- * flagship run. Temperature is applied to non-Opus models only (see isOpus).
+ * upgraded without code changes. While we verify end-to-end delivery of the full
+ * suite, every phase defaults to the cheapest model (claude-haiku-4-5) for fast,
+ * low-cost runs; set any phase's env var (e.g. LEVERAGE_MODEL=claude-sonnet-4-6
+ * or claude-opus-4-8) to run it on a deeper model. Temperature is applied to
+ * non-Opus models only (see isOpus).
  */
 export class LiveClearEngine implements ClearEngine {
   private client = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY")! });
-  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-sonnet-4-6";
-  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-sonnet-4-6";
-  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-sonnet-4-6";
-  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-sonnet-4-6";
+  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-haiku-4-5";
+  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-haiku-4-5";
+  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-haiku-4-5";
+  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-haiku-4-5";
 
   private async call<T>(
     model: string,
