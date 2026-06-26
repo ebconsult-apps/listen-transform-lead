@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
     const tier = ent?.tier ?? "free";
 
     // Build intake
-    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }] =
+    const [{ data: input }, { data: docs }, { data: contributions }, { data: reactions }, { data: findings }, { data: gaps }] =
       await Promise.all([
         admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
         admin.from("documents").select("*").eq("project_id", projectId),
@@ -147,6 +147,7 @@ Deno.serve(async (req) => {
           .select("*")
           .eq("project_id", projectId)
           .in("status", ["accepted", "promoted"]),
+        admin.from("assumption_gaps").select("*").eq("project_id", projectId),
       ]);
     const documents = (docs ?? [])
       .filter((d: { extracted_text: string | null }) => d.extracted_text)
@@ -160,6 +161,22 @@ Deno.serve(async (req) => {
     const respondentInput = summarizeRespondentInput(contributions ?? [], reactions ?? []);
     if (respondentInput) {
       documents.push({ filename: "Respondent contributions", text: respondentInput });
+    }
+
+    // Fold the owner's answers to flagged assumptions/gaps into intake so a re-run
+    // accounts for them. Attached files already arrive via the documents query.
+    const answeredGaps = (gaps ?? []).filter(
+      (g: { response: string | null }) => g.response && g.response.trim(),
+    );
+    if (answeredGaps.length) {
+      const text = answeredGaps
+        .map((g: { content: string; phase: string | null; response: string | null }) =>
+          `- ${g.content}${g.phase ? ` (${g.phase})` : ""}\n  Answer: ${g.response?.trim() ?? ""}`)
+        .join("\n");
+      documents.push({
+        filename: "Resolved assumptions & answers",
+        text: `[Owner answers to flagged assumptions/gaps]\n\n${text}`,
+      });
     }
 
     // Owner-accepted research findings flow in as cited "Verified" evidence.
@@ -355,8 +372,29 @@ Deno.serve(async (req) => {
         return json({ error: "Approve Clarify before generating the full report." }, 409);
       }
       await admin.from("projects").update({ status: "running" }).eq("id", projectId);
-      const teaser = await engine.runLeverageTeaser(intake, clarify);
-      const full = await engine.runLeverageFull(intake, clarify, teaser.output);
+      // Reuse the teaser already generated during the Leverage phase instead of
+      // regenerating it. The full report is a slow model call on its own; running
+      // the teaser first too made "full" two sequential calls that blew past the
+      // edge runtime's wall-clock limit — the worker was killed mid-run (500)
+      // before the catch could fire, leaving the project stuck on "running".
+      // Fall back to generating the teaser only if none was persisted yet (the
+      // normal flow always reaches teaser_ready before full).
+      const { data: teaserRuns } = await admin
+        .from("runs")
+        .select("output, created_at")
+        .eq("project_id", projectId)
+        .eq("phase", "leverage_teaser")
+        .order("created_at", { ascending: true });
+      let teaserOutput =
+        teaserRuns && teaserRuns.length
+          ? (teaserRuns[teaserRuns.length - 1].output as Parameters<typeof engine.runLeverageFull>[2])
+          : null;
+      if (!teaserOutput) {
+        const teaser = await engine.runLeverageTeaser(intake, clarify);
+        await persist("leverage_teaser", teaser.output, teaser.tokens, teaser.costUsd);
+        teaserOutput = teaser.output;
+      }
+      const full = await engine.runLeverageFull(intake, clarify, teaserOutput);
       await persist("leverage_full", full.output, full.tokens, full.costUsd);
       await seedGapLog("leverage_full", full.output.gapLog);
       await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);

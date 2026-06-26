@@ -114,6 +114,7 @@ export function gapRows(
     content: f.content,
     source: f.source ?? null,
     status: "open",
+    response: null,
     created_at: ts,
     updated_at: ts,
   }));

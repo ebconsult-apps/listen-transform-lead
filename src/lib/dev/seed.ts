@@ -254,10 +254,33 @@ function buildSeeded(): MockDb {
     ];
     db.approvals[id] = CLARIFY;
     db.unlocks[id] = unlock(id);
-    db.assumptionGaps[id] = [
+    const fullGaps = [
       ...gapRows(id, "clarify", CLARIFY.gapLog, 2),
       ...gapRows(id, "leverage_full", FULL.gapLog, 1),
     ];
+    // Demo one answered item with an attached document so the Open-questions
+    // surface shows the resolved/answered state (and an attachment) out of the box.
+    if (fullGaps[0]) {
+      fullGaps[0].response =
+        "Confirmed with the membership team: the day-1 baseline is a 58% drop-off (Q2 cohort export, attached).";
+      fullGaps[0].status = "resolved";
+      fullGaps[0].updated_at = daysAgoIso(1);
+      db.documents[id] = [
+        {
+          id: uid("doc"),
+          project_id: id,
+          storage_path: `dev/${id}/q2-cohort-baseline.csv`,
+          filename: "q2-cohort-baseline.csv",
+          mime: "text/csv",
+          bytes: 12480,
+          status: "uploaded",
+          extracted_text: null,
+          assumption_gap_id: fullGaps[0].id,
+          created_at: daysAgoIso(1),
+        },
+      ];
+    }
+    db.assumptionGaps[id] = fullGaps;
   }
 
   // 6 — With contributions: invitations + submitted contributions + reactions.

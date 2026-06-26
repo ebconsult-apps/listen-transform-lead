@@ -1,6 +1,7 @@
 import type { ClarifyOutput } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
 import GapFlagList from "./GapFlagList";
+import { HelpTip, HINTS, OkrExplainer } from "./okr-help";
 
 /** Read-only Clarify (OKR) display, shown once the owner has approved it. */
 const ClarifyCard = ({ clarify }: { clarify: ClarifyOutput }) => {
@@ -15,21 +16,26 @@ const ClarifyCard = ({ clarify }: { clarify: ClarifyOutput }) => {
           Approved
         </span>
       </div>
+      <OkrExplainer className="mb-5" />
       <p className="body-md mb-5">{clarify.whyItMatters}</p>
-      <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-2">Objective</h4>
+      <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-2">
+        Objective <HelpTip hint={HINTS.objective} label="Objective" />
+      </h4>
       <p className="text-lg font-medium mb-5">{clarify.objective}</p>
-      <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-3">Key Results</h4>
+      <h4 className="font-semibold text-sm uppercase tracking-wide text-foreground/50 mb-3">
+        Key Results <HelpTip hint={HINTS.kr} label="Key result" />
+      </h4>
       <div className="space-y-3">
         {clarify.keyResults.map((kr, i) => (
           <div key={i} className="border border-border rounded-xl p-4">
             <p className="font-medium">{kr.kr}</p>
             <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-sm text-foreground/60">
-              {kr.metric && <span>Metric: {kr.metric}</span>}
-              {kr.baseline && <span>Baseline: {kr.baseline}</span>}
-              {kr.target && <span>Target: {kr.target}</span>}
-              {kr.timeline && <span>Timeline: {kr.timeline}</span>}
-              {kr.owner && <span>Owner: {kr.owner}</span>}
-              {kr.confidence && <span>Confidence: {kr.confidence}</span>}
+              {kr.metric && <span>Metric <HelpTip hint={HINTS.metric} label="Metric" />: {kr.metric}</span>}
+              {kr.baseline && <span>Baseline <HelpTip hint={HINTS.baseline} label="Baseline" />: {kr.baseline}</span>}
+              {kr.target && <span>Target <HelpTip hint={HINTS.target} label="Target" />: {kr.target}</span>}
+              {kr.timeline && <span>Timeline <HelpTip hint={HINTS.timeline} label="Timeline" />: {kr.timeline}</span>}
+              {kr.owner && <span>Owner <HelpTip hint={HINTS.owner} label="Owner (role)" />: {kr.owner}</span>}
+              {kr.confidence && <span>Confidence <HelpTip hint={HINTS.confidence} label="Confidence" />: {kr.confidence}</span>}
             </div>
           </div>
         ))}
