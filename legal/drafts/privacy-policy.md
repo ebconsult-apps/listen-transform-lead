@@ -1,11 +1,12 @@
 > **DRAFT — NOT LEGAL ADVICE.** Prepared as a product-specific starting point. It **must be
 > reviewed and finalized by qualified legal counsel (EU / Swedish law)** before publication or
-> use. Items in `[brackets]` require confirmation. Draft date: 2026-06-25.
+> use. Items in `[brackets]` require confirmation. Draft date: 2026-06-25 · counsel-review fill-in
+> pass: 2026-06-26 (proposed defaults filled; true business/legal facts still bracketed).
 
 # CLEAR — Privacy Policy
 
-**Effective date:** `[effective date]`
-**Version:** `[policy version — keep in sync with `PRIVACY_POLICY_VERSION` in the app, currently `2026-06-25`]`
+**Effective date:** `[set on publication]` — this draft prepared **26 June 2026**
+**Version:** `2026-06-26` (kept in sync with `PRIVACY_POLICY_VERSION` in the app)
 
 This Privacy Policy explains how personal data is collected and processed in connection with
 **CLEAR**, a self-serve B2B behavioral-analysis platform that helps organizations diagnose and
@@ -68,17 +69,16 @@ psychology-led consultancy based in **Stockholm, Sweden**.
 | Legal entity name | `[legal entity name — to confirm]` |
 | Company registration number | `[company registration / org. number — to confirm]` |
 | Registered address | `[registered address — to confirm]` |
-| Privacy / contact email | `[privacy contact email]` (current verified sender: `erik@eb-consulting.se`) |
+| Privacy / contact email | `erik@eb-consulting.se` (verified sender) `[a dedicated `privacy@eb-consulting.se` alias is recommended]` |
 | Website | `eb-consulting.se` `[confirm CLEAR product domain]` |
 
-**Data Protection Officer (DPO):** `[A DPO is not mandatory for every organization under
-GDPR Art. 37. Confirm with counsel whether a DPO is required given the scale and nature of
-processing. If appointed, insert DPO name + contact here; otherwise state that no DPO is
-required and give the privacy contact above.]`
+**Data Protection Officer (DPO):** We have **not appointed a DPO**. A DPO is not mandatory for
+CLEAR's processing under GDPR Art. 37 (our core activity is not large-scale systematic monitoring,
+nor large-scale processing of special-category data). For any privacy matter, contact us at the
+email above. `[Counsel to confirm a DPO is not required given the scale and nature of processing.]`
 
-**EU/EEA representative:** Not required — the operator is established in the EU/EEA (Sweden).
-`[Confirm; an Art. 27 representative is only relevant for controllers established outside the
-EU/EEA.]`
+**EU/EEA representative:** **Not required** — the operator is established in the EU/EEA (Sweden); an
+Art. 27 representative is only relevant for controllers established outside the EU/EEA.
 
 Throughout this policy, **"we", "us", "CLEAR"** refer to the operator above; **"you"** refers to
 the individual whose personal data is processed; **"customer"** refers to the organization that
@@ -111,8 +111,8 @@ for who is responsible.
   instructions. The customer's own privacy notice — not this one — governs how that data is used,
   and data-subject requests about that content should be directed to the **customer** (we will
   assist the customer as their processor). The terms of this processor relationship are set out in
-  a **Data Processing Agreement (DPA)** between CLEAR and the customer (GDPR Art. 28).
-  `[Link to DPA once finalized.]`
+  a **Data Processing Agreement (DPA)** between CLEAR and the customer (GDPR Art. 28) — see the
+  **[Data Processing Agreement](./data-processing-agreement.md)**. `[Finalize the DPA before relying on it.]`
 
 In plain terms: **we control the data about _our customers and our website_; our customers control
 the data they _bring into their projects_, and we just process it for them.**
@@ -130,6 +130,7 @@ the data they _bring into their projects_, and we just process it for them.**
 | **AI outputs** | The structured analysis generated for a project (objectives, systems maps, COM-B/APEASE analysis, intervention candidates, experiment designs) | Processor (stored on the customer's behalf) |
 | **Voice dictation (transcript only)** | If you use the optional in-browser dictation on input fields, **only the resulting transcript text** is captured into the field. The Web Speech API runs in your browser; **no audio file is recorded or sent to CLEAR servers.** | Same role as the field being filled |
 | **Billing** | Stripe customer ID, subscription ID, plan tier and status, billing contact. *Card/payment details are handled by Stripe and never reach CLEAR servers.* | Controller |
+| **Enquiry / marketing** | When you submit a contact, consultation, assessment, booking or whitepaper form on our website: the details you provide — typically name, email, organisation, role and message. | Controller |
 | **Website analytics** | Pseudonymous usage events and page views, transient IP address. *If/when Google Ads goes live, a hashed email may be sent for "enhanced conversions" — **not active today** (the Google Ads tag is not yet configured; see the Cookie Policy).* **All consent-gated.** | Controller |
 
 We do not buy personal data about you, and we do not sell your personal data.
@@ -146,6 +147,7 @@ We do not buy personal data about you, and we do not sell your personal data.
 | Billing, subscriptions and one-off unlocks | Take payment and manage your plan | **(b) Contract** |
 | Keeping accounting/billing records | Comply with statutory bookkeeping duties | **(c) Legal obligation** (Swedish Bookkeeping Act / *Bokföringslagen*) |
 | Service emails (account, respondent invitations sent on the customer's behalf) | Operate the service and deliver transactional messages | **(b) Contract** and/or **(f) legitimate interests** |
+| Responding to website enquiries / sending updates you request | Answer your contact, consultation, assessment, booking or whitepaper request | **(a) Consent** and/or **(f) legitimate interests** in responding to you |
 | Security, abuse prevention, service improvement, defending legal claims | Protect users and the platform; run the business | **(f) Legitimate interests** (balanced against your rights) |
 | **Website analytics and advertising measurement** (GA4, Google Ads) | Understand site usage and measure ad effectiveness | **(a) Consent** — see Section 9 of this policy and the **Cookie Policy**. No non-essential cookie or tracker loads until you consent. |
 
@@ -168,8 +170,9 @@ concerning sex life or sexual orientation), and we do not ask for it.
   as a **processor on the customer's documented instructions**.
 - Under our terms / DPA, the **customer warrants** that it has a lawful basis for all personal data
   (including any special categories) that it introduces into the platform, and that it has provided
-  all required notices to, and obtained any required consents from, the relevant individuals.
-  `[Confirm this warranty wording appears in the Terms / DPA.]`
+  all required notices to, and obtained any required consents from, the relevant individuals. This
+  warranty is set out in the **[DPA](./data-processing-agreement.md)** (§13) and the
+  **[Acceptable Use Policy](./acceptable-use-policy.md)** (§3). `[Counsel to confirm final wording.]`
 
 If you believe special-category data has been entered without a proper basis, contact the relevant
 customer (controller) or us (Section 11).
@@ -288,10 +291,10 @@ The periods below are **proposed defaults** and are subject to confirmation.
 
 | Data | Retention | Notes |
 |---|---|---|
-| Account + project data | Kept for the life of the account; deleted within **`[30]` days** of account closure | Backups purged within **`[90]` days** |
+| Account + project data | Kept for the life of the account; deleted within **30 days** of account closure | Backups purged within **90 days** |
 | Uploaded documents + AI outputs | Same lifecycle as their project | Deletable per-project by the project owner at any time |
 | Respondent invitations | **Invite token expires after 30 days** | Contributions are retained with the project and are deletable by the project owner |
-| Website analytics (GA4) | **`[14 months]`** | See the Cookie Policy |
+| Website analytics (GA4) | **14 months** | See the Cookie Policy |
 | Billing / accounting records | **7 years** | Required by the Swedish Bookkeeping Act (*Bokföringslagen*) — applies even after account closure |
 
 When a retention period ends, data is deleted or irreversibly anonymized. For customer project
@@ -319,11 +322,11 @@ Where CLEAR is a **processor** (customer project content, target-group data, res
 contributions), please direct your request to the **customer organization that controls that data**;
 we will support that customer in responding, as required by our DPA.
 
-**How to exercise your rights.** Contact us at **`[privacy contact email]`** (Section 14). We may
+**How to exercise your rights.** Contact us at **`erik@eb-consulting.se`** (Section 16). We may
 need to verify your identity. We aim to respond **within one month** of receiving a valid request
 (extendable by two further months for complex requests, with notice), as provided by the GDPR.
-There is normally no fee. `[Confirm a verification process and an internal owner for data-subject
-requests.]`
+There is normally no fee. `[Internal: assign an owner + intake address and operationalize the
+data-subject-request process (see the DSR runbook) before launch.]`
 
 **Right to complain.** If you are unhappy with how your personal data is handled, you can lodge a
 complaint with your local supervisory authority. In Sweden this is the **Swedish Authority for
@@ -332,7 +335,6 @@ Privacy Protection (IMY — Integritetsskyddsmyndigheten)**:
 > IMY — Integritetsskyddsmyndigheten
 > Box 8114, 104 20 Stockholm, Sweden
 > `imy@imy.se` · `www.imy.se`
-> `[Confirm current IMY contact details.]`
 
 You may also complain to the supervisory authority in your EU/EEA country of residence or work.
 
@@ -384,9 +386,10 @@ process and notification responsibilities between CLEAR and customers in the DPA
 ## 14. Children
 
 CLEAR is a **B2B service intended for organizations and their staff**. It is **not directed to
-children** and is intended for users aged **`[18]`+**. We do not knowingly collect personal data
+children** and is intended for users aged **18+** (as stated in the
+**[Terms of Service](./terms-of-service.md)** §1). We do not knowingly collect personal data
 from children. Customers must not use CLEAR to process children's personal data without their own
-appropriate lawful basis and safeguards. `[Confirm minimum age and any age-gating.]`
+appropriate lawful basis and safeguards. `[B2B service with no technical age-gate — counsel to confirm acceptable.]`
 
 ---
 
@@ -405,7 +408,8 @@ sync.]`
 
 | Version | Effective date | Summary of changes |
 |---|---|---|
-| `2026-06-25` | `[effective date]` | Initial version. |
+| `2026-06-25` | — (unpublished draft) | Initial draft. |
+| `2026-06-26` | `[set on publication]` | Counsel-review pass: added the at-a-glance summary, table of contents and this version history; clarified the AI de-identification / shared-knowledge-base wording, the international-transfer statement and cookie-consent withdrawal; added the enquiry/marketing data category; filled the retention (30 / 90 days, 14 months) and age (18+) defaults. |
 
 `[Add a new row each time the policy materially changes, and keep the latest version string in sync
 with `PRIVACY_POLICY_VERSION` in the app.]`
@@ -416,14 +420,14 @@ with `PRIVACY_POLICY_VERSION` in the app.]`
 
 For any privacy question or to exercise your rights:
 
-- **Email:** `[privacy contact email]` (current verified sender: `erik@eb-consulting.se`)
+- **Email:** `erik@eb-consulting.se` (verified sender)
 - **Operator:** Erik Bohjort / EB Consulting, Stockholm, Sweden
 - **Postal address:** `[registered address — to confirm]`
-- **DPO (if appointed):** `[DPO contact — see Section 1]`
+- **DPO:** None appointed — see Section 1; contact us at the email above.
 
 You can also lodge a complaint with the Swedish DPA (**IMY**) or your local EU/EEA supervisory
 authority (Section 11).
 
 ---
 
-*Related documents:* **[Subprocessors](./subprocessors.md)** · **[Cookie Policy](./cookie-policy.md)** · `[Data Processing Agreement (DPA) — link once finalized]` · `[Terms of Service — link once finalized]`
+*Related documents:* **[Subprocessors](./subprocessors.md)** · **[Cookie Policy](./cookie-policy.md)** · **[Data Processing Agreement](./data-processing-agreement.md)** · **[Terms of Service](./terms-of-service.md)**
