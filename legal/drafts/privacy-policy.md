@@ -226,7 +226,7 @@ individual decisions about employment, creditworthiness or similar.
 - **No solely-automated decisions with legal/significant effect** are made about individuals by
   CLEAR (GDPR Art. 22). `[Confirm this remains true for any future features.]`
 
-Respondents will be given an equivalent AI-transparency notice at the point of contribution
+Respondents are given an equivalent AI-transparency notice at the point of contribution
 (Section 12).
 
 ---
@@ -276,9 +276,8 @@ to run the site and remember your consent choice. **Analytics (Google Analytics 
 
 We use **Google Consent Mode v2**, which **defaults all analytics and advertising signals to
 "denied"** until you opt in. You can change or withdraw consent at any time — **withdrawing is as
-easy as giving it** — using the **"Cookie settings"** control. `[Provide a persistent "Cookie
-settings" link (e.g. in the site/app footer) that reopens the consent banner; today the banner
-reappears only if the stored choice is cleared. Required by ePrivacy/GDPR — see the Cookie Policy.]`
+easy as giving it** — using the **"Cookie settings"** control in the site/app footer, which reopens
+the consent banner.
 
 Full details — categories, the specific trackers, durations, and how to change your choice — are in
 the separate **[Cookie Policy](./cookie-policy.md)**.
@@ -351,12 +350,11 @@ Respondents are external stakeholders invited by a project owner via a **tokeniz
 - We process a respondent's **invite email, optional name, free-text answers, reactions/notes and
   any optional uploads** solely to record their contribution to the project and to produce the
   analysis (Section 6).
-- **Just-in-time notice.** The respondent portal **will present** a short notice **at the point of
+- **Just-in-time notice.** The respondent portal **presents** a short notice **at the point of
   contribution** explaining: who is collecting the data (the inviting organization) and that CLEAR
   processes it on their behalf; what is collected and why; that an **AI system** is used to analyze
   contributions and that **outputs are AI-generated and human-reviewed**; how long data is kept; and
-  how to exercise rights or object. `[Confirm the respondent-portal notice wording and link it here
-  once published.]`
+  how to exercise rights or object.
 - Respondents can exercise their rights (Section 11) primarily with the **inviting organization**;
   CLEAR will assist as processor.
 
