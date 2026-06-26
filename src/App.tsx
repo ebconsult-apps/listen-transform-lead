@@ -57,6 +57,7 @@ import Dashboard from "./pages/app/Dashboard";
 import NewProject from "./pages/app/NewProject";
 import ProjectDetail from "./pages/app/ProjectDetail";
 import Billing from "./pages/app/Billing";
+import Account from "./pages/app/Account";
 import RespondentPortal from "./pages/respond/RespondentPortal";
 import DevPanel from "@/components/dev/DevPanel";
 import { DEV_ACCESS_ENABLED } from "@/lib/dev/config";
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/app/projects/new" element={<ProtectedRoute><NewProject /></ProtectedRoute>} />
               <Route path="/app/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
+              <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
               <Route path="/account/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
             </Route>
 

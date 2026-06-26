@@ -54,8 +54,6 @@ import {
   questionRows,
 } from "./fixtures";
 import { delay, nowIso, uid } from "./util";
-import { MOCK_USER_ID } from "./mock-session";
-import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
 
 const READ_MS = 200;
 const RUN_MS = 900;
@@ -107,16 +105,14 @@ export async function getMyWorkspace(): Promise<Workspace> {
 
 export async function getMyProfile(): Promise<Profile | null> {
   await delay(READ_MS);
-  // Mock mode treats the Privacy Policy as already accepted, so the New Project
-  // flow never gates the QA walkthrough behind the consent checkbox (and never
-  // makes a real `profiles` query on a fake session).
-  return {
-    id: MOCK_USER_ID,
-    full_name: "Dev User",
-    created_at: nowIso(),
-    privacy_accepted_at: nowIso(),
-    privacy_policy_version: PRIVACY_POLICY_VERSION,
-  };
+  // Served from the in-memory db (seeded with the Privacy Policy already accepted,
+  // so the New Project flow never gates the QA walkthrough) — and so an edit via
+  // updateMyProfile persists within the session instead of a fresh literal each read.
+  return clone(db.profile);
+}
+
+export async function updateMyProfile(patch: { full_name: string }): Promise<void> {
+  db.profile = { ...db.profile, full_name: patch.full_name };
 }
 
 export async function listProjects(): Promise<Project[]> {
