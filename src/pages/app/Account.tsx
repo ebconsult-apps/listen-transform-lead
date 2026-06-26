@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,12 +11,23 @@ import {
   type Entitlement,
   type Profile,
 } from "@/lib/db";
-import { changePassword } from "@/lib/account";
+import { changePassword, deleteMyAccount } from "@/lib/account";
 import { openBillingPortal, startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PLANS, PRICE_IDS } from "@/config/billing";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
 const MIN_PASSWORD = 8;
@@ -25,6 +36,7 @@ type PaidTier = "solo" | "team" | "business";
 
 const Account = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +54,11 @@ const Account = () => {
 
   // Subscription
   const [busy, setBusy] = useState(false);
+
+  // Account deletion
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,6 +141,18 @@ const Account = () => {
     } catch {
       toast.error("Couldn't start checkout. Is the stripe-checkout function deployed?");
       setBusy(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await deleteMyAccount();
+      toast.success("Your account has been deleted.");
+      navigate("/product");
+    } catch (e) {
+      toast.error((e as Error).message);
+      setDeleting(false);
     }
   };
 
@@ -289,6 +318,62 @@ const Account = () => {
               </Link>
             </div>
           )}
+
+          {/* Danger zone */}
+          <div className="glass-card p-8 border border-destructive/30">
+            <h2 className="heading-md mb-1">Danger zone</h2>
+            <p className="body-md mb-6">
+              Permanently delete your account and all associated data. This cancels any active
+              subscription and can't be undone.
+            </p>
+            <AlertDialog
+              open={confirmOpen}
+              onOpenChange={(o) => {
+                setConfirmOpen(o);
+                if (!o) setConfirmText("");
+              }}
+            >
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                >
+                  Delete account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This permanently deletes your account, workspace, and every project and
+                    report, and cancels any active subscription. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div>
+                  <Label htmlFor="confirmDelete">
+                    Type <span className="font-semibold text-foreground">DELETE</span> to confirm
+                  </Label>
+                  <Input
+                    id="confirmDelete"
+                    value={confirmText}
+                    onChange={(e) => setConfirmText(e.target.value)}
+                    autoComplete="off"
+                    className="mt-1"
+                  />
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteAccount}
+                    disabled={deleting || confirmText !== "DELETE"}
+                  >
+                    {deleting ? "Deleting…" : "Delete account"}
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       )}
     </div>
