@@ -12,12 +12,16 @@ import {
   type Profile,
 } from "@/lib/db";
 import { changePassword } from "@/lib/account";
+import { openBillingPortal, startCheckout } from "@/lib/billing";
+import { BILLING_ENABLED, PLANS, PRICE_IDS } from "@/config/billing";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const MIN_PASSWORD = 8;
+
+type PaidTier = "solo" | "team" | "business";
 
 const Account = () => {
   const { user } = useAuth();
@@ -35,6 +39,9 @@ const Account = () => {
   const [pw1, setPw1] = useState("");
   const [pw2, setPw2] = useState("");
   const [savingPw, setSavingPw] = useState(false);
+
+  // Subscription
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,7 +104,32 @@ const Account = () => {
     }
   };
 
+  const portal = async () => {
+    try {
+      await openBillingPortal();
+    } catch {
+      toast.error("Couldn't open the billing portal. Is Stripe configured?");
+    }
+  };
+
+  const subscribe = async (planId: PaidTier) => {
+    const priceId = PRICE_IDS[planId];
+    if (!BILLING_ENABLED || !priceId) {
+      toast.error("Billing isn't configured yet.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await startCheckout({ mode: "subscription", priceId, tier: planId });
+    } catch {
+      toast.error("Couldn't start checkout. Is the stripe-checkout function deployed?");
+      setBusy(false);
+    }
+  };
+
   const tier = entitlement?.tier ?? "free";
+  const isPaid = tier !== "free";
+  const paidPlans = PLANS.filter((p) => p.id !== "free" && p.id !== "enterprise");
   const joined = profile?.created_at ?? user?.created_at;
   const nameUnchanged = name.trim() === (profile?.full_name ?? "");
 
@@ -189,7 +221,7 @@ const Account = () => {
             </div>
           </div>
 
-          {/* Subscription (summary; full management lives in Billing) */}
+          {/* Subscription & billing */}
           <div className="glass-card p-8">
             <h2 className="heading-md mb-4">Subscription</h2>
             <div className="flex items-center justify-between">
@@ -197,22 +229,66 @@ const Account = () => {
                 <p className="text-sm text-foreground/50">Current plan</p>
                 <p className="text-2xl font-bold capitalize">{tier}</p>
               </div>
-              <span className={`tag ${tier !== "free" ? "" : "opacity-60"}`}>
+              <span className={`tag ${isPaid ? "" : "opacity-60"}`}>
                 {entitlement?.status ?? "active"}
               </span>
             </div>
+
             {entitlement?.current_period_end && (
               <p className="text-sm text-foreground/60 mt-4">
                 Renews {new Date(entitlement.current_period_end).toLocaleDateString()}.
               </p>
             )}
-            <Link
-              to="/account/billing"
-              className="inline-block text-sm text-primary hover:underline mt-4"
-            >
-              Manage billing →
-            </Link>
+
+            {isPaid && (
+              <div className="mt-6">
+                <button onClick={portal} className="btn-primary">
+                  Manage subscription
+                </button>
+                <p className="text-sm text-foreground/50 mt-3">
+                  Invoices, receipts, and payment methods are available in the billing portal.
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* Free users: subscribe inline (the actual subscription checkout). */}
+          {!isPaid && (
+            <div className="glass-card p-8">
+              <h2 className="heading-md mb-1">Subscribe</h2>
+              <p className="body-md mb-6">
+                Unlock full reports across your projects. Or grab a one-off unlock from any
+                project's paywall.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {paidPlans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className="border border-border rounded-xl p-4 flex flex-col"
+                  >
+                    <p className="font-semibold">{plan.name}</p>
+                    <p className="text-2xl font-bold mt-1 mb-3">
+                      {plan.price}
+                      <span className="text-sm font-normal text-foreground/50"> {plan.cadence}</span>
+                    </p>
+                    <button
+                      onClick={() => subscribe(plan.id as PaidTier)}
+                      disabled={busy || !PRICE_IDS[plan.id as PaidTier]}
+                      className="btn-primary w-full mt-auto disabled:opacity-50"
+                    >
+                      {busy ? "…" : "Subscribe"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <Link
+                to="/pricing"
+                className="inline-block text-sm text-primary hover:underline mt-4"
+              >
+                Compare plans →
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
