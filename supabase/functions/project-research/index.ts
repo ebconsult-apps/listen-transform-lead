@@ -11,8 +11,12 @@ import { createClient } from "npm:@supabase/supabase-js@^2";
 import Anthropic from "npm:@anthropic-ai/sdk@^0.32";
 import { corsHeaders, json } from "../_shared/cors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
+import {
+  buildResearchIntake,
+  fetchKnowledgeEntries,
+  seedResearchOutputs,
+} from "../_shared/clear/research-io.ts";
 import { NEVER_FABRICATE_BANNER } from "../_shared/clear/prompts.ts";
-import type { GapFlag, IntakeInput } from "../_shared/clear/types.ts";
 import {
   capForTier,
   exceedsCostCap,
@@ -34,6 +38,47 @@ const OPERATOR_WORKSPACE_ID = Deno.env.get("OPERATOR_WORKSPACE_ID") ?? "";
 const DEIDENTIFY_MODEL = Deno.env.get("DEIDENTIFY_MODEL") ?? "claude-haiku-4-5";
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY);
+
+// GitHub Actions worker that runs research OFF the 150s edge wall clock. The edge
+// fn triggers it via the REST API (workflow_dispatch) using a fine-grained PAT.
+const GITHUB_WORKER_TOKEN = Deno.env.get("GITHUB_WORKER_TOKEN") ?? "";
+const GITHUB_WORKER_REPO = Deno.env.get("GITHUB_WORKER_REPO") ?? "";
+const GITHUB_WORKER_WORKFLOW = Deno.env.get("GITHUB_WORKER_WORKFLOW") ?? "research-worker.yml";
+const GITHUB_WORKER_REF = Deno.env.get("GITHUB_WORKER_REF") ?? "main";
+
+/** Trigger the research worker via GitHub's workflow_dispatch (204 = accepted). */
+async function dispatchResearchWorker(
+  projectId: string,
+  runId: string,
+  nonce: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!GITHUB_WORKER_TOKEN || !GITHUB_WORKER_REPO) {
+    return {
+      ok: false,
+      error: "Research worker is not configured (set GITHUB_WORKER_TOKEN and GITHUB_WORKER_REPO).",
+    };
+  }
+  const url =
+    `https://api.github.com/repos/${GITHUB_WORKER_REPO}/actions/workflows/${GITHUB_WORKER_WORKFLOW}/dispatches`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GITHUB_WORKER_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+        "User-Agent": "clear-project-research",
+      },
+      body: JSON.stringify({ ref: GITHUB_WORKER_REF, inputs: { projectId, runId, nonce } }),
+    });
+    if (res.status === 204) return { ok: true };
+    const text = await res.text().catch(() => "");
+    return { ok: false, error: `Worker dispatch failed (HTTP ${res.status}).${text ? " " + text : ""}` };
+  } catch (e) {
+    return { ok: false, error: `Worker dispatch error: ${(e as Error).message}` };
+  }
+}
 
 // deno-lint-ignore no-explicit-any
 async function getMemberWorkspace(jwt: string, projectId: string): Promise<any> {
@@ -187,25 +232,10 @@ Deno.serve(async (req) => {
       return json({ error: "Payment required" }, 402);
     }
 
-    // Build intake (challenge + documents) — needed by the input/spend guards.
-    const [{ data: input }, { data: docs }] = await Promise.all([
-      admin.from("project_inputs").select("*").eq("project_id", projectId).maybeSingle(),
-      admin.from("documents").select("*").eq("project_id", projectId),
-    ]);
-    const documents = (docs ?? [])
-      .filter((d: { extracted_text: string | null }) => d.extracted_text)
-      .map((d: { filename: string; extracted_text: string }) => ({
-        filename: d.filename,
-        text: d.extracted_text,
-      }));
-    const intake: IntakeInput = {
-      challenge: input?.challenge ?? "",
-      stakeholders: input?.stakeholders ?? [],
-      timeline: input?.timeline ?? undefined,
-      targetGroup: project.target_group ?? undefined,
-      useCase: project.use_case ?? undefined,
-      documents,
-    };
+    // Build intake (challenge + documents) via the shared helper — the off-edge
+    // worker rebuilds it identically. `documents` feeds the input/spend guards.
+    const intake = await buildResearchIntake(admin, projectId, project);
+    const documents = intake.documents;
 
     // Spend + input guards (live only): bound a single run (input budget +
     // projected cost) and the calendar month (per-tier cap). Web-search/fetch
@@ -233,88 +263,66 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Retrieve curated/promoted knowledge as candidate evidence (v1: simple fetch).
-    const { data: kb } = await admin
-      .from("knowledge_base")
-      .select("id, kind, title, summary, tags, citations")
-      .eq("review_status", "approved")
-      .order("kind", { ascending: true })
-      .limit(12);
-    // deno-lint-ignore no-explicit-any
-    const knowledgeEntries = (kb ?? []).map((e: any) => ({
-      id: e.id,
-      kind: e.kind,
-      title: e.title,
-      summary: e.summary,
-      tags: e.tags ?? {},
-      citations: e.citations ?? [],
-    }));
-
-    const engine = getClearEngine();
-    const res = await engine.runResearch(intake, { knowledgeEntries });
-    const out = res.output;
-
-    // Persist the raw run (uniform token/cost accounting + monthly cap).
-    await admin.from("runs").insert({
-      project_id: projectId,
-      phase: "research",
-      status: "done",
-      ai_mode: AI_MODE,
-      output: out,
-      tokens_used: res.tokens ?? 0,
-      cost_usd: res.costUsd ?? 0,
-    });
-
-    // Seed proposed findings + open questions (idempotent: skip if any exist).
-    const { data: existingF } = await admin
-      .from("research_findings").select("id").eq("project_id", projectId).limit(1);
-    if (!(existingF && existingF.length) && out.findings?.length) {
-      await admin.from("research_findings").insert(
-        out.findings.map((f) => ({
-          project_id: projectId,
-          phase_target: f.phaseTarget ?? "leverage",
-          claim: f.claim,
-          detail: f.detail ?? null,
-          source_kind: f.sourceKind ?? "web",
-          citations: f.citations ?? [],
-          evidence_flag: f.evidenceFlag ?? "A",
-          confidence: f.confidence ?? null,
-          tags: f.tags ?? {},
-          status: "proposed",
-        })),
-      );
-    }
-    const { data: existingQ } = await admin
-      .from("research_questions").select("id").eq("project_id", projectId).limit(1);
-    if (!(existingQ && existingQ.length) && out.questions?.length) {
-      await admin.from("research_questions").insert(
-        out.questions.map((q) => ({
-          project_id: projectId,
-          question: q.question,
-          rationale: q.rationale ?? null,
-        })),
-      );
+    // Stub / non-live deploy: run synchronously in-process (no worker needed).
+    if (AI_MODE !== "live") {
+      const knowledgeEntries = await fetchKnowledgeEntries(admin);
+      const engine = getClearEngine();
+      const res = await engine.runResearch(intake, { knowledgeEntries });
+      await admin.from("runs").insert({
+        project_id: projectId,
+        phase: "research",
+        status: "done",
+        ai_mode: AI_MODE,
+        output: res.output,
+        tokens_used: res.tokens ?? 0,
+        cost_usd: res.costUsd ?? 0,
+      });
+      await seedResearchOutputs(admin, projectId, res.output);
+      return json({ ok: true });
     }
 
-    // Seed gap flags into the persistent cross-phase log (idempotent on content).
-    const flags: GapFlag[] = out.gapLog ?? [];
-    if (flags.length) {
-      const { data: existing } = await admin
-        .from("assumption_gaps").select("content").eq("project_id", projectId).eq("phase", "research");
-      const seen = new Set((existing ?? []).map((r: { content: string }) => r.content));
-      const rows = flags
-        .filter((f) => !seen.has(f.content))
-        .map((f) => ({
-          project_id: projectId,
-          phase: "research",
-          flag_type: f.type,
-          content: f.content,
-          source: f.source ?? null,
-        }));
-      if (rows.length) await admin.from("assumption_gaps").insert(rows);
+    // Live: the research web loop exceeds the edge runtime's 150s wall clock, so
+    // run it OFF the edge in a GitHub Actions worker. Pre-create the run row,
+    // dispatch the worker, and return immediately — the client polls the run
+    // status until the worker flips it to done/error.
+    //
+    // GC any stale running row first (a prior worker that died without finishing),
+    // so a re-run isn't permanently wedged in "running".
+    await admin
+      .from("runs")
+      .delete()
+      .eq("project_id", projectId)
+      .eq("phase", "research")
+      .eq("status", "running");
+
+    const nonce = crypto.randomUUID();
+    const { data: runRow, error: insErr } = await admin
+      .from("runs")
+      .insert({
+        project_id: projectId,
+        phase: "research",
+        status: "running",
+        ai_mode: AI_MODE,
+        output: { kickoff: { nonce } },
+        tokens_used: 0,
+        cost_usd: 0,
+      })
+      .select("id")
+      .single();
+    if (insErr || !runRow) {
+      return json({ error: insErr?.message ?? "Could not start research." }, 500);
     }
 
-    return json({ ok: true });
+    const dispatched = await dispatchResearchWorker(projectId, runRow.id, nonce);
+    if (!dispatched.ok) {
+      await admin
+        .from("runs")
+        .update({ status: "error", output: { error: dispatched.error } })
+        .eq("id", runRow.id);
+      return json({ error: dispatched.error }, 502);
+    }
+
+    return json({ ok: true, status: "running", runId: runRow.id });
   } catch (e) {
     return json({ error: (e as Error).message }, 500);
   }

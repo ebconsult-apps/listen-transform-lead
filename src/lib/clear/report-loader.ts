@@ -41,6 +41,19 @@ export const FULL_REPORT_STEPS: BuildStep[] = [
   { label: "Compiling your report", seconds: 0 },
 ];
 
+// Research runs the web-search/fetch agent OFF the edge wall clock (a background
+// worker), so the client polls for completion rather than awaiting one call. These
+// dwell times approximate a real run (search → fetch → synthesise) so the checklist
+// advances believably while the poll waits for the worker's result.
+export const RESEARCH_STEPS: BuildStep[] = [
+  { label: "Reviewing your challenge and approved target", seconds: 8 },
+  { label: "Searching the web for evidence", seconds: 60 },
+  { label: "Fetching and reading sources", seconds: 45 },
+  { label: "Citing findings and drafting follow-up questions", seconds: 20 },
+  // Terminal step — spins until the worker's findings arrive. `seconds` is unused.
+  { label: "Compiling your findings", seconds: 0 },
+];
+
 /**
  * Map elapsed time to loader state. `current` walks the cumulative dwell timeline
  * and parks on the terminal step once the timeline is exhausted; `pct` is capped
