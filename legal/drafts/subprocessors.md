@@ -7,7 +7,8 @@
 This page lists the third parties ("subprocessors") that **CLEAR** (operated by
 **Erik Bohjort / EB Consulting**) engages to process personal data on behalf of its customers in
 connection with the CLEAR platform. It is referenced by, and forms part of, the
-[CLEAR Privacy Policy] and the [Data Processing Agreement (DPA)](./data-processing-agreement.md).
+[CLEAR Privacy Policy](./privacy-policy.md) and the
+[Data Processing Agreement (DPA)](./data-processing-agreement.md).
 
 - **Effective date:** 2026-06-25
 - **Maintained by:** CLEAR / EB Consulting — contact `[privacy contact email]` (current verified

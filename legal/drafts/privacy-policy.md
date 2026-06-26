@@ -18,6 +18,44 @@ technologies, EU consumer law, and the EU AI Act). For other regions (e.g. UK, U
 
 ---
 
+## At a glance
+
+> A short, plain-language summary to orient you. **It does not replace the full policy below and has
+> no separate legal effect.**
+>
+> - **Two roles.** We are the **controller** for your *account, log-in and billing* data and our
+>   *website analytics*. We are a **processor** for the *content you put into a project* — there your
+>   organization is the controller and decides what happens to that data (Section 2).
+> - **AI.** Your project content is analyzed by **Anthropic's Claude** for **inference only**. It is
+>   **not used to train AI models**, and we send the model only what is needed (Section 6).
+> - **Where your data lives.** Application data is **hosted in the EU/EEA**; the **AI-inference step
+>   runs in the US** under EU Standard Contractual Clauses (Section 8).
+> - **Your choices.** Non-essential cookies load **only if you consent**, and you can withdraw consent
+>   at any time (Section 9). You can exercise your GDPR rights with us, or — for project content —
+>   with the customer that controls it (Section 11).
+> - **No sale.** We do **not** buy or sell your personal data.
+
+## Contents
+
+1. [Who we are (data controller)](#1-who-we-are-data-controller)
+2. [Controller vs processor](#2-controller-vs-processor--who-decides-what-happens-to-your-data)
+3. [Categories of personal data we process](#3-categories-of-personal-data-we-process)
+4. [Why we process it, and our legal bases](#4-why-we-process-it-and-our-legal-bases-gdpr-art-6)
+5. [Special categories of personal data](#5-special-categories-of-personal-data-gdpr-art-9)
+6. [How we use AI](#6-how-we-use-ai)
+7. [Subprocessors](#7-subprocessors)
+8. [International data transfers](#8-international-data-transfers)
+9. [Cookies, analytics and consent](#9-cookies-analytics-and-consent)
+10. [How long we keep data (retention)](#10-how-long-we-keep-data-retention)
+11. [Your rights](#11-your-rights)
+12. [Respondents](#12-respondents)
+13. [Security](#13-security-gdpr-art-32)
+14. [Children](#14-children)
+15. [Changes to this policy & versioning](#15-changes-to-this-policy--versioning)
+16. [Contact / how to make a privacy request](#16-contact--how-to-make-a-privacy-request)
+
+---
+
 ## 1. Who we are (data controller)
 
 CLEAR is operated by **Erik Bohjort**, trading as **EB Consulting** (`eb-consulting.se`), a
@@ -92,7 +130,7 @@ the data they _bring into their projects_, and we just process it for them.**
 | **AI outputs** | The structured analysis generated for a project (objectives, systems maps, COM-B/APEASE analysis, intervention candidates, experiment designs) | Processor (stored on the customer's behalf) |
 | **Voice dictation (transcript only)** | If you use the optional in-browser dictation on input fields, **only the resulting transcript text** is captured into the field. The Web Speech API runs in your browser; **no audio file is recorded or sent to CLEAR servers.** | Same role as the field being filled |
 | **Billing** | Stripe customer ID, subscription ID, plan tier and status, billing contact. *Card/payment details are handled by Stripe and never reach CLEAR servers.* | Controller |
-| **Website analytics** | Pseudonymous usage events and page views, transient IP address; `[hashed email for Google "enhanced conversions"]`. **All consent-gated** (see the Cookie Policy). | Controller |
+| **Website analytics** | Pseudonymous usage events and page views, transient IP address. *If/when Google Ads goes live, a hashed email may be sent for "enhanced conversions" — **not active today** (the Google Ads tag is not yet configured; see the Cookie Policy).* **All consent-gated.** | Controller |
 
 We do not buy personal data about you, and we do not sell your personal data.
 
@@ -145,10 +183,13 @@ for **inference only**.
 
 - **Models:** Claude **Sonnet** by default, with **Opus** optionally available; **Claude Haiku** is
   used to **de-identify** research findings before any of them are promoted into a **shared
-  knowledge base** that can be reused across projects. The de-identification step is intended to
-  strip personal identifiers before content is reused beyond its original project.
-  `[Confirm the de-identification scope and that no directly identifying data reaches the shared
-  knowledge base.]`
+  knowledge base** that can be reused across projects. Promotion is **not automatic**: a project
+  owner reviews and approves each finding, and the de-identification step is **designed to** strip
+  personal identifiers before content is reused beyond its original project. Because de-identification
+  is performed by an automated model, we apply this owner-review step as a safeguard but **cannot
+  guarantee** that every identifier is removed in every case.
+  `[Confirm the de-identification scope and the owner-review step, and validate de-identification
+  quality so that no directly identifying data reaches the shared knowledge base.]`
 - **No model training on your data.** Under Anthropic's commercial terms, the inputs we send and
   the outputs returned are **not used to train Anthropic's models**, and retention by Anthropic is
   limited. `[Confirm zero/limited-retention configuration with Anthropic.]`
@@ -182,7 +223,7 @@ individual decisions about employment, creditworthiness or similar.
 - **No solely-automated decisions with legal/significant effect** are made about individuals by
   CLEAR (GDPR Art. 22). `[Confirm this remains true for any future features.]`
 
-Respondents are given an equivalent AI-transparency notice at the point of contribution
+Respondents will be given an equivalent AI-transparency notice at the point of contribution
 (Section 12).
 
 ---
@@ -206,8 +247,9 @@ We aim to keep application data **hosted and processed within the EU/EEA**. Our 
 database, authentication and document storage run in an **EU region**, and our transactional email
 provider is **EU-based**.
 
-One important exception: our AI inference provider, **Anthropic, is established in the United
-States**, so the content sent for analysis (Section 6) is **transferred to the US**. That transfer
+The most significant transfer outside the EU/EEA concerns AI inference: our AI inference provider,
+**Anthropic, is established in the United States**, so the content sent for analysis (Section 6) is
+**transferred to the US**. That transfer
 is protected by the **EU Standard Contractual Clauses (SCCs)** together with Anthropic's commercial
 terms and Data Processing Agreement, plus supplementary measures as appropriate.
 `[Confirm SCCs/DPA on file; complete a transfer-impact assessment.]` Where the optional web-research
@@ -230,7 +272,10 @@ to run the site and remember your consent choice. **Analytics (Google Analytics 
 **advertising (Google Ads)** trackers are **non-essential** and load **only after you consent**.
 
 We use **Google Consent Mode v2**, which **defaults all analytics and advertising signals to
-"denied"** until you opt in. You can change or withdraw consent at any time.
+"denied"** until you opt in. You can change or withdraw consent at any time — **withdrawing is as
+easy as giving it** — using the **"Cookie settings"** control. `[Provide a persistent "Cookie
+settings" link (e.g. in the site/app footer) that reopens the consent banner; today the banner
+reappears only if the stored choice is cleared. Required by ePrivacy/GDPR — see the Cookie Policy.]`
 
 Full details — categories, the specific trackers, durations, and how to change your choice — are in
 the separate **[Cookie Policy](./cookie-policy.md)**.
@@ -304,7 +349,7 @@ Respondents are external stakeholders invited by a project owner via a **tokeniz
 - We process a respondent's **invite email, optional name, free-text answers, reactions/notes and
   any optional uploads** solely to record their contribution to the project and to produce the
   analysis (Section 6).
-- **Just-in-time notice.** The respondent portal presents a short notice **at the point of
+- **Just-in-time notice.** The respondent portal **will present** a short notice **at the point of
   contribution** explaining: who is collecting the data (the inviting organization) and that CLEAR
   processes it on their behalf; what is collected and why; that an **AI system** is used to analyze
   contributions and that **outputs are AI-generated and human-reviewed**; how long data is kept; and
@@ -355,6 +400,15 @@ The current policy version is recorded in the application (`PRIVACY_POLICY_VERSI
 **timestamp + version** of your acceptance is stored on your profile, so we can detect when a newer
 version requires re-acceptance. `[Keep the published version string and the in-app version in
 sync.]`
+
+### Version history
+
+| Version | Effective date | Summary of changes |
+|---|---|---|
+| `2026-06-25` | `[effective date]` | Initial version. |
+
+`[Add a new row each time the policy materially changes, and keep the latest version string in sync
+with `PRIVACY_POLICY_VERSION` in the app.]`
 
 ---
 
