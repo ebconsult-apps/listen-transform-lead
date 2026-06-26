@@ -534,6 +534,14 @@ function buildSeeded(): MockDb {
     db.approvals[id] = CLARIFY;
     db.unlocks[id] = unlock(id);
 
+    // Build the gaps first so a finding can link back to a real gap id (showing
+    // the "Research these open questions" → linked-finding flow out of the box).
+    const gaps = [
+      ...gapRows(id, "leverage_full", FULL.gapLog, 4),
+      ...gapRows(id, "research", RESEARCH.gapLog, 3),
+    ];
+    db.assumptionGaps[id] = gaps;
+
     const findings = findingRows(id, 3);
     // Spread across the lifecycle so the Research tab shows every state.
     if (findings[0]) findings[0].status = "accepted";
@@ -542,6 +550,9 @@ function buildSeeded(): MockDb {
       findings[1].shared_finding_id = "kb-dev-0001";
     }
     if (findings[3]) findings[3].status = "dismissed";
+    // Link a proposed finding to the first open question so the gap shows as
+    // already researched under the Full report's assumptions panel.
+    if (findings[2] && gaps[0]) findings[2].source_gap_ids = [gaps[0].id];
     db.findings[id] = findings;
 
     const questions = questionRows(id, 3);
@@ -550,11 +561,6 @@ function buildSeeded(): MockDb {
       questions[0].answer = "The Monday clinic newsletter — almost everyone opens it.";
     }
     db.questions[id] = questions;
-
-    db.assumptionGaps[id] = [
-      ...gapRows(id, "leverage_full", FULL.gapLog, 4),
-      ...gapRows(id, "research", RESEARCH.gapLog, 3),
-    ];
 
     db.knowledgeBase = [
       {

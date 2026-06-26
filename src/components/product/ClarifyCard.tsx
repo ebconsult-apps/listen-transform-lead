@@ -1,10 +1,20 @@
 import type { ClarifyOutput } from "@/lib/clear/types";
 import { gapFlags } from "@/lib/clear/labels";
 import GapFlagList from "./GapFlagList";
+import ResearchGapsPanel from "./ResearchGapsPanel";
 import { HelpTip, HINTS, OkrExplainer } from "./okr-help";
 
 /** Read-only Clarify (OKR) display, shown once the owner has approved it. */
-const ClarifyCard = ({ clarify }: { clarify: ClarifyOutput }) => {
+const ClarifyCard = ({
+  clarify,
+  projectId,
+  entitled = false,
+}: {
+  clarify: ClarifyOutput;
+  /** Provided in-app to surface the "Research these open questions" panel. */
+  projectId?: string;
+  entitled?: boolean;
+}) => {
   return (
     <div className="glass-card p-6 sm:p-8">
       <div className="flex items-center gap-2 mb-4">
@@ -47,6 +57,11 @@ const ClarifyCard = ({ clarify }: { clarify: ClarifyOutput }) => {
           </h4>
           <GapFlagList flags={gapFlags(clarify)} />
         </>
+      )}
+      {projectId && (
+        <div className="mt-5">
+          <ResearchGapsPanel projectId={projectId} entitled={entitled} phase="clarify" />
+        </div>
       )}
     </div>
   );

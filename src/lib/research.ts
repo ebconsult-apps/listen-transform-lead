@@ -52,6 +52,19 @@ export async function updateFinding(
 export const setFindingStatus = (id: string, status: ResearchFindingStatus) =>
   updateFinding(id, { status });
 
+/**
+ * Findings generated to close a given gap (any status). Pure: callers load the
+ * project's findings once via listFindings, then bucket per gap in memory — no
+ * extra query. A targeted research run stamps source_gap_ids with the selected
+ * gap id(s), so a finding shows under every gap it was asked to close.
+ */
+export function findingsForGap(
+  findings: ResearchFindingRow[],
+  gapId: string,
+): ResearchFindingRow[] {
+  return findings.filter((f) => (f.source_gap_ids ?? []).includes(gapId));
+}
+
 /** Accepted (and already-promoted) findings, mapped to engine intake shape. */
 export async function listAcceptedResearch(projectId: string): Promise<ResearchFinding[]> {
   const rows = await listFindings(projectId);

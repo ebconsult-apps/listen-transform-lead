@@ -410,6 +410,75 @@ export async function runResearch(projectId: string): Promise<void> {
   await seedGapLog(projectId, "research", research.output.gapLog);
 }
 
+/**
+ * Seed targeted-research findings, ALWAYS appending and linking each to the
+ * selected gap(s) via source_gap_ids. Unlike seedFindings, it never skips when
+ * findings already exist — a targeted run *adds* evidence rather than seeding the
+ * project's findings once. Prefers the model's own per-finding attribution
+ * (sourceGapIds) and falls back to stamping the whole selected bundle.
+ */
+async function seedFindingsLinked(
+  projectId: string,
+  findings: ResearchFinding[],
+  gapIds: string[],
+) {
+  if (!findings?.length) return;
+  const sb = requireSupabase();
+  const rows = findings.map((f) => ({
+    project_id: projectId,
+    phase_target: f.phaseTarget ?? "leverage",
+    claim: f.claim,
+    detail: f.detail ?? null,
+    source_kind: f.sourceKind ?? "web",
+    citations: f.citations ?? [],
+    evidence_flag: f.evidenceFlag ?? "A",
+    confidence: f.confidence ?? null,
+    tags: f.tags ?? {},
+    status: "proposed",
+    source_gap_ids: f.sourceGapIds?.length ? f.sourceGapIds : gapIds,
+  }));
+  const { error } = await sb.from("research_findings").insert(rows);
+  if (error) throw error;
+}
+
+/**
+ * Targeted research: gather cited evidence to close one OR several owner-selected
+ * open questions together (MECE) and link the findings back to those
+ * assumption_gaps. The "Research these open questions" on-ramp from any
+ * assumptions/gaps surface.
+ *
+ * - live: delegate to the project-research edge function (action "research-gaps"),
+ *   which reuses the same entitlement + cost gates as the broad run.
+ * - stub: run the engine in-browser scoped to the selected gaps, then persist the
+ *   findings linked via source_gap_ids (member RLS).
+ */
+export async function runResearchGaps(projectId: string, gapIds: string[]): Promise<void> {
+  if (DEV_CAP && devActive()) {
+    guardLiveInMock();
+    return mockStore.researchGaps(projectId, gapIds);
+  }
+  if (effectiveAiMode() === "live") {
+    const sb = requireSupabase();
+    const { error } = await sb.functions.invoke("project-research", {
+      body: { action: "research-gaps", projectId, gapIds },
+    });
+    if (error) throw error;
+    return;
+  }
+
+  const [intake, gaps] = await Promise.all([
+    buildIntake(projectId),
+    listAssumptionGaps(projectId),
+  ]);
+  const focusGaps = gaps
+    .filter((g) => gapIds.includes(g.id))
+    .map((g) => ({ id: g.id, flagType: g.flag_type, content: g.content, source: g.source }));
+  const engine = getClearEngine();
+  const research = await engine.runResearch(intake, { focusGaps });
+  await persistRun(projectId, "research", research.output, research.tokens, research.costUsd);
+  await seedFindingsLinked(projectId, research.output.findings, gapIds);
+}
+
 /** Convenience accessors used by the report views. */
 export function latestOutput<T>(
   runs: { phase: RunPhase; output: unknown; created_at: string }[],

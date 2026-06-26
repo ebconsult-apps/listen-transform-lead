@@ -280,6 +280,21 @@ export async function getResearchRunStatus(projectId: string): Promise<ResearchR
   };
 }
 
+/**
+ * Targeted research over selected gaps. Unlike runResearch this ALWAYS appends
+ * fresh findings (new ids) linked to the passed gap ids — mirroring the
+ * always-append behaviour of the edge function's research-gaps action — so the
+ * QA walkthrough shows new, linked findings appear under the chosen questions.
+ */
+export async function researchGaps(projectId: string, gapIds: string[]): Promise<void> {
+  await delay(RUN_MS);
+  db.runs[projectId] = [...(db.runs[projectId] ?? []), mkRun(projectId, "research", RESEARCH)];
+  const linked = findingRows(projectId)
+    .slice(0, Math.max(1, gapIds.length))
+    .map((f) => ({ ...f, source_gap_ids: [...gapIds] }));
+  db.findings[projectId] = [...(db.findings[projectId] ?? []), ...linked];
+}
+
 function mkRun(projectId: string, phase: RunPhase, output: unknown): Run {
   return {
     id: uid("run"),
