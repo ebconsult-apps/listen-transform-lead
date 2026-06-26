@@ -64,3 +64,39 @@ describe("mock-store seeded dataset", () => {
     expect(profile?.privacy_policy_version).toBe(PRIVACY_POLICY_VERSION);
   });
 });
+
+// Clarify-stage collaboration: invites + contributions can land before any leverage
+// map exists, so the Collaborate pane is reachable from the Clarify step. This guards
+// the data contract that drives that flow (see seed.ts "proj-collab-clarify").
+describe("mock-store Clarify-stage collaboration seed", () => {
+  const ID = "proj-collab-clarify";
+
+  it("lands on the un-approved ClarifyReview surface (clarify run, no approval, no teaser)", async () => {
+    expect((await store.getProject(ID)).status).toBe("clarify_ready");
+    expect(await store.getClarifyApproval(ID)).toBeNull();
+    const runs = await store.listRuns(ID);
+    expect(runs.some((r) => r.phase === "clarify")).toBe(true);
+    expect(runs.some((r) => r.phase === "leverage_teaser")).toBe(false);
+  });
+
+  it("has invitations and exactly one submitted contribution before any map", async () => {
+    const invitations = await store.listInvitations(ID);
+    expect(invitations.length).toBeGreaterThanOrEqual(2);
+    expect(invitations.some((i) => i.status === "submitted")).toBe(true);
+
+    const submitted = (await store.listContributions(ID)).filter((c) => c.status === "submitted");
+    expect(submitted).toHaveLength(1);
+  });
+
+  it("submitted contribution postdates the clarify run, so the re-run CTA shows", async () => {
+    const clarifyRun = (await store.listRuns(ID)).find((r) => r.phase === "clarify")!;
+    const submitted = (await store.listContributions(ID)).find((c) => c.status === "submitted")!;
+    // newSinceRun counts contributions submitted after the last clarify run.
+    expect(submitted.submitted_at).not.toBeNull();
+    expect(submitted.submitted_at! > clarifyRun.created_at).toBe(true);
+  });
+
+  it("has no leverage-map reactions yet, so the reaction summary stays hidden", async () => {
+    expect(await store.listReactions(ID)).toEqual([]);
+  });
+});
