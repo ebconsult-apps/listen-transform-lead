@@ -165,6 +165,23 @@ export interface LeverageFull extends LeverageTeaser {
   discoveryActivities: string[];
 }
 
+/**
+ * The FULL report is generated in two passes so each model call stays under the
+ * edge runtime's wall-clock limit (the whole report in one call truncated). Pass
+ * 1 is the systems map + behaviours; Pass 2 is the COM-B barriers + actions. The
+ * two passes plus the teaser reassemble into a complete `LeverageFull`
+ * (`{ ...teaser, ...systems, ...barriers }`).
+ */
+export type LeverageFullSystems = Pick<
+  LeverageFull,
+  "topLeveragePoints" | "behaviors" | "behaviorPriorities" | "keyActors" | "causeEffect" | "loops"
+>;
+
+export type LeverageFullBarriers = Pick<
+  LeverageFull,
+  "comb" | "strongestBarriers" | "barrierNarratives" | "discoveryActivities" | "gapLog"
+>;
+
 // ── EXPERIMENT (APEASE-screened interventions) ───────────────────────────────
 export interface ResourceEnvelope {
   budget?: string;
@@ -286,11 +303,20 @@ export interface ClearEngine {
     input: IntakeInput,
     clarify: ClarifyOutput,
   ): Promise<EngineResult<LeverageTeaser>>;
-  runLeverageFull(
+  // The FULL report is generated in two passes (each kept under the edge
+  // runtime's wall-clock limit); the caller reassembles them with the teaser
+  // into a LeverageFull. Pass 2 receives Pass 1's output for COM-B context.
+  runLeverageFullSystems(
     input: IntakeInput,
     clarify: ClarifyOutput,
     teaser: LeverageTeaser,
-  ): Promise<EngineResult<LeverageFull>>;
+  ): Promise<EngineResult<LeverageFullSystems>>;
+  runLeverageFullBarriers(
+    input: IntakeInput,
+    clarify: ClarifyOutput,
+    teaser: LeverageTeaser,
+    systems: LeverageFullSystems,
+  ): Promise<EngineResult<LeverageFullBarriers>>;
   runExperiment(
     input: IntakeInput,
     clarify: ClarifyOutput,

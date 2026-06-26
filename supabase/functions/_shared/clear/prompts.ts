@@ -54,7 +54,9 @@ Key Results MUST be outcome-focused and measurable. Key Results must NOT be:
 
 For each KR, fill metric/baseline/target/timeline/owner only where the intake supports it; otherwise leave the field out and record the missing piece in gapLog. Owner is a ROLE, not a personal name. Do not include any prose outside the JSON.`;
 
-export const LEVERAGE_PROMPT = `${NEVER_FABRICATE_BANNER}
+// Shared LEVERAGE methodology — the analytical chain every LEVERAGE pass reasons
+// from. The teaser and the two FULL passes append their own output spec to this.
+const LEVERAGE_METHODOLOGY = `${NEVER_FABRICATE_BANNER}
 
 ${CLEAR_SYSTEM_CONTEXT}
 
@@ -66,7 +68,15 @@ Work the methodology chain "Outcome → Behaviors → Factors/barriers → (inte
 - Step 2.5 — Prioritize behaviors on four equal-weighted criteria scored 1-5 RELATIVE to each other: Effect (direct impact on the outcome/KR), Ease (how realistically it can be increased in 6-12 months), Centrality (whether it gates other desired behaviors), Measurability (with today's tracking).
 - Step 3 — Barrier analysis with COM-B: for each of the six components — capability_physical, capability_psychological, opportunity_physical, opportunity_social, motivation_reflective, motivation_automatic — ask: is this a barrier? what specifically? how significant? Rate each barrier by Impact and Changeability (High/Medium/Low). Tag every cell with an evidence flag — "V" (verified in the intake/documents), "A" (assumption), "G" (gap), or "NA" — and a source where one exists. Then synthesize the 3-5 STRONGEST barriers. In each barrier's "significance" (and each strongest barrier's "rationale"), NAME the specific psychological mechanism at work — e.g. status-quo bias, present bias / hyperbolic discounting, loss aversion, social proof / descriptive norms, defaults & friction, salience, or a self-determination need (autonomy, competence, relatedness) — and explain how it shows up in THIS case, grounded in the intake. Always prefer a named mechanism to a generic phrase like "low motivation".
 - Systems mapping: identify key actors and their behaviors; build a cause-and-effect adjacency list (from → to, with +/- polarity) and note any reinforcing loops, bottlenecks, or high-influence nodes.
-- Rank leverage points by Propagated Impact × Ease of Change; tag any node resting on unverified assumptions.
+- Rank leverage points by Propagated Impact × Ease of Change; tag any node resting on unverified assumptions.`;
+
+// Shared closing rule for every LEVERAGE output. The economy nudge matters: each
+// FULL pass must return complete JSON within one model call (the report is
+// generated in chunks to stay under the edge runtime's wall-clock limit).
+const LEVERAGE_CLOSING =
+  "Ground every claim in the intake/documents. Do NOT suggest interventions. Keep every prose field tight and concrete — economical precision over length — so the complete JSON returns in a single response. Do not include any prose outside the JSON.";
+
+export const LEVERAGE_PROMPT = `${LEVERAGE_METHODOLOGY}
 
 For the TEASER pass return ONLY (the free hook — the 3 strongest leverage points):
 {
@@ -75,21 +85,39 @@ For the TEASER pass return ONLY (the free hook — the 3 strongest leverage poin
   "headline": string                           // format: "If we changed X, we'd likely see Y."
 }
 
-For the FULL pass return the teaser fields (with topLeveragePoints now holding 5-10 ranked points) PLUS:
+${LEVERAGE_CLOSING}`;
+
+// The FULL report is generated in two passes so each model call stays under the
+// edge runtime's wall-clock limit. Pass 1 = systems map + behaviours. The teaser
+// already carried systemsMapSummary + headline, so this pass does NOT repeat them.
+export const LEVERAGE_FULL_SYSTEMS_PROMPT = `${LEVERAGE_METHODOLOGY}
+
+This is PASS 1 of 2 of the FULL report — the systems map and behaviours. The COM-B barriers and actions are produced in a SEPARATE pass, so do NOT include them here. Return ONLY this JSON:
 {
+  "topLeveragePoints": [ { "rank": number, "point": string, "currentState": string, "impact": "High"|"Medium"|"Low", "ease": "High"|"Medium"|"Low", "confidence": number, "assumptionBased"?: boolean } ],   // 5-10 ranked points (a focused 5-7 beats padding to 10)
   "behaviors": [ { "id": string, "description": string, "who"?: string, "doesWhat"?: string, "when"?: string, "where"?: string, "howOften"?: string, "withWhom"?: string, "level"?: "high"|"detail", "genre"?: "seek_information"|"compare"|"decide"|"carry_out_process"|"register"|"social" } ],
   "behaviorPriorities": [ { "behaviorId": string, "effect": number, "ease": number, "centrality": number, "measurability": number } ],
   "keyActors": [ { "actor": string, "behavior": string } ],
   "causeEffect": [ { "from": string, "to": string, "polarity"?: "+"|"-", "note"?: string } ],
-  "loops"?: string[],
-  "comb": [ { "component": "capability_physical"|"capability_psychological"|"opportunity_physical"|"opportunity_social"|"motivation_reflective"|"motivation_automatic", "barrier": string, "significance"?: string, "impact": "High"|"Medium"|"Low", "changeability": "High"|"Medium"|"Low", "evidenceFlag": "V"|"A"|"G"|"NA", "source"?: string } ],
-  "strongestBarriers": [ { "barrier": string, "component": <one of the six>, "rationale": string } ],
-  "barrierNarratives": [ { "point": string, "narrative": string } ],
+  "loops"?: string[]
+}
+
+${LEVERAGE_CLOSING}`;
+
+// Pass 2 = COM-B barriers + actions. It is given Pass 1's systems map and
+// behaviours and analyses the barriers to THOSE. gapLog lives in this pass.
+export const LEVERAGE_FULL_BARRIERS_PROMPT = `${LEVERAGE_METHODOLOGY}
+
+This is PASS 2 of 2 of the FULL report — the COM-B barrier analysis and actions. You are given PASS 1's systems map and behaviours; analyse the barriers to THOSE behaviours and leverage points. Return ONLY this JSON:
+{
+  "comb": [ { "component": "capability_physical"|"capability_psychological"|"opportunity_physical"|"opportunity_social"|"motivation_reflective"|"motivation_automatic", "barrier": string, "significance"?: string, "impact": "High"|"Medium"|"Low", "changeability": "High"|"Medium"|"Low", "evidenceFlag": "V"|"A"|"G"|"NA", "source"?: string } ],   // cover all six components
+  "strongestBarriers": [ { "barrier": string, "component": <one of the six>, "rationale": string } ],   // the 3-5 strongest, each naming the mechanism
+  "barrierNarratives": [ { "point": string, "narrative": string } ],   // one per top leverage point
   ${GAP_LOG_SPEC},
   "discoveryActivities": string[]              // interviews, audits, journey maps — discovery, NOT intervention tests
 }
 
-Ground every claim in the intake/documents. Do NOT suggest interventions. Keep every prose field tight and concrete — economical precision over length — and prioritise the strongest leverage points (a focused 5-7 beats padding to 10) so the complete FULL report returns in a single response. Do not include any prose outside the JSON.`;
+${LEVERAGE_CLOSING}`;
 
 export const EXPERIMENT_PROMPT = `${NEVER_FABRICATE_BANNER}
 

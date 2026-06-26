@@ -5,6 +5,8 @@ import type {
   ExperimentOutput,
   IntakeInput,
   LeverageFull,
+  LeverageFullBarriers,
+  LeverageFullSystems,
   LeverageTeaser,
   ResearchContext,
   ResearchOutput,
@@ -38,13 +40,37 @@ export class StubClearEngine implements ClearEngine {
     return { output: teaserFixture as LeverageTeaser, tokens: 0, costUsd: 0 };
   }
 
-  async runLeverageFull(
+  // The FULL report is generated in two passes (mirrors the live engine); each
+  // returns its slice of the fixture so the caller reassembles the full report.
+  async runLeverageFullSystems(
     _input: IntakeInput,
     _clarify: ClarifyOutput,
     _teaser: LeverageTeaser,
-  ): Promise<EngineResult<LeverageFull>> {
-    await delay(1800);
-    return { output: fullFixture as LeverageFull, tokens: 0, costUsd: 0 };
+  ): Promise<EngineResult<LeverageFullSystems>> {
+    await delay(900);
+    const { topLeveragePoints, behaviors, behaviorPriorities, keyActors, causeEffect, loops } =
+      fullFixture as LeverageFull;
+    return {
+      output: { topLeveragePoints, behaviors, behaviorPriorities, keyActors, causeEffect, loops },
+      tokens: 0,
+      costUsd: 0,
+    };
+  }
+
+  async runLeverageFullBarriers(
+    _input: IntakeInput,
+    _clarify: ClarifyOutput,
+    _teaser: LeverageTeaser,
+    _systems: LeverageFullSystems,
+  ): Promise<EngineResult<LeverageFullBarriers>> {
+    await delay(900);
+    const { comb, strongestBarriers, barrierNarratives, gapLog, discoveryActivities } =
+      fullFixture as LeverageFull;
+    return {
+      output: { comb, strongestBarriers, barrierNarratives, gapLog, discoveryActivities },
+      tokens: 0,
+      costUsd: 0,
+    };
   }
 
   async runExperiment(

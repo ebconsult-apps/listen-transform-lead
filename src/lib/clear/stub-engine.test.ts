@@ -72,21 +72,29 @@ describe("StubClearEngine.runLeverageTeaser", () => {
   });
 });
 
-describe("StubClearEngine.runLeverageFull", () => {
-  it("returns the full chain: 5–10 points, the six COM-B components, 3–5 strongest barriers", async () => {
-    const { output } = await engine.runLeverageFull(intake, {} as ClarifyOutput, {} as LeverageTeaser);
-    // 5–10 ranked leverage points
+describe("StubClearEngine full report (two passes)", () => {
+  it("assembles systems + barriers + teaser into the full chain: 5–10 points, six COM-B components, 3–5 strongest barriers", async () => {
+    // The full report is generated in two passes that reassemble with the teaser
+    // into one LeverageFull — mirror that here and assert the merged result.
+    const teaser = (await engine.runLeverageTeaser(intake, {} as ClarifyOutput)).output;
+    const systems = (await engine.runLeverageFullSystems(intake, {} as ClarifyOutput, teaser)).output;
+    const barriers = (
+      await engine.runLeverageFullBarriers(intake, {} as ClarifyOutput, teaser, systems)
+    ).output;
+    const output: LeverageFull = { ...teaser, ...systems, ...barriers };
+
+    // 5–10 ranked leverage points (pass 1 extends the teaser's top 3)
     expect(output.topLeveragePoints.length).toBeGreaterThanOrEqual(5);
     expect(output.topLeveragePoints.length).toBeLessThanOrEqual(10);
-    // COM-B covers all six components, each cell carries a valid evidence flag
+    // COM-B covers all six components, each cell carries a valid evidence flag (pass 2)
     for (const component of COMB_COMPONENTS) {
       expect(output.comb.some((c) => c.component === component)).toBe(true);
     }
     expect(output.comb.every((c) => EVIDENCE_FLAGS.includes(c.evidenceFlag))).toBe(true);
-    // 3–5 synthesized strongest barriers
+    // 3–5 synthesized strongest barriers (pass 2)
     expect(output.strongestBarriers.length).toBeGreaterThanOrEqual(3);
     expect(output.strongestBarriers.length).toBeLessThanOrEqual(5);
-    // behaviors + relative 1–5 prioritization
+    // behaviors + relative 1–5 prioritization (pass 1)
     expect(output.behaviors.length).toBeGreaterThan(0);
     expect(
       output.behaviorPriorities.every(

@@ -240,10 +240,24 @@ export async function runFull(projectId: string): Promise<void> {
   }
   if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
-    const { error } = await sb.functions.invoke("project-run", {
-      body: { projectId, phase: "full" },
+    // The full report is generated in two passes, each its own request, so
+    // neither model call hits the edge runtime's wall-clock limit. Pass 1 returns
+    // the systems map + behaviours, which we echo into pass 2 (see project-run).
+    const { data, error } = await sb.functions.invoke("project-run", {
+      body: { projectId, phase: "full", part: 1 },
     });
     if (error) throw error;
+    const { error: error2 } = await sb.functions.invoke("project-run", {
+      body: {
+        projectId,
+        phase: "full",
+        part: 2,
+        systems: data?.systems,
+        systemsTokens: data?.tokens,
+        systemsCostUsd: data?.costUsd,
+      },
+    });
+    if (error2) throw error2;
     return;
   }
 
@@ -262,9 +276,14 @@ export async function runFull(projectId: string): Promise<void> {
       await persistRun(projectId, "leverage_teaser", t.output, t.tokens, t.costUsd);
       teaser = t.output;
     }
-    const full = await engine.runLeverageFull(intake, clarify, teaser);
-    await persistRun(projectId, "leverage_full", full.output, full.tokens, full.costUsd);
-    await seedGapLog(projectId, "leverage_full", full.output.gapLog);
+    // Two passes (mirrors the edge function), assembled into one LeverageFull.
+    const systems = await engine.runLeverageFullSystems(intake, clarify, teaser);
+    const barriers = await engine.runLeverageFullBarriers(intake, clarify, teaser, systems.output);
+    const full: LeverageFull = { ...teaser, ...systems.output, ...barriers.output };
+    const tokens = (systems.tokens ?? 0) + (barriers.tokens ?? 0);
+    const costUsd = (systems.costUsd ?? 0) + (barriers.costUsd ?? 0);
+    await persistRun(projectId, "leverage_full", full, tokens, costUsd);
+    await seedGapLog(projectId, "leverage_full", full.gapLog);
     await setProjectStatus(projectId, "full_ready");
   } catch (e) {
     await setProjectStatus(projectId, "error");
