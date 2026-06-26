@@ -129,15 +129,24 @@ export class LiveClearEngine implements ClearEngine {
     return this.call<LeverageFullSystems>(this.leverageModel, LEVERAGE_FULL_SYSTEMS_PROMPT, user, 8000, 0.5);
   }
 
-  // Pass 2 — COM-B barriers + actions, given Pass 1's systems map + behaviours.
+  // Pass 2 — COM-B barriers + actions, given Pass 1's leverage points + behaviours.
+  // Pass 2 already runs with a large prior context, so to keep it under the edge
+  // runtime's 150s wall clock we trim its input hard: drop the raw documents (Pass
+  // 1 already distilled them into behaviours/leverage points) and pass only the
+  // leverage points + behaviours the COM-B analysis actually needs — not the full
+  // systems map (causeEffect/loops/keyActors). Left unchecked, the long context
+  // slowed generation enough that Pass 2 was killed at the wall-clock limit.
   runLeverageFullBarriers(
     input: IntakeInput,
     clarify: ClarifyOutput,
     teaser: LeverageTeaser,
     systems: LeverageFullSystems,
   ) {
-    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nPASS 1 (SYSTEMS & BEHAVIOURS) OUTPUT:\n${JSON.stringify(systems)}\n\nReturn PASS 2 JSON (comb across all six COM-B components, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
-    return this.call<LeverageFullBarriers>(this.leverageModel, LEVERAGE_FULL_BARRIERS_PROMPT, user, 8000, 0.5);
+    const lean = { topLeveragePoints: systems.topLeveragePoints, behaviors: systems.behaviors };
+    const user = `${renderIntake({ ...input, documents: [] })}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nPASS 1 (LEVERAGE POINTS & BEHAVIOURS) OUTPUT:\n${JSON.stringify(lean)}\n\nReturn PASS 2 JSON (comb across all six COM-B components, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
+    // 7000 (vs Pass 1's 8000): the barrier set is smaller than the systems map, and
+    // a tighter ceiling keeps Pass 2 comfortably under the 150s wall clock.
+    return this.call<LeverageFullBarriers>(this.leverageModel, LEVERAGE_FULL_BARRIERS_PROMPT, user, 7000, 0.5);
   }
 
   runExperiment(
