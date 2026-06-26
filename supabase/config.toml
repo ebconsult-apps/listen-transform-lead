@@ -30,3 +30,8 @@ verify_jwt = false
 # them through Brevo. Supabase signs the request (hook secret), so there's no JWT.
 [functions.auth-email]
 verify_jwt = false
+
+# Owner-only account deletion: cancels Stripe, wipes the caller's workspace(s) and
+# storage, then deletes the auth user. Uses the service role in-function.
+[functions.delete-account]
+verify_jwt = true
