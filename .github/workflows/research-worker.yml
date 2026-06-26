@@ -50,8 +50,13 @@ jobs:
           deno-version: v2.x
 
       - name: Run research worker
+        # --node-modules-dir=none: the repo root has a package.json (the Vite app),
+        # which would otherwise put Deno in "bring-your-own-node_modules" mode and
+        # make it refuse to fetch npm: specifiers. `none` resolves npm: deps
+        # (@supabase/supabase-js, @anthropic-ai/sdk) from Deno's global cache on
+        # demand — the same way the Supabase edge runtime does.
         run: >-
-          deno run --allow-net --allow-env
+          deno run --allow-net --allow-env --node-modules-dir=none
           supabase/functions/_shared/research-worker/main.ts
           "${{ inputs.projectId }}" "${{ inputs.runId }}" "${{ inputs.nonce }}"
         env:
