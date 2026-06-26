@@ -7,7 +7,7 @@ import {
   setProjectStatus,
 } from "@/lib/db";
 import { listContributions, listReactions, summarizeRespondentInput } from "@/lib/collab";
-import { apeaseParked, getExperimentDesign } from "@/lib/experiment";
+import { apeaseParked, getExperimentDesign, listAssumptionGaps } from "@/lib/experiment";
 import { getClarifyApproval, pickClarify } from "@/lib/clarify";
 import { listAcceptedResearch } from "@/lib/research";
 import { getClearEngine } from "./index";
@@ -39,13 +39,14 @@ function guardLiveInMock() {
 }
 
 async function buildIntake(projectId: string): Promise<IntakeInput> {
-  const [project, input, docs, contributions, reactions, research] = await Promise.all([
+  const [project, input, docs, contributions, reactions, research, gaps] = await Promise.all([
     getProject(projectId),
     getProjectInput(projectId),
     listDocuments(projectId),
     listContributions(projectId),
     listReactions(projectId),
     listAcceptedResearch(projectId),
+    listAssumptionGaps(projectId),
   ]);
   const documents = docs
     .filter((d) => d.extracted_text)
@@ -56,6 +57,19 @@ async function buildIntake(projectId: string): Promise<IntakeInput> {
   const respondentInput = summarizeRespondentInput(contributions, reactions);
   if (respondentInput) {
     documents.push({ filename: "Respondent contributions", text: respondentInput });
+  }
+
+  // Fold the owner's answers to flagged assumptions/gaps into intake so a re-run
+  // accounts for them. Attached files already arrive via listDocuments.
+  const answered = gaps.filter((g) => g.response && g.response.trim());
+  if (answered.length) {
+    const text = answered
+      .map((g) => `- ${g.content}${g.phase ? ` (${g.phase})` : ""}\n  Answer: ${g.response!.trim()}`)
+      .join("\n");
+    documents.push({
+      filename: "Resolved assumptions & answers",
+      text: `[Owner answers to flagged assumptions/gaps]\n\n${text}`,
+    });
   }
 
   return {
@@ -239,8 +253,16 @@ export async function runFull(projectId: string): Promise<void> {
     if (!clarify) throw new Error("Approve Clarify before generating the full report.");
     const intake = await buildIntake(projectId);
     const engine = getClearEngine();
-    const teaser = await engine.runLeverageTeaser(intake, clarify);
-    const full = await engine.runLeverageFull(intake, clarify, teaser.output);
+    // Reuse the teaser from the Leverage phase rather than regenerating it (see
+    // project-run/index.ts: two sequential model calls time out the live run).
+    const runs = await listRuns(projectId);
+    let teaser = latestOutput<LeverageTeaser>(runs, "leverage_teaser");
+    if (!teaser) {
+      const t = await engine.runLeverageTeaser(intake, clarify);
+      await persistRun(projectId, "leverage_teaser", t.output, t.tokens, t.costUsd);
+      teaser = t.output;
+    }
+    const full = await engine.runLeverageFull(intake, clarify, teaser);
     await persistRun(projectId, "leverage_full", full.output, full.tokens, full.costUsd);
     await seedGapLog(projectId, "leverage_full", full.output.gapLog);
     await setProjectStatus(projectId, "full_ready");

@@ -3,6 +3,7 @@ import {
   addAssumptionGap,
   deleteAssumptionGap,
   listAssumptionGaps,
+  respondAssumptionGap,
   setAssumptionGapStatus,
 } from "@/lib/experiment";
 import { qk } from "@/lib/query-keys";
@@ -50,6 +51,18 @@ export function useDeleteAssumptionGap(projectId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteAssumptionGap(id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: qk.assumptionGaps(projectId) }),
+    onError: (e) => toast.error((e as Error).message),
+  });
+}
+
+/** Save the owner's answer for a gap; non-empty marks it resolved (see experiment.ts). */
+export function useRespondAssumptionGap(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { id: string; response: string }) =>
+      respondAssumptionGap(vars.id, vars.response),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: qk.assumptionGaps(projectId) }),
     onError: (e) => toast.error((e as Error).message),

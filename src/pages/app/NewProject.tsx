@@ -8,8 +8,7 @@ import PrivacyPolicyDialog from "@/components/product/PrivacyPolicyDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
 import { requireSupabase } from "@/lib/supabase";
-import { getMyWorkspace, getMyProfile, recordPrivacyAcceptance } from "@/lib/db";
-import { extractText } from "@/lib/extract-text";
+import { getMyWorkspace, getMyProfile, recordPrivacyAcceptance, uploadDocument } from "@/lib/db";
 import { useAuth } from "@/hooks/useAuth";
 import { devActive } from "@/lib/dev/config";
 import * as mockStore from "@/lib/dev/mock-store";
@@ -134,33 +133,10 @@ const NewProject = () => {
       if (iErr) throw iErr;
 
       for (const file of files) {
-        // Supabase Storage keys reject non-ASCII characters (e.g. "förändra"),
-        // so transliterate accents and replace anything else with "_". The real
-        // filename is preserved in documents.filename below for display.
-        const safeName =
-          file.name
-            .normalize("NFKD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-zA-Z0-9.\-_]/g, "_")
-            .replace(/_{2,}/g, "_")
-            .replace(/^_+|_+$/g, "") || "file";
-        const path = `${ws.id}/${project.id}/${crypto.randomUUID()}-${safeName}`;
-        const { error: upErr } = await sb.storage.from("documents").upload(path, file);
-        if (upErr) throw upErr;
-        // Extract text so the analysis can actually read the file. Best-effort:
-        // a failed/unsupported file just contributes no text, never blocks the run.
-        const extracted = await extractText(file);
-        if (!extracted) toast.warning(`Couldn't read text from ${file.name}.`);
-        const { error: dErr } = await sb.from("documents").insert({
-          project_id: project.id,
-          storage_path: path,
-          filename: file.name,
-          mime: file.type || null,
-          bytes: file.size,
-          extracted_text: extracted,
-          status: "uploaded",
-        });
-        if (dErr) throw dErr;
+        // Upload + extract text. Best-effort: a failed/unsupported file just
+        // contributes no text, never blocks the run.
+        const doc = await uploadDocument(project.id, file);
+        if (!doc.extracted_text) toast.warning(`Couldn't read text from ${file.name}.`);
       }
 
       navigate(`/app/projects/${project.id}`);

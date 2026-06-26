@@ -201,3 +201,21 @@ export async function deleteAssumptionGap(id: string): Promise<void> {
   const { error } = await sb.from("assumption_gaps").delete().eq("id", id);
   if (error) throw error;
 }
+
+/**
+ * Save the owner's answer / documentation note for a gap. Mirrors
+ * answerQuestion: a non-empty answer marks the item resolved, clearing it reopens.
+ */
+export async function respondAssumptionGap(id: string, response: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.respondAssumptionGap(id, response);
+  const sb = requireSupabase();
+  const { error } = await sb
+    .from("assumption_gaps")
+    .update({
+      response,
+      status: response.trim() ? "resolved" : "open",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) throw error;
+}
