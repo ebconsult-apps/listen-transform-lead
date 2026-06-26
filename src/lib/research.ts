@@ -106,6 +106,40 @@ export async function dismissQuestion(id: string): Promise<void> {
   if (error) throw error;
 }
 
+// ── research run status (async run lifecycle) ─────────────────────────────────
+// Live research runs OFF the edge wall clock (a GitHub Actions worker), so the run
+// is asynchronous: the edge fn inserts a `running` run row and the worker flips it
+// to `done`/`error`. The client polls this to know when findings are ready. In
+// stub/mock mode the run completes synchronously, so the latest row is `done`.
+export type ResearchRunState = "pending" | "running" | "done" | "error";
+export interface ResearchRunStatus {
+  /** Latest research run's status, or null if research has never run. */
+  status: ResearchRunState | null;
+  /** Failure message when `status === "error"`. */
+  error?: string;
+}
+
+export async function getResearchRunStatus(projectId: string): Promise<ResearchRunStatus> {
+  if (DEV_CAP && devActive()) return mockStore.getResearchRunStatus(projectId);
+  const sb = requireSupabase();
+  const { data, error } = await sb
+    .from("runs")
+    .select("status, output, created_at")
+    .eq("project_id", projectId)
+    .eq("phase", "research")
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (error) throw error;
+  const row = data?.[0];
+  if (!row) return { status: null };
+  const status = row.status as ResearchRunState;
+  const err =
+    status === "error"
+      ? ((row.output as { error?: string } | null)?.error ?? "Research failed.")
+      : undefined;
+  return { status, error: err };
+}
+
 // ── knowledge_base (shared, de-identified library) ────────────────────────────
 export async function listKnowledgeBase(): Promise<KnowledgeEntryRow[]> {
   if (DEV_CAP && devActive()) return mockStore.listKnowledgeBase();

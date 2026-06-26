@@ -57,17 +57,18 @@ function extractJson<T>(text: string): T {
 
 /**
  * LiveClearEngine — real Claude calls. Model ids come from env so they can be
- * upgraded without code changes. Every phase defaults to a deeper model worthy
- * of the methodology (Clarify defines the whole engagement, so it gets the
- * documents and a Sonnet floor); set LEVERAGE_MODEL=claude-opus-4-8 for a
- * flagship run. Temperature is applied to non-Opus models only (see isOpus).
+ * upgraded without code changes. While we verify end-to-end delivery of the full
+ * suite, every phase defaults to the cheapest model (claude-haiku-4-5) for fast,
+ * low-cost runs; set any phase's env var (e.g. LEVERAGE_MODEL=claude-sonnet-4-6
+ * or claude-opus-4-8) to run it on a deeper model. Temperature is applied to
+ * non-Opus models only (see isOpus).
  */
 export class LiveClearEngine implements ClearEngine {
   private client = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY")! });
-  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-sonnet-4-6";
-  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-sonnet-4-6";
-  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-sonnet-4-6";
-  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-sonnet-4-6";
+  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-haiku-4-5";
+  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-haiku-4-5";
+  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-haiku-4-5";
+  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-haiku-4-5";
 
   private async call<T>(
     model: string,
@@ -195,8 +196,13 @@ export class LiveClearEngine implements ClearEngine {
       max_tokens: maxTokens,
       system,
       tools: [
-        { type: "web_search_20260209", name: "web_search", max_uses: 6 },
-        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 6 },
+        // allowed_callers: ["direct"] keeps these as plain server tools driven by
+        // the pause_turn loop below. Without it, the _20260209 versions default to
+        // dynamic filtering (programmatic tool calling) — which only some models
+        // support (Haiku 4.5 returns a 400) and would route results through code
+        // execution instead of the direct server_tool_use blocks this loop tallies.
+        { type: "web_search_20260209", name: "web_search", max_uses: 6, allowed_callers: ["direct"] },
+        { type: "web_fetch_20260209", name: "web_fetch", max_uses: 6, allowed_callers: ["direct"] },
       ],
       messages: [{ role: "user", content: user }],
     };

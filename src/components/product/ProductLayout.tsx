@@ -1,5 +1,20 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+/** Two-letter monogram from a display name or email for the avatar fallback. */
+function initials(source: string): string {
+  const letters = (source.match(/[a-zA-Z0-9]/g) ?? []).slice(0, 2);
+  return letters.length ? letters.join("").toUpperCase() : "?";
+}
 
 /**
  * Chrome for the self-serve product surface (landing, pricing, app, account).
@@ -7,7 +22,7 @@ import { useAuth } from "@/hooks/useAuth";
  * when signed out and switches to Dashboard / Log out when signed in.
  */
 const ProductLayout = () => {
-  const { session, signOut } = useAuth();
+  const { session, user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -34,14 +49,30 @@ const ProductLayout = () => {
               Pricing
             </NavLink>
             {session ? (
-              <>
-                <NavLink to="/app" className="nav-link hidden sm:inline-flex">
-                  Dashboard
-                </NavLink>
-                <button onClick={handleSignOut} className="btn-secondary">
-                  Log out
-                </button>
-              </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    aria-label="Account menu"
+                  >
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="text-sm font-semibold">
+                        {initials((user?.user_metadata?.name as string) || user?.email || "")}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="truncate font-normal text-foreground/60">
+                    {user?.email}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/app")}>Dashboard</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/account")}>Account</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Link to="/login" className="btn-primary">
                 Log in

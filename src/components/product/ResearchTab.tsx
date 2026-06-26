@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Microscope, Check, X, Library, RefreshCw, ExternalLink, HelpCircle } from "lucide-react";
 import type { ResearchFindingRow, ResearchQuestionRow } from "@/lib/db";
 import type { ClarifyOutput, LeverageFull } from "@/lib/clear/types";
 import { runResearch } from "@/lib/clear/run";
+import { RESEARCH_STEPS } from "@/lib/clear/report-loader";
 import { LoadingState } from "@/components/ui/data-states";
 import ResearchValue from "./ResearchValue";
+import ReportBuildingLoader from "./ReportBuildingLoader";
 import {
   answerQuestion,
   confirmPromotion,
   dismissQuestion,
+  getResearchRunStatus,
   listFindings,
   listQuestions,
   previewPromotion,
   setFindingStatus,
   type PromotePreview,
+  type ResearchRunStatus,
 } from "@/lib/research";
 import { toast } from "sonner";
 
@@ -51,10 +55,16 @@ const ResearchTab = ({
   const [findings, setFindings] = useState<ResearchFindingRow[]>([]);
   const [questions, setQuestions] = useState<ResearchQuestionRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
+  const [running, setRunning] = useState(false);
   const [preview, setPreview] = useState<{ id: string; entry: PromotePreview } | null>(null);
   const [promoting, setPromoting] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  // Hold the latest onAfterRun so the poll interval doesn't resubscribe to it.
+  const afterRunRef = useRef(onAfterRun);
+  useEffect(() => {
+    afterRunRef.current = onAfterRun;
+  }, [onAfterRun]);
 
   const load = useCallback(async () => {
     const [f, q] = await Promise.all([listFindings(projectId), listQuestions(projectId)]);
@@ -68,18 +78,64 @@ const ResearchTab = ({
       .finally(() => setLoading(false));
   }, [load]);
 
+  // Research runs OFF the edge wall clock (a background worker) and reports back
+  // via a `runs` row status, so we poll instead of awaiting a single call. On
+  // completion we refresh findings; on failure we surface the worker's message.
+  const finishIfDone = useCallback(async () => {
+    let s: ResearchRunStatus;
+    try {
+      s = await getResearchRunStatus(projectId);
+    } catch {
+      return; // transient read error — try again next tick
+    }
+    if (s.status === "done") {
+      setRunning(false);
+      await load();
+      await afterRunRef.current?.();
+      toast.success("Research complete. Review the findings below.");
+    } else if (s.status === "error") {
+      setRunning(false);
+      toast.error(s.error ?? "Research failed.");
+    }
+  }, [projectId, load]);
+
+  // Resume the loader + polling if a run is already in flight (e.g. reloaded mid-run).
+  useEffect(() => {
+    let cancelled = false;
+    getResearchRunStatus(projectId)
+      .then((s) => {
+        if (!cancelled && (s.status === "running" || s.status === "pending")) setRunning(true);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
+
+  // Poll every 5s while a run is in flight.
+  useEffect(() => {
+    if (!running) return;
+    let stop = false;
+    const id = window.setInterval(() => {
+      if (!stop) void finishIfDone();
+    }, 5000);
+    return () => {
+      stop = true;
+      window.clearInterval(id);
+    };
+  }, [running, finishIfDone]);
+
   const run = async () => {
-    setBusy(true);
+    setRunning(true);
     try {
       await runResearch(projectId);
-      await load();
-      await onAfterRun?.();
-      toast.success("Research complete. Review the findings below.");
     } catch (e) {
+      setRunning(false);
       toast.error((e as Error).message);
-    } finally {
-      setBusy(false);
+      return;
     }
+    // Stub/mock complete synchronously → resolve now; live keeps polling.
+    await finishIfDone();
   };
 
   const setStatus = async (id: string, status: "accepted" | "dismissed" | "proposed") => {
@@ -152,8 +208,8 @@ const ResearchTab = ({
         <div className="mb-5">
           <ResearchValue clarify={clarify} full={full} />
         </div>
-        <button onClick={run} disabled={busy} className="btn-primary">
-          {busy ? (
+        <button onClick={run} disabled={running} className="btn-primary">
+          {running ? (
             <RefreshCw className="h-4 w-4 mr-1.5 animate-spin" />
           ) : (
             <Microscope className="h-4 w-4 mr-1.5" />
@@ -161,6 +217,14 @@ const ResearchTab = ({
           {findings.length ? "Run research again" : "Run research"}
         </button>
       </div>
+
+      {running && (
+        <ReportBuildingLoader
+          title="Running research"
+          steps={RESEARCH_STEPS}
+          estimate="This usually takes a few minutes. You can leave this page — findings appear here when it's done."
+        />
+      )}
 
       {active.length > 0 && (
         <div className="space-y-3">
