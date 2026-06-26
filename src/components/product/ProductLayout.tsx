@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { openCookieSettings } from "@/components/CookieConsent";
 import { useAuth } from "@/hooks/useAuth";
 import {
   DropdownMenu,
@@ -99,6 +100,9 @@ const ProductLayout = () => {
             <Link to="/" className="hover:text-foreground transition-colors">
               clear-framework.com
             </Link>
+            <button type="button" onClick={openCookieSettings} className="hover:text-foreground transition-colors">
+              Cookie settings
+            </button>
           </div>
         </div>
       </footer>

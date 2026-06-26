@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
-import { initGA4 } from "@/utils/analytics";
+import { initGA4, revokeAnalyticsConsent } from "@/utils/analytics";
 
 const STORAGE_KEY = "cookie_consent";
+
+/** Event used to reopen the banner from elsewhere (e.g. a footer "Cookie settings" link). */
+const OPEN_EVENT = "clear:open-cookie-settings";
+
+/** Reopen the cookie consent banner so the user can change or withdraw their choice. */
+export function openCookieSettings(): void {
+  window.dispatchEvent(new Event(OPEN_EVENT));
+}
 
 type ConsentStatus = "accepted" | "declined" | null;
 
@@ -30,6 +38,16 @@ export default function CookieConsent() {
     }
   }, []);
 
+  // Let a "Cookie settings" control anywhere in the app reopen the banner.
+  useEffect(() => {
+    const open = () => {
+      setExiting(false);
+      setVisible(true);
+    };
+    window.addEventListener(OPEN_EVENT, open);
+    return () => window.removeEventListener(OPEN_EVENT, open);
+  }, []);
+
   function dismiss() {
     setExiting(true);
     setTimeout(() => setVisible(false), 300);
@@ -51,6 +69,7 @@ export default function CookieConsent() {
     } catch {
       // ignore
     }
+    revokeAnalyticsConsent();
     dismiss();
   }
 
