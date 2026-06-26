@@ -35,7 +35,7 @@ export const PHASE_MAX_OUTPUT: Record<string, number> = {
   leverage: 2500,
   full: 8000,
   experiment: 4000,
-  research: 8000,
+  research: 16000,
 };
 
 /**

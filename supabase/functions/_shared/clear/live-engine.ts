@@ -170,7 +170,10 @@ export class LiveClearEngine implements ClearEngine {
       "",
       "Use the web search and web fetch tools to find and CITE external evidence, then return the RESEARCH JSON.",
     ].join("\n");
-    return this.callWithTools<ResearchOutput>(this.researchModel, RESEARCH_PROMPT, user, 8000);
+    // 16000 (not 8000): a cited findings list with web sources routinely exceeds
+    // 8000 output tokens and was truncating mid-JSON. Haiku 4.5 allows up to 64K
+    // output, and callWithTools now throws a clear error if even this is exceeded.
+    return this.callWithTools<ResearchOutput>(this.researchModel, RESEARCH_PROMPT, user, 16000);
   }
 
   /**
@@ -230,6 +233,14 @@ export class LiveClearEngine implements ClearEngine {
         guard++;
       }
     } while (res.stop_reason === "pause_turn" && guard < 6);
+    // A truncated final turn returns incomplete JSON, which would otherwise fail
+    // downstream as an opaque "Expected ',' or ']'" parse error. Surface the real
+    // cause so it's actionable (raise max_tokens / trim the output).
+    if (res.stop_reason === "max_tokens") {
+      throw new Error(
+        `Model output hit the ${maxTokens}-token limit and was truncated before returning complete JSON.`,
+      );
+    }
     const text = (res.content ?? [])
       .filter((b: { type: string }) => b.type === "text")
       .map((b: { text?: string }) => b.text ?? "")
