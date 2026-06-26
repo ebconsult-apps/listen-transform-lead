@@ -10,6 +10,7 @@ import type {
   GapFlag,
   IntakeInput,
   InterventionCandidate,
+  LeverageFullSystems,
   ResourceEnvelope,
 } from "../_shared/clear/types.ts";
 import {
@@ -367,18 +368,18 @@ Deno.serve(async (req) => {
     }
 
     if (phase === "full") {
+      // The FULL report is generated in TWO passes, each its own request, so
+      // neither model call approaches the edge runtime's wall-clock limit (one
+      // combined call truncated even at 8000 tokens). The client sends part:1
+      // then part:2 (echoing pass-1's output/tokens back). Pass 1 returns its
+      // output (persists nothing); pass 2 assembles + persists the leverage_full.
       const clarify = await loadClarify(false);
       if (!clarify) {
         return json({ error: "Approve Clarify before generating the full report." }, 409);
       }
-      await admin.from("projects").update({ status: "running" }).eq("id", projectId);
-      // Reuse the teaser already generated during the Leverage phase instead of
-      // regenerating it. The full report is a slow model call on its own; running
-      // the teaser first too made "full" two sequential calls that blew past the
-      // edge runtime's wall-clock limit — the worker was killed mid-run (500)
-      // before the catch could fire, leaving the project stuck on "running".
-      // Fall back to generating the teaser only if none was persisted yet (the
-      // normal flow always reaches teaser_ready before full).
+      // Reuse the teaser from the Leverage phase (both passes need it). Fall back
+      // to generating it only if none was persisted (the normal flow always
+      // reaches teaser_ready before full).
       const { data: teaserRuns } = await admin
         .from("runs")
         .select("output, created_at")
@@ -387,16 +388,51 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: true });
       let teaserOutput =
         teaserRuns && teaserRuns.length
-          ? (teaserRuns[teaserRuns.length - 1].output as Parameters<typeof engine.runLeverageFull>[2])
+          ? (teaserRuns[teaserRuns.length - 1].output as Parameters<
+              typeof engine.runLeverageFullSystems
+            >[2])
           : null;
       if (!teaserOutput) {
         const teaser = await engine.runLeverageTeaser(intake, clarify);
         await persist("leverage_teaser", teaser.output, teaser.tokens, teaser.costUsd);
         teaserOutput = teaser.output;
       }
-      const full = await engine.runLeverageFull(intake, clarify, teaserOutput);
-      await persist("leverage_full", full.output, full.tokens, full.costUsd);
-      await seedGapLog("leverage_full", full.output.gapLog);
+
+      await admin.from("projects").update({ status: "running" }).eq("id", projectId);
+
+      // Pass 1 — systems map + behaviours. Return it for the client to echo into
+      // pass 2 (nothing is persisted until the report is complete).
+      if (body.part === 1) {
+        const systems = await engine.runLeverageFullSystems(intake, clarify, teaserOutput);
+        return json({
+          ok: true,
+          systems: systems.output,
+          tokens: systems.tokens ?? 0,
+          costUsd: systems.costUsd ?? 0,
+        });
+      }
+
+      // Pass 2 — COM-B barriers + actions, then assemble + persist. If pass-1
+      // output wasn't supplied (e.g. a legacy client that sends no `part`),
+      // generate it inline so the call still yields a complete report.
+      let systems = body.systems as LeverageFullSystems | undefined;
+      let priorTokens = Number(body.systemsTokens) || 0;
+      let priorCostUsd = Number(body.systemsCostUsd) || 0;
+      if (!systems) {
+        const s = await engine.runLeverageFullSystems(intake, clarify, teaserOutput);
+        systems = s.output;
+        priorTokens = s.tokens ?? 0;
+        priorCostUsd = s.costUsd ?? 0;
+      }
+      const barriers = await engine.runLeverageFullBarriers(intake, clarify, teaserOutput, systems);
+      const fullOutput = { ...teaserOutput, ...systems, ...barriers.output };
+      await persist(
+        "leverage_full",
+        fullOutput,
+        priorTokens + (barriers.tokens ?? 0),
+        priorCostUsd + (barriers.costUsd ?? 0),
+      );
+      await seedGapLog("leverage_full", fullOutput.gapLog);
       await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
       return json({ ok: true, status: "full_ready" });
     }

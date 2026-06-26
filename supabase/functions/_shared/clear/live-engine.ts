@@ -6,6 +6,8 @@ import type {
   ExperimentOutput,
   IntakeInput,
   LeverageFull,
+  LeverageFullBarriers,
+  LeverageFullSystems,
   LeverageTeaser,
   ResearchContext,
   ResearchOutput,
@@ -14,6 +16,8 @@ import type {
 import {
   CLARIFY_PROMPT,
   EXPERIMENT_PROMPT,
+  LEVERAGE_FULL_BARRIERS_PROMPT,
+  LEVERAGE_FULL_SYSTEMS_PROMPT,
   LEVERAGE_PROMPT,
   renderEnvelope,
   renderIntake,
@@ -115,13 +119,25 @@ export class LiveClearEngine implements ClearEngine {
     return this.call<LeverageTeaser>(this.leverageModel, LEVERAGE_PROMPT, user, 2500, 0.5);
   }
 
-  runLeverageFull(input: IntakeInput, clarify: ClarifyOutput, teaser: LeverageTeaser) {
-    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nReturn the FULL JSON (teaser fields with 5-10 ranked points, plus behaviors, behaviorPriorities, keyActors, causeEffect, loops, comb, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
-    // 8000, not 6000: the full report is the largest output and was truncating
-    // mid-JSON at 6000. At the observed generation rate this completes in ~130s,
-    // which stays under the edge runtime's 150s free-plan wall-clock limit. Do not
-    // raise much further without moving to a paid plan (400s) or chunking the run.
-    return this.call<LeverageFull>(this.leverageModel, LEVERAGE_PROMPT, user, 8000, 0.5);
+  // The FULL report is generated in two passes, each its own request, so neither
+  // model call approaches the edge runtime's 150s wall-clock limit (one combined
+  // call truncated even at 8000 tokens). Each subset is well under 8000 tokens.
+
+  // Pass 1 — systems map + behaviours (teaser already carried systemsMapSummary).
+  runLeverageFullSystems(input: IntakeInput, clarify: ClarifyOutput, teaser: LeverageTeaser) {
+    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nReturn PASS 1 JSON (topLeveragePoints with 5-10 ranked points, behaviors, behaviorPriorities, keyActors, causeEffect, loops).`;
+    return this.call<LeverageFullSystems>(this.leverageModel, LEVERAGE_FULL_SYSTEMS_PROMPT, user, 8000, 0.5);
+  }
+
+  // Pass 2 — COM-B barriers + actions, given Pass 1's systems map + behaviours.
+  runLeverageFullBarriers(
+    input: IntakeInput,
+    clarify: ClarifyOutput,
+    teaser: LeverageTeaser,
+    systems: LeverageFullSystems,
+  ) {
+    const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nPASS 1 (SYSTEMS & BEHAVIOURS) OUTPUT:\n${JSON.stringify(systems)}\n\nReturn PASS 2 JSON (comb across all six COM-B components, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
+    return this.call<LeverageFullBarriers>(this.leverageModel, LEVERAGE_FULL_BARRIERS_PROMPT, user, 8000, 0.5);
   }
 
   runExperiment(
