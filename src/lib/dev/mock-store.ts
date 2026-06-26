@@ -40,7 +40,7 @@ import type {
   RunPhase,
 } from "@/lib/clear/types";
 import type { InviteResult } from "@/lib/collab";
-import type { PromotePreview } from "@/lib/research";
+import type { PromotePreview, ResearchRunStatus } from "@/lib/research";
 import { buildDataset, type MockDb } from "./seed";
 import {
   CLARIFY,
@@ -265,6 +265,22 @@ export async function runResearch(projectId: string): Promise<void> {
   if (!(db.findings[projectId]?.length)) db.findings[projectId] = findingRows(projectId);
   if (!(db.questions[projectId]?.length)) db.questions[projectId] = questionRows(projectId);
   seedGaps(projectId, "research", RESEARCH.gapLog);
+}
+
+// Mock research completes synchronously (mkRun → status "done"), so the latest
+// research run reads "done" right after runResearch — no polling loop needed.
+export async function getResearchRunStatus(projectId: string): Promise<ResearchRunStatus> {
+  await delay(READ_MS);
+  const runs = (db.runs[projectId] ?? []).filter((r) => r.phase === "research");
+  if (!runs.length) return { status: null };
+  const latest = runs[runs.length - 1];
+  return {
+    status: latest.status,
+    error:
+      latest.status === "error"
+        ? ((latest.output as { error?: string } | null)?.error ?? "Research failed.")
+        : undefined,
+  };
 }
 
 function mkRun(projectId: string, phase: RunPhase, output: unknown): Run {

@@ -1,0 +1,72 @@
+name: Research worker
+
+# Runs the research agent OFF the Supabase edge-function 150s wall clock. The
+# project-research edge function pre-creates a `runs` row (phase=research,
+# status=running) and dispatches this workflow; the worker reuses the SAME engine
+# + DB helpers as the edge fn (it just runs them where there's no wall clock),
+# then flips the run row to done/error for the client's poll to pick up.
+#
+# Triggered only via the GitHub REST API (workflow_dispatch) by the edge fn using
+# a fine-grained PAT. Inputs are non-secret ids — the worker re-fetches intake
+# (challenge/documents) from the DB via the service role, so sensitive content is
+# never passed as a (logged) workflow input.
+on:
+  workflow_dispatch:
+    inputs:
+      projectId:
+        description: Project id to run research for
+        required: true
+      runId:
+        description: The pre-created runs row id (phase=research, status=running)
+        required: true
+      nonce:
+        description: Anti-stale token written on the run row at kickoff
+        required: false
+        default: ""
+
+# One research run per project at a time. Do NOT cancel in progress: a half-done
+# run that already seeded but hasn't flipped the row is worse than letting it finish.
+concurrency:
+  group: research-${{ inputs.projectId }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    # Research is ~minutes; cap so a hung model call fails fast instead of burning
+    # the runner budget. (A timeout skips the worker's catch, leaving the row
+    # `running` — the edge GC clears it on the next kickoff.)
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Run research worker
+        run: >-
+          deno run --allow-net --allow-env
+          supabase/functions/_shared/research-worker/main.ts
+          "${{ inputs.projectId }}" "${{ inputs.runId }}" "${{ inputs.nonce }}"
+        env:
+          # The worker only ever runs live; hardcoded so a dropped secret can't
+          # silently flip it to the stub engine (the worker also asserts this).
+          AI_MODE: live
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Match whatever model the edge fn projected cost for. Defaults to the
+          # engine's Sonnet floor; set the RESEARCH_MODEL Actions variable here too
+          # if you override it as a Supabase edge secret.
+          RESEARCH_MODEL: ${{ vars.RESEARCH_MODEL || 'claude-sonnet-4-6' }}
+          # Web-tool per-request fees default to pricing.ts (0.01 each) when unset —
+          # left unset here so the worker matches a non-overridden edge. If you
+          # override WEB_SEARCH_REQUEST_FEE_USD / WEB_FETCH_REQUEST_FEE_USD on the
+          # edge, add them as Actions variables and wire them here to keep cost
+          # accounting in step.
