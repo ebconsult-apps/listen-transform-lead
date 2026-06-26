@@ -15,6 +15,7 @@ import type {
   InterventionCandidateRow,
   KnowledgeEntryRow,
   LeverageReaction,
+  Profile,
   Project,
   ProjectContribution,
   ProjectInput,
@@ -41,9 +42,11 @@ import {
   questionRows,
 } from "./fixtures";
 import { daysAgoIso, uid } from "./util";
+import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
 
 export interface MockDb {
   workspace: Workspace;
+  profile: Profile;
   entitlement: Entitlement;
   projects: Project[];
   inputs: Record<string, ProjectInput>;
@@ -71,6 +74,21 @@ function workspace(): Workspace {
     name: "Dev / QA workspace",
     owner_id: MOCK_USER_ID,
     created_at: daysAgoIso(30),
+  };
+}
+
+/**
+ * The signed-in user's profile. Stored in the mock db (not a fresh literal) so an
+ * edit via `updateMyProfile` persists across navigations within the session.
+ * Privacy is pre-accepted so the New Project flow never gates the QA walkthrough.
+ */
+function profile(): Profile {
+  return {
+    id: MOCK_USER_ID,
+    full_name: "Dev User",
+    created_at: daysAgoIso(30),
+    privacy_accepted_at: daysAgoIso(30),
+    privacy_policy_version: PRIVACY_POLICY_VERSION,
   };
 }
 
@@ -147,6 +165,7 @@ function unlock(projectId: string): ProjectUnlock {
 function buildSeeded(): MockDb {
   const db: MockDb = {
     workspace: workspace(),
+    profile: profile(),
     entitlement: entitlement(),
     projects: [],
     inputs: {},
@@ -571,6 +590,7 @@ function buildSeeded(): MockDb {
 function buildEmpty(): MockDb {
   return {
     workspace: workspace(),
+    profile: profile(),
     entitlement: entitlement(),
     projects: [],
     inputs: {},

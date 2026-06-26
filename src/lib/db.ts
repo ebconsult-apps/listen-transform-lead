@@ -269,6 +269,17 @@ export async function getMyProfile(): Promise<Profile | null> {
   return (data as Profile) ?? null;
 }
 
+/** Update the signed-in user's profile (display name). RLS scopes the write to their row. */
+export async function updateMyProfile(patch: { full_name: string }): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.updateMyProfile(patch);
+  const sb = requireSupabase();
+  const { data: auth } = await sb.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error("Not signed in.");
+  const { error } = await sb.from("profiles").update({ full_name: patch.full_name }).eq("id", userId);
+  if (error) throw error;
+}
+
 /** Record the current user's acceptance of the given Privacy Policy version. */
 export async function recordPrivacyAcceptance(version: string): Promise<void> {
   const sb = requireSupabase();
