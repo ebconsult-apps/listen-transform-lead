@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { openCookieSettings } from "@/components/CookieConsent";
 
 const Layout = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -131,6 +132,7 @@ const Layout = () => {
             <div className="flex space-x-4">
               <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
               <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+              <button type="button" onClick={openCookieSettings} className="hover:text-foreground transition-colors">Cookie settings</button>
             </div>
           </div>
         </div>

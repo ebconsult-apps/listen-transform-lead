@@ -126,10 +126,8 @@ Section 7.
 
 **To change or withdraw your choice:**
 
-1. Use the in-app/website cookie settings control. `[Provide a persistent "Cookie settings" link
-   (e.g. in the footer) that reopens the banner so consent can be withdrawn as easily as it was
-   given — required by the GDPR/ePrivacy. Currently the banner only reappears if the stored choice
-   is cleared.]`
+1. Use the **"Cookie settings"** control in the site/app footer, which reopens the banner so you
+   can change or withdraw consent as easily as you gave it.
 2. Or clear the **`cookie_consent`** value in your browser's local storage (and delete existing
    Google cookies); the banner will reappear on your next visit.
 3. You can also block or delete cookies in your browser settings, and install **Google's opt-out

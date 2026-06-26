@@ -36,6 +36,23 @@ export function initGA4(): void {
 }
 
 /**
+ * Withdraw analytics/advertising consent (e.g. when the user changes their
+ * choice via the "Cookie settings" control). Updates Consent Mode v2 back to
+ * "denied" so gtag stops using non-essential storage. Withdrawal must be as
+ * easy as granting (ePrivacy/GDPR).
+ */
+export function revokeAnalyticsConsent(): void {
+  if (typeof window.gtag === "function") {
+    window.gtag("consent", "update", {
+      analytics_storage: "denied",
+      ad_storage: "denied",
+      ad_user_data: "denied",
+      ad_personalization: "denied",
+    });
+  }
+}
+
+/**
  * Send a custom event to GA4.
  */
 export function trackEvent(

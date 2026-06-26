@@ -196,6 +196,36 @@ const RespondentPortal = () => {
               <PrepPromptCard variant="respondent" prebuilt={data.prepPrompt} />
             )}
 
+            {/* Just-in-time privacy notice (GDPR Art. 13) */}
+            <section className="glass-card p-6 sm:p-8">
+              <h2 className="heading-md mb-3">How your input is handled</h2>
+              <ul className="body-md space-y-2 list-disc pl-5">
+                <li>
+                  The team that invited you decides how your contribution is used — they are the{" "}
+                  <strong>data controller</strong>. CLEAR provides the platform and processes your
+                  input on their behalf.
+                </li>
+                <li>
+                  We collect your optional name, your written answers, your reactions, and any files
+                  you choose to share — only to record your contribution and produce the project
+                  analysis.
+                </li>
+                <li>
+                  An <strong>AI system</strong> (Anthropic's Claude) helps analyze contributions.
+                  Outputs are AI-generated and reviewed by the project team; no automated decision is
+                  made about you.
+                </li>
+                <li>
+                  Your contribution is kept with the project and can be deleted by the project owner;
+                  your invite link expires after 30 days.
+                </li>
+                <li>
+                  To access, correct, delete, or object to the use of your data, contact the
+                  organization that invited you — CLEAR will assist them as processor.
+                </li>
+              </ul>
+            </section>
+
             {/* Guided input */}
             <section className="glass-card p-6 sm:p-8 space-y-5">
               <h2 className="heading-md">Your input</h2>
@@ -270,7 +300,7 @@ const RespondentPortal = () => {
                 />
                 <span>
                   I understand my input and any documents I share will be visible to the project team and used to
-                  shape this analysis.
+                  shape this analysis — including analysis by an AI system, as described above.
                 </span>
               </label>
               <div className="flex items-center gap-4">

@@ -15,10 +15,10 @@
  * accepts, so we can detect (in future) that an older version was accepted.
  * Bump this string whenever the copy in <PrivacyPolicyContent/> changes.
  */
-export const PRIVACY_POLICY_VERSION = "2026-06-25";
+export const PRIVACY_POLICY_VERSION = "2026-06-26";
 
 /** Human-readable effective date, shown at the top of the policy body. */
-export const PRIVACY_POLICY_EFFECTIVE_DATE = "25 June 2026";
+export const PRIVACY_POLICY_EFFECTIVE_DATE = "26 June 2026";
 
 const CONTACT_EMAIL = "erik@eb-consulting.se";
 
@@ -161,7 +161,10 @@ export function PrivacyPolicyContent() {
           your report; under Anthropic&rsquo;s commercial terms this content is{" "}
           <strong>not used to train its models</strong>. Where you enable the optional
           research feature, search queries derived from your project may be sent to web
-          search and content providers.
+          search and content providers. A de-identified summary of a research finding may,
+          only after a project owner reviews and approves it, be added to a shared knowledge
+          base that improves analyses across projects; de-identification is designed to remove
+          personal identifiers, though we cannot guarantee removal in every case.
         </p>
         <p>
           <strong>AI transparency.</strong> CLEAR outputs are AI-generated and may be
