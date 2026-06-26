@@ -177,7 +177,7 @@ Also produce:
 Return ONLY a JSON object with this exact shape:
 {
   "findings": [
-    { "phaseTarget": "clarify"|"leverage", "claim": string, "detail"?: string, "sourceKind": "web"|"knowledge_base"|"dialogue", "citations": [ { "title": string, "url"?: string, "note"?: string } ], "evidenceFlag": "V"|"A"|"G"|"NA", "confidence": number, "tags"?: { "useCase"?: string, "targetGroup"?: string, "topic"?: string, "comBComponent"?: string } }
+    { "phaseTarget": "clarify"|"leverage", "claim": string, "detail"?: string, "sourceKind": "web"|"knowledge_base"|"dialogue", "citations": [ { "title": string, "url"?: string, "note"?: string } ], "evidenceFlag": "V"|"A"|"G"|"NA", "confidence": number, "tags"?: { "useCase"?: string, "targetGroup"?: string, "topic"?: string, "comBComponent"?: string }, "sourceGapIds"?: string[] }
   ],
   "questions": [ { "question": string, "rationale": string } ],
   ${GAP_LOG_SPEC}
@@ -257,6 +257,30 @@ export function renderResearch(
     "cite the source, and do not present these as your own unverified assumptions):\n" +
     lines.join("\n")
   );
+}
+
+/**
+ * Render the owner-selected open questions a TARGETED research run must close.
+ * Appended to the research user message so the run is scoped (MECE) to exactly
+ * these gaps instead of the whole project.
+ */
+export function renderGapFocus(
+  gaps: { id: string; flagType: string; content: string; source?: string | null }[],
+): string {
+  if (!gaps.length) return "";
+  const lines = gaps.map(
+    (g) => `- [${g.id}] (${g.flagType}) ${g.content}${g.source ? ` — source: ${g.source}` : ""}`,
+  );
+  return [
+    "FOCUS — research ONLY these owner-selected open questions and close them with cited evidence:",
+    lines.join("\n"),
+    "",
+    "Return findings that are MUTUALLY EXCLUSIVE and COLLECTIVELY EXHAUSTIVE across the selected items:",
+    "- Every selected item above must be addressed by at least one finding (collectively exhaustive).",
+    "- Findings must not overlap or restate the same evidence (mutually exclusive).",
+    '- In each finding, set "sourceGapIds" to the bracketed id(s) of the selected item(s) it addresses.',
+    "- If you genuinely cannot find a source for one item, record it in gapLog (do not invent) but still cover the rest.",
+  ].join("\n");
 }
 
 /** Render retrieved knowledge-base entries as candidate evidence for the RESEARCH prompt. */

@@ -216,6 +216,8 @@ export interface ResearchFindingRow {
   tags: Record<string, unknown>;
   status: ResearchFindingStatus;
   shared_finding_id: string | null;
+  /** assumption_gaps this finding was generated to close (targeted MECE research). */
+  source_gap_ids: string[];
   created_at: string;
   updated_at: string;
 }

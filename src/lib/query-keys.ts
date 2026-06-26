@@ -19,4 +19,5 @@
 export const qk = {
   projects: () => ["projects"] as const,
   assumptionGaps: (projectId: string) => ["assumptionGaps", projectId] as const,
+  findings: (projectId: string) => ["findings", projectId] as const,
 } as const;

@@ -21,6 +21,7 @@ import TestCardList from "./TestCardList";
 import ExecutionCalendar from "./ExecutionCalendar";
 import FrontlineFaq from "./FrontlineFaq";
 import AssumptionsGapsLog from "./AssumptionsGapsLog";
+import ResearchGapsPanel from "./ResearchGapsPanel";
 import { toast } from "sonner";
 
 /**
@@ -36,6 +37,7 @@ const ExperimentTab = ({
   teaser,
   full,
   experimentOutput,
+  entitled = true,
   onAfterRun,
 }: {
   projectId: string;
@@ -45,6 +47,7 @@ const ExperimentTab = ({
   teaser: LeverageTeaser;
   full: LeverageFull;
   experimentOutput: ExperimentOutput | null;
+  entitled?: boolean;
   onAfterRun: () => Promise<void> | void;
 }) => {
   const [envelope, setEnvelope] = useState<ResourceEnvelope>({});
@@ -143,6 +146,7 @@ const ExperimentTab = ({
         </div>
         <ResourceEnvelopeForm initial={envelope} busy={busy} onGenerate={generate} />
         <AssumptionsGapsLog projectId={projectId} />
+        <ResearchGapsPanel projectId={projectId} entitled={entitled} onResearched={load} />
       </div>
     );
   }
@@ -210,6 +214,7 @@ const ExperimentTab = ({
       ) : null}
 
       <AssumptionsGapsLog projectId={projectId} />
+      <ResearchGapsPanel projectId={projectId} entitled={entitled} onResearched={load} />
 
       <div className="glass-card p-6 sm:p-8 text-center">
         <RefreshCw className="h-5 w-5 text-foreground/30 mx-auto mb-2" />

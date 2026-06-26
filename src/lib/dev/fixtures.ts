@@ -75,6 +75,7 @@ export function findingRows(
     tags: (f.tags ?? {}) as Record<string, unknown>,
     status: "proposed",
     shared_finding_id: null,
+    source_gap_ids: [],
     created_at: ts,
     updated_at: ts,
   }));

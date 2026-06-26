@@ -14,4 +14,9 @@ describe("query-keys", () => {
     // Distinct projects must produce distinct keys (no cross-project cache bleed).
     expect(qk.assumptionGaps("p1")).not.toEqual(qk.assumptionGaps("p2"));
   });
+
+  it("findings(id) scopes by projectId", () => {
+    expect(qk.findings("p1")).toEqual(["findings", "p1"]);
+    expect(qk.findings("p1")).not.toEqual(qk.findings("p2"));
+  });
 });
