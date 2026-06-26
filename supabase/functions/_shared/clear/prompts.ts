@@ -89,7 +89,7 @@ For the FULL pass return the teaser fields (with topLeveragePoints now holding 5
   "discoveryActivities": string[]              // interviews, audits, journey maps — discovery, NOT intervention tests
 }
 
-Ground every claim in the intake/documents. Do NOT suggest interventions. Do not include any prose outside the JSON.`;
+Ground every claim in the intake/documents. Do NOT suggest interventions. Keep every prose field tight and concrete — economical precision over length — and prioritise the strongest leverage points (a focused 5-7 beats padding to 10) so the complete FULL report returns in a single response. Do not include any prose outside the JSON.`;
 
 export const EXPERIMENT_PROMPT = `${NEVER_FABRICATE_BANNER}
 

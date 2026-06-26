@@ -117,7 +117,11 @@ export class LiveClearEngine implements ClearEngine {
 
   runLeverageFull(input: IntakeInput, clarify: ClarifyOutput, teaser: LeverageTeaser) {
     const user = `${renderIntake(input)}\n\nCLARIFY OUTPUT:\n${JSON.stringify(clarify)}\n\nTEASER OUTPUT:\n${JSON.stringify(teaser)}\n\nReturn the FULL JSON (teaser fields with 5-10 ranked points, plus behaviors, behaviorPriorities, keyActors, causeEffect, loops, comb, strongestBarriers, barrierNarratives, gapLog, discoveryActivities).`;
-    return this.call<LeverageFull>(this.leverageModel, LEVERAGE_PROMPT, user, 6000, 0.5);
+    // 8000, not 6000: the full report is the largest output and was truncating
+    // mid-JSON at 6000. At the observed generation rate this completes in ~130s,
+    // which stays under the edge runtime's 150s free-plan wall-clock limit. Do not
+    // raise much further without moving to a paid plan (400s) or chunking the run.
+    return this.call<LeverageFull>(this.leverageModel, LEVERAGE_PROMPT, user, 8000, 0.5);
   }
 
   runExperiment(
