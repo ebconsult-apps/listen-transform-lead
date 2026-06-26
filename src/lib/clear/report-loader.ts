@@ -28,14 +28,15 @@ export interface BuildProgress {
   done: (i: number) => boolean;
 }
 
-// Step labels map to what `runFull` actually produces (systems map / leverage
-// points, COM-B barriers + evidence, intervention candidates + discovery), so the
-// checklist reads as truthful work rather than generic theatre.
+// Step labels map to what `runFull` actually produces, and their dwell times track
+// the real run: the report is generated in TWO model passes (systems/behaviours,
+// then COM-B barriers/actions), each its own ~75-85s request, so the checklist
+// reads as truthful work (~190s total) rather than a single fast spinner.
 export const FULL_REPORT_STEPS: BuildStep[] = [
-  { label: "Reviewing your inputs and approved target", seconds: 6 },
-  { label: "Mapping the system and leverage points", seconds: 12 },
-  { label: "Analysing COM-B barriers and evidence", seconds: 12 },
-  { label: "Drafting interventions and discovery activities", seconds: 12 },
+  { label: "Reviewing your inputs and approved target", seconds: 8 },
+  { label: "Pass 1 · mapping the system, behaviours and leverage points", seconds: 85 },
+  { label: "Pass 2 · analysing COM-B barriers and the evidence", seconds: 75 },
+  { label: "Drafting barrier narratives and discovery activities", seconds: 20 },
   // Terminal step — spins until the real report arrives. `seconds` is unused.
   { label: "Compiling your report", seconds: 0 },
 ];

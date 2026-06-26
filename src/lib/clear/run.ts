@@ -241,21 +241,15 @@ export async function runFull(projectId: string): Promise<void> {
   if (effectiveAiMode() === "live") {
     const sb = requireSupabase();
     // The full report is generated in two passes, each its own request, so
-    // neither model call hits the edge runtime's wall-clock limit. Pass 1 returns
-    // the systems map + behaviours, which we echo into pass 2 (see project-run).
-    const { data, error } = await sb.functions.invoke("project-run", {
+    // neither model call hits the edge runtime's wall-clock limit. Pass 1 persists
+    // its output server-side; pass 2 reads it back and assembles (see project-run),
+    // so the report survives this tab closing between the two calls.
+    const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "full", part: 1 },
     });
     if (error) throw error;
     const { error: error2 } = await sb.functions.invoke("project-run", {
-      body: {
-        projectId,
-        phase: "full",
-        part: 2,
-        systems: data?.systems,
-        systemsTokens: data?.tokens,
-        systemsCostUsd: data?.costUsd,
-      },
+      body: { projectId, phase: "full", part: 2 },
     });
     if (error2) throw error2;
     return;

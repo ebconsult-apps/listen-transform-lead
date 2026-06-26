@@ -221,19 +221,25 @@ Deno.serve(async (req) => {
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
       const { data: spend } = await admin
         .from("runs")
-        .select("cost_usd, projects!inner(workspace_id)")
+        .select("cost_usd, phase, projects!inner(workspace_id)")
         .gte("created_at", monthStart)
         .eq("projects.workspace_id", project.workspace_id);
       const monthSpendUsd = (spend ?? []).reduce(
         (s: number, r: { cost_usd: number | null }) => s + (r.cost_usd ?? 0),
         0,
       );
+      // leverage_full_systems is the intermediate Pass-1 scratch run (deleted once
+      // the full report is assembled) — its cost counts toward spend, but it is NOT
+      // a billable generation, so it must not consume the free-tier run quota.
+      const monthRunCount = (spend ?? []).filter(
+        (r: { phase?: string }) => r.phase !== "leverage_full_systems",
+      ).length;
 
       // Free tier is also capped by a monthly generation quota.
       if (
         exceedsFreeRunQuota({
           tier,
-          monthRunCount: spend?.length ?? 0,
+          monthRunCount,
           quota: loadFreeRunQuota((k) => Deno.env.get(k)),
         })
       ) {
@@ -255,7 +261,12 @@ Deno.serve(async (req) => {
     const engine = getClearEngine();
 
     const persist = async (
-      runPhase: "clarify" | "leverage_teaser" | "leverage_full" | "experiment",
+      runPhase:
+        | "clarify"
+        | "leverage_teaser"
+        | "leverage_full"
+        | "leverage_full_systems"
+        | "experiment",
       output: unknown,
       tokens?: number,
       costUsd?: number,
@@ -370,9 +381,11 @@ Deno.serve(async (req) => {
     if (phase === "full") {
       // The FULL report is generated in TWO passes, each its own request, so
       // neither model call approaches the edge runtime's wall-clock limit (one
-      // combined call truncated even at 8000 tokens). The client sends part:1
-      // then part:2 (echoing pass-1's output/tokens back). Pass 1 returns its
-      // output (persists nothing); pass 2 assembles + persists the leverage_full.
+      // combined call truncated even at 8000 tokens). Pass 1 (part:1) persists its
+      // output server-side as a `leverage_full_systems` scratch run; Pass 2
+      // (part:2) reads it back, assembles the report, persists `leverage_full`,
+      // and deletes the scratch — so the report survives the tab closing between
+      // the two requests and Pass-1 cost is always recorded.
       const clarify = await loadClarify(false);
       if (!clarify) {
         return json({ error: "Approve Clarify before generating the full report." }, 409);
@@ -400,24 +413,33 @@ Deno.serve(async (req) => {
 
       await admin.from("projects").update({ status: "running" }).eq("id", projectId);
 
-      // Pass 1 — systems map + behaviours. Return it for the client to echo into
-      // pass 2 (nothing is persisted until the report is complete).
+      // Pass 1 — systems map + behaviours. Clear any stale scratch from an
+      // abandoned earlier attempt, generate, and persist it for Pass 2 to pick up.
       if (body.part === 1) {
+        await admin
+          .from("runs")
+          .delete()
+          .eq("project_id", projectId)
+          .eq("phase", "leverage_full_systems");
         const systems = await engine.runLeverageFullSystems(intake, clarify, teaserOutput);
-        return json({
-          ok: true,
-          systems: systems.output,
-          tokens: systems.tokens ?? 0,
-          costUsd: systems.costUsd ?? 0,
-        });
+        await persist("leverage_full_systems", systems.output, systems.tokens, systems.costUsd);
+        return json({ ok: true, status: "running" });
       }
 
-      // Pass 2 — COM-B barriers + actions, then assemble + persist. If pass-1
-      // output wasn't supplied (e.g. a legacy client that sends no `part`),
-      // generate it inline so the call still yields a complete report.
-      let systems = body.systems as LeverageFullSystems | undefined;
-      let priorTokens = Number(body.systemsTokens) || 0;
-      let priorCostUsd = Number(body.systemsCostUsd) || 0;
+      // Pass 2 — load Pass 1 from its scratch run. If it's missing (a legacy
+      // client that sends no `part`, or the scratch was never written), generate
+      // it inline so the call still yields a complete report.
+      const { data: systemsRuns } = await admin
+        .from("runs")
+        .select("output, tokens_used, cost_usd, created_at")
+        .eq("project_id", projectId)
+        .eq("phase", "leverage_full_systems")
+        .order("created_at", { ascending: true });
+      const systemsRow =
+        systemsRuns && systemsRuns.length ? systemsRuns[systemsRuns.length - 1] : null;
+      let systems = systemsRow?.output as LeverageFullSystems | undefined;
+      let priorTokens = Number(systemsRow?.tokens_used) || 0;
+      let priorCostUsd = Number(systemsRow?.cost_usd) || 0;
       if (!systems) {
         const s = await engine.runLeverageFullSystems(intake, clarify, teaserOutput);
         systems = s.output;
@@ -433,6 +455,12 @@ Deno.serve(async (req) => {
         priorCostUsd + (barriers.costUsd ?? 0),
       );
       await seedGapLog("leverage_full", fullOutput.gapLog);
+      // The Pass-1 scratch run has been folded into leverage_full — remove it.
+      await admin
+        .from("runs")
+        .delete()
+        .eq("project_id", projectId)
+        .eq("phase", "leverage_full_systems");
       await admin.from("projects").update({ status: "full_ready" }).eq("id", projectId);
       return json({ ok: true, status: "full_ready" });
     }

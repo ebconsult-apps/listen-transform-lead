@@ -12,7 +12,7 @@ describe("buildProgress", () => {
   });
 
   it("advances to a later step and marks earlier steps done as time elapses", () => {
-    const { current, done } = buildProgress(FULL_REPORT_STEPS, 7000); // past the 6s first step
+    const { current, done } = buildProgress(FULL_REPORT_STEPS, 9000); // past the 8s first step
     expect(current).toBeGreaterThan(0);
     expect(done(0)).toBe(true);
   });
