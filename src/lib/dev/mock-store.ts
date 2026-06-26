@@ -141,6 +141,39 @@ export async function listDocuments(projectId: string): Promise<DocumentRow[]> {
   return clone(db.documents[projectId] ?? []);
 }
 
+export async function uploadDocument(
+  projectId: string,
+  file: File,
+  opts?: { assumptionGapId?: string },
+): Promise<DocumentRow> {
+  // Mock mode has no storage/extraction: record a row so the file shows up in the
+  // attachment list and counts toward intake, with no extracted text.
+  const row: DocumentRow = {
+    id: uid("doc"),
+    project_id: projectId,
+    storage_path: `dev/${projectId}/${file.name}`,
+    filename: file.name,
+    mime: file.type || null,
+    bytes: file.size,
+    status: "uploaded",
+    extracted_text: null,
+    assumption_gap_id: opts?.assumptionGapId ?? null,
+    created_at: nowIso(),
+  };
+  db.documents[projectId] = [...(db.documents[projectId] ?? []), row];
+  return clone(row);
+}
+
+export async function deleteDocument(id: string): Promise<void> {
+  for (const list of Object.values(db.documents)) {
+    const idx = list.findIndex((d) => d.id === id);
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      return;
+    }
+  }
+}
+
 export async function listRuns(projectId: string): Promise<Run[]> {
   await delay(READ_MS);
   return clone(
@@ -457,6 +490,7 @@ export async function addAssumptionGap(
     content: flag.content,
     source: flag.source ?? null,
     status: "open",
+    response: null,
     created_at: nowIso(),
     updated_at: nowIso(),
   };
@@ -477,6 +511,17 @@ export async function setAssumptionGapStatus(
 ): Promise<void> {
   const found = findGap(id);
   if (found) Object.assign(found.list[found.idx], { status, updated_at: nowIso() });
+}
+
+export async function respondAssumptionGap(id: string, response: string): Promise<void> {
+  const found = findGap(id);
+  if (found) {
+    Object.assign(found.list[found.idx], {
+      response,
+      status: response.trim() ? "resolved" : "open",
+      updated_at: nowIso(),
+    });
+  }
 }
 
 export async function deleteAssumptionGap(id: string): Promise<void> {
@@ -636,6 +681,7 @@ export function createProject(args: CreateProjectArgs): string {
       bytes: d.bytes,
       status: "uploaded",
       extracted_text: null,
+      assumption_gap_id: null,
       created_at: nowIso(),
     }));
   }

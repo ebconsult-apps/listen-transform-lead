@@ -6,6 +6,7 @@ import * as mockStore from "@/lib/dev/mock-store";
 // graph (mock-store + seed) tree-shakes out (mock-store's only top-level is a
 // @__PURE__ initializer, so nothing keeps it alive).
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
+import { extractText } from "./extract-text";
 import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
@@ -62,6 +63,8 @@ export interface DocumentRow {
   bytes: number | null;
   status: "uploaded" | "parsed" | "failed";
   extracted_text: string | null;
+  /** When set, this document is attached to a specific assumption_gaps item. */
+  assumption_gap_id?: string | null;
   created_at: string;
 }
 
@@ -191,6 +194,8 @@ export interface AssumptionGapRow {
   content: string;
   source: string | null;
   status: AssumptionGapStatus;
+  /** Owner's answer / supporting note for this item (mirrors research_questions.answer). */
+  response: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -321,6 +326,70 @@ export async function listDocuments(projectId: string): Promise<DocumentRow[]> {
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as DocumentRow[];
+}
+
+/**
+ * Supabase Storage keys reject non-ASCII characters (e.g. "förändra"), so
+ * transliterate accents and replace anything else with "_". The real filename is
+ * preserved in documents.filename for display.
+ */
+function storageSafeName(name: string): string {
+  return (
+    name
+      .normalize("NFKD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-zA-Z0-9.\-_]/g, "_")
+      .replace(/_{2,}/g, "_")
+      .replace(/^_+|_+$/g, "") || "file"
+  );
+}
+
+/**
+ * Upload one file to the project's storage area, extract its text (best-effort,
+ * so an unreadable file just contributes no text), and record a documents row.
+ * `opts.assumptionGapId` attaches it to a specific assumption/gap item. Shared by
+ * the New Project flow and the Open-questions attachments.
+ */
+export async function uploadDocument(
+  projectId: string,
+  file: File,
+  opts?: { assumptionGapId?: string },
+): Promise<DocumentRow> {
+  if (DEV_CAP && devActive()) return mockStore.uploadDocument(projectId, file, opts);
+  const sb = requireSupabase();
+  const ws = await getMyWorkspace();
+  const path = `${ws.id}/${projectId}/${crypto.randomUUID()}-${storageSafeName(file.name)}`;
+  const { error: upErr } = await sb.storage.from("documents").upload(path, file);
+  if (upErr) throw upErr;
+  const extracted = await extractText(file);
+  const { data, error } = await sb
+    .from("documents")
+    .insert({
+      project_id: projectId,
+      storage_path: path,
+      filename: file.name,
+      mime: file.type || null,
+      bytes: file.size,
+      extracted_text: extracted,
+      status: "uploaded",
+      assumption_gap_id: opts?.assumptionGapId ?? null,
+    })
+    .select("*")
+    .single();
+  if (error) throw error;
+  return data as DocumentRow;
+}
+
+/** Remove a document row and its storage object (storage delete is best-effort). */
+export async function deleteDocument(id: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.deleteDocument(id);
+  const sb = requireSupabase();
+  const { data: row } = await sb.from("documents").select("storage_path").eq("id", id).maybeSingle();
+  if (row?.storage_path) {
+    await sb.storage.from("documents").remove([row.storage_path]);
+  }
+  const { error } = await sb.from("documents").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export async function listRuns(projectId: string): Promise<Run[]> {

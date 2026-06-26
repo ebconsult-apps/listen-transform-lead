@@ -17,6 +17,7 @@ import TeaserReport from "@/components/product/TeaserReport";
 import ClarifyCard from "@/components/product/ClarifyCard";
 import ClarifyReview from "@/components/product/ClarifyReview";
 import FullReport from "@/components/product/FullReport";
+import OpenQuestionsPanel from "@/components/product/OpenQuestionsPanel";
 import Paywall from "@/components/product/Paywall";
 import CollaborateTab from "@/components/product/CollaborateTab";
 import ExperimentTab from "@/components/product/ExperimentTab";
@@ -342,6 +343,7 @@ const ProjectDetail = () => {
           <Tabs defaultValue="report">
             <TabsList className="mb-6 no-print">
               <TabsTrigger value="report">Report</TabsTrigger>
+              <TabsTrigger value="questions">Open questions</TabsTrigger>
               <TabsTrigger value="research" disabled={!canResearch}>Research</TabsTrigger>
               <TabsTrigger value="collaborate">Collaborate</TabsTrigger>
             </TabsList>
@@ -396,6 +398,10 @@ const ProjectDetail = () => {
                     </div>
                   ))}
               </div>
+            </TabsContent>
+
+            <TabsContent value="questions">
+              <OpenQuestionsPanel projectId={project.id} />
             </TabsContent>
 
             <TabsContent value="research">
