@@ -1,9 +1,33 @@
 import { Link } from "react-router-dom";
-import { Plus, FileText } from "lucide-react";
+import { Plus, Target, Network, ClipboardList } from "lucide-react";
 import SEO from "@/components/SEO";
 import type { ProjectStatus } from "@/lib/clear/types";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { useProjects } from "@/hooks/queries/useProjects";
+import Pipeline from "@/components/product/Pipeline";
+
+// What a first run actually produces — phrased to match the real Clarify/Leverage
+// output so expectations land accurately the moment a project finishes.
+const WHAT_YOU_GET = [
+  {
+    icon: Target,
+    token: "--phase-c",
+    title: "A measurable objective",
+    body: "Clarify turns your challenge into one sharp objective with key results — baselines and targets, not vibes.",
+  },
+  {
+    icon: Network,
+    token: "--phase-l",
+    title: "Your top leverage points",
+    body: "Leverage maps the system and ranks the three points where action moves the number most. Free.",
+  },
+  {
+    icon: ClipboardList,
+    token: "--phase-l",
+    title: "A plan you can act on",
+    body: "The full report adds the COM-B barrier analysis and concrete discovery activities to run this week.",
+  },
+] as const;
 
 const STATUS_LABEL: Record<ProjectStatus, string> = {
   draft: "Draft",
@@ -52,15 +76,55 @@ const Dashboard = () => {
       ) : isError ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : projects.length === 0 ? (
-        <div className="glass-card p-12 text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <FileText className="h-5 w-5 text-primary" />
+        <div className="space-y-6">
+          <div className="glass-card p-8 sm:p-12">
+            <div className="max-w-2xl mx-auto text-center">
+              <span className="tag mb-4">Your first project</span>
+              <h2 className="heading-lg mb-3">Turn a behavior-change challenge into a measurable plan</h2>
+              <p className="body-md mb-10">
+                Describe a behavior you want to move. CLEAR clarifies it into a measurable
+                objective, maps the highest-leverage points to act on, and builds the full plan
+                when you're ready — in minutes, not months.
+              </p>
+            </div>
+
+            <Pipeline />
+
+            <div className="grid sm:grid-cols-3 gap-6 mt-12">
+              {WHAT_YOU_GET.map((item) => (
+                <div key={item.title}>
+                  <div
+                    className="h-10 w-10 rounded-xl flex items-center justify-center mb-3"
+                    style={{
+                      backgroundColor: `hsl(var(${item.token}) / 0.12)`,
+                      color: `hsl(var(${item.token}))`,
+                    }}
+                  >
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-semibold mb-1">{item.title}</h3>
+                  <p className="text-sm text-foreground/60">{item.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <h2 className="heading-md mb-2">No projects yet</h2>
-          <p className="body-md mb-6">Create your first project to get a CLEAR analysis.</p>
-          <Link to="/app/projects/new" className="btn-primary">
-            <Plus className="mr-2 h-4 w-4" /> New project
-          </Link>
+
+          <div className="glass-card p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <h3 className="font-semibold">Ready when you are</h3>
+              <p className="text-sm text-foreground/60">
+                Start your own, or walk through a finished example first.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full sm:w-auto">
+              <Link to="/app/projects/sample" className="btn-secondary justify-center">
+                Walk through an example
+              </Link>
+              <Link to="/app/projects/new" className="btn-primary justify-center">
+                <Plus className="mr-2 h-4 w-4" /> New project
+              </Link>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
