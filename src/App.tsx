@@ -55,6 +55,7 @@ import Signup from "./pages/product/Signup";
 import AuthCallback from "./pages/product/AuthCallback";
 import Dashboard from "./pages/app/Dashboard";
 import NewProject from "./pages/app/NewProject";
+import SampleProject from "./pages/app/SampleProject";
 import ProjectDetail from "./pages/app/ProjectDetail";
 import Billing from "./pages/app/Billing";
 import Account from "./pages/app/Account";
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/app" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/app/projects/new" element={<ProtectedRoute><NewProject /></ProtectedRoute>} />
+              <Route path="/app/projects/sample" element={<ProtectedRoute><SampleProject /></ProtectedRoute>} />
               <Route path="/app/projects/:id" element={<ProtectedRoute><ProjectDetail /></ProtectedRoute>} />
               <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
               <Route path="/account/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />

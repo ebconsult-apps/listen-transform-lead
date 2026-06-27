@@ -15,13 +15,21 @@ import { toast } from "sonner";
 const Paywall = ({
   projectId,
   onDevPreview,
+  objective,
 }: {
   projectId: string;
   onDevPreview?: () => void;
+  /** The project's Clarify objective, used to frame the unlock around the
+   *  user's own result. Falls back to generic copy when absent/empty. */
+  objective?: string;
 }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const trimmedObjective = objective?.trim();
+  const personalObjective =
+    trimmedObjective && trimmedObjective.length <= 160 ? trimmedObjective : undefined;
 
   const unlock = async () => {
     setLoading(true);
@@ -53,6 +61,13 @@ const Paywall = ({
         <Lock className="h-5 w-5 text-primary" />
       </div>
       <h3 className="heading-md mb-2">Unlock the full report</h3>
+      {personalObjective && (
+        <p className="body-md max-w-md mx-auto mb-3">
+          You've set your objective:{" "}
+          <span className="font-medium text-foreground/90">“{personalObjective}”</span>. The full
+          report shows exactly how to hit it.
+        </p>
+      )}
       <p className="body-md max-w-md mx-auto mb-4">
         The teaser shows you the top leverage points. The full report gives you what
         to do about them — and why.

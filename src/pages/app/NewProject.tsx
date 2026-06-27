@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Plus, X, Upload } from "lucide-react";
 import SEO from "@/components/SEO";
 import DictationButton from "@/components/DictationButton";
@@ -149,7 +149,15 @@ const NewProject = () => {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <SEO title="New project: CLEAR" description="Create a new CLEAR analysis." path="/app/projects/new" noindex />
-      <h1 className="heading-lg mb-6">New project</h1>
+      <h1 className="heading-lg mb-2">New project</h1>
+      <p className="body-md mb-6">
+        In about a minute you'll get a measurable objective and your top 3 leverage points — free.
+        The full plan is optional.{" "}
+        <Link to="/app/projects/sample" className="text-primary hover:underline font-medium">
+          See an example first
+        </Link>
+        .
+      </p>
 
       <form onSubmit={submit} className="space-y-6">
         <Field label="Project name" htmlFor="np-name">

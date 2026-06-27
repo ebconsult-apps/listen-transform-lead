@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Play, FileDown, RefreshCw, Pencil, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Play, FileDown, RefreshCw, Pencil, AlertTriangle, Sparkles } from "lucide-react";
 import SEO from "@/components/SEO";
 import {
   getProject,
@@ -157,12 +157,14 @@ const ProjectDetail = () => {
   }, [reload]);
 
   // Returning from a successful Stripe checkout → refresh entitlement + run full.
+  // Route through `reload()` so a failed post-payment refresh surfaces an error
+  // state instead of silently stranding a new paying user on the stale teaser.
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Payment received, generating your full report.");
-      load();
+      reload();
     }
-  }, [searchParams, load]);
+  }, [searchParams, reload]);
 
   const run = useCallback(
     async (fn: () => Promise<void>) => {
@@ -309,6 +311,22 @@ const ProjectDetail = () => {
         <ClarifyStageTabs
           collab={{ projectId: project.id, lastRunAt: clarifyAt, onRerun: onRunClarify, busy: isRunning }}
         >
+          {!isApproved && (
+            <div
+              className="mb-6 p-4 rounded-xl border flex items-start gap-3 no-print"
+              style={{
+                backgroundColor: "hsl(var(--phase-c) / 0.08)",
+                borderColor: "hsl(var(--phase-c) / 0.2)",
+              }}
+            >
+              <Sparkles className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "hsl(var(--phase-c))" }} />
+              <p className="body-md">
+                <span className="font-semibold text-foreground">Your first result is ready.</span>{" "}
+                Clarify turned your challenge into a measurable target below. Review it, then approve
+                to map your top leverage points — for free.
+              </p>
+            </div>
+          )}
           <ClarifyReview
             initial={clarify}
             busy={isRunning}
@@ -433,7 +451,11 @@ const ProjectDetail = () => {
                         <div className="glass-card p-8 h-64" />
                       </div>
                       <div className="absolute inset-0 flex items-center justify-center p-4">
-                        <Paywall projectId={project.id} onDevPreview={onDevPreview} />
+                        <Paywall
+                          projectId={project.id}
+                          objective={clarify.objective}
+                          onDevPreview={onDevPreview}
+                        />
                       </div>
                     </div>
                   ))}
