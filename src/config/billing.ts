@@ -1,6 +1,16 @@
 /**
- * Tier ladder (spec §10). Prices are hypotheses — validate before going live.
+ * Tier ladder (spec §10).
+ *
+ * ⚠️ LAUNCH EXPERIMENT — not validated pricing. These prices/packages are the
+ * best ex-ante model from market analogues, not proven WTP. The canonical value
+ * metric is the *report credit*; seats are secondary. Rationale, the falsifiable
+ * hypotheses, and the telemetry that must confirm/kill each boundary live in
+ * docs/research/self-serve-pricing.md. Treat the exact numbers as a measured
+ * test, not the answer.
+ *
  * Stripe Price IDs are read from env so the same build works across test/prod.
+ * NOTE: changing a price string here does NOT change what Stripe charges — new
+ * amounts require new Stripe Prices + updated VITE_STRIPE_PRICE_* at deploy.
  */
 import type { Entitlement, ProjectUnlock } from "@/lib/db";
 
@@ -38,46 +48,50 @@ export const PLANS: Plan[] = [
     name: "Free",
     price: "$0",
     cadence: "forever",
-    features: ["1 project", "Teaser report only", "No export"],
+    // Demonstrative, not productive: enough to prove CLEAR finds something true,
+    // not enough to use as a workflow. Run cap enforced in cost-cap.ts.
+    features: ["1 teaser project", "Up to 3 runs to explore", "No export or sharing"],
     cta: "Start free",
   },
   {
     id: "solo",
     name: "Solo",
-    price: "$49",
+    price: "$79",
     cadence: "/mo",
     highlight: true,
-    features: ["Full reports", "PDF + Markdown export", "A few projects / month"],
+    features: ["5 report credits / month", "Full reports + PDF / Markdown export", "Saved history"],
     cta: "Choose Solo",
     priceEnv: "VITE_STRIPE_PRICE_SOLO",
   },
   {
     id: "team",
     name: "Team",
-    price: "$299",
+    price: "$249",
     cadence: "/mo",
-    features: ["Several reports / month", "All report sections", "Workspace billing"],
+    features: ["20 pooled report credits / month", "3 seats + workspace sharing", "All report sections"],
     cta: "Choose Team",
     priceEnv: "VITE_STRIPE_PRICE_TEAM",
   },
-  {
-    id: "business",
-    name: "Business",
-    price: "$999",
-    cadence: "/mo",
-    features: ["Unlimited reports", "Priority processing", "Workspace billing"],
-    cta: "Choose Business",
-    priceEnv: "VITE_STRIPE_PRICE_BUSINESS",
-  },
 ];
+// Public $999 Business tier retired — self-serve tops out at Team; larger needs
+// route to Enterprise ("Contact us"). The `business` tier still exists in the
+// type/PRICE_IDS so existing subscribers and the webhook/portal mapping resolve.
+// Agency ($499) is intentionally deferred until repeat client-delivery evidence.
 
+/**
+ * The premium first-paid "front door" — one full report, no subscription. Priced
+ * to be an easy first purchase that feeds subscriptions, not a tollbooth.
+ * FOLLOW-UP (not built; see memo): make the Report Pass creditable toward the
+ * first subscription within 14 days. Until that mechanic ships, do NOT advertise
+ * "creditable toward a subscription" anywhere in live UI.
+ */
 export const UNLOCK_PLAN: Plan = {
   id: "unlock",
-  name: "Single report unlock",
-  price: "$200+",
+  name: "Report Pass",
+  price: "$99",
   cadence: "one-off",
-  features: ["Unlock one full report", "Per-deliverable, no subscription", "PDF + Markdown export"],
-  cta: "Unlock this report",
+  features: ["One full report, unlocked", "Premium one-off — no subscription", "PDF + Markdown export"],
+  cta: "Get a Report Pass",
   priceEnv: "VITE_STRIPE_PRICE_UNLOCK",
 };
 

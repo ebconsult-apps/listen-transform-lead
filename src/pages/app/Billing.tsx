@@ -97,7 +97,7 @@ const Billing = () => {
               <p className="body-md mb-6">
                 Unlock full reports across your projects. Or grab a one-off unlock from any project's paywall.
               </p>
-              <div className="grid sm:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 {paidPlans.map((plan) => (
                   <div key={plan.id} className="border border-border rounded-xl p-4 flex flex-col">
                     <p className="font-semibold">{plan.name}</p>
