@@ -447,10 +447,13 @@ const ProjectDetail = () => {
                     />
                   ) : (
                     <div className="relative">
-                      <div className="locked-blur" aria-hidden>
-                        <div className="glass-card p-8 h-64" />
+                      {/* Blurred preview fills the locked area, behind the paywall card */}
+                      <div className="locked-blur absolute inset-0" aria-hidden>
+                        <div className="glass-card h-full w-full" />
                       </div>
-                      <div className="absolute inset-0 flex items-center justify-center p-4">
+                      {/* Paywall in normal flow → its height drives the container, so it
+                          never overflows onto the teaser above or the footer below */}
+                      <div className="relative flex items-center justify-center p-4">
                         <Paywall
                           projectId={project.id}
                           objective={clarify.objective}

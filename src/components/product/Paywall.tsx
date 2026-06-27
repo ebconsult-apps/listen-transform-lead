@@ -56,7 +56,7 @@ const Paywall = ({
   };
 
   return (
-    <div className="glass-card p-8 text-center border-primary/20 bg-primary/5">
+    <div className="glass-card p-8 text-center border-primary/20">
       <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
         <Lock className="h-5 w-5 text-primary" />
       </div>
@@ -69,8 +69,11 @@ const Paywall = ({
         </p>
       )}
       <p className="body-md max-w-md mx-auto mb-4">
-        The teaser shows you the top leverage points. The full report gives you what
-        to do about them — and why.
+        The teaser shows you <span className="font-medium text-foreground/90">where</span> the
+        leverage is. The full report gives you the{" "}
+        <span className="font-medium text-foreground/90">evidence-based, ready-to-implement
+        plan</span>{" "}
+        to act on it — what to do, why it works, and how to prove it.
       </p>
       <ul className="text-left max-w-md mx-auto mb-5 space-y-2.5 text-sm">
         {[
@@ -83,8 +86,8 @@ const Paywall = ({
             body: "the gap log separates what's confirmed from what's still an assumption, so nothing reads as fact without provenance.",
           },
           {
-            title: "Know your next move",
-            body: "concrete discovery activities, interviews, audits, surveys, you can run this week to close those gaps.",
+            title: "Know exactly what to implement next",
+            body: "concrete, evidence-based actions — discovery activities, interviews, audits, surveys — you can put into practice this week to close those gaps.",
           },
           {
             title: "Unlock Research & Experiment",
