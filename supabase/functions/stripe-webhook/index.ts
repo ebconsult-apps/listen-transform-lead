@@ -7,7 +7,12 @@
 // the returned mutation via the service-role client.
 import Stripe from "npm:stripe@^17";
 import { createClient } from "npm:@supabase/supabase-js@^2";
-import { planForEvent, type NormalizedEvent, type PriceMap } from "../_shared/billing/entitlements.ts";
+import {
+  PASS_CREDIT_WINDOW_DAYS,
+  planForEvent,
+  type NormalizedEvent,
+  type PriceMap,
+} from "../_shared/billing/entitlements.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
 const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
@@ -33,6 +38,8 @@ function normalize(event: Stripe.Event): NormalizedEvent {
       customerId: (s.customer as string) ?? null,
       subscriptionId: (s.subscription as string) ?? null,
       paymentIntent: (s.payment_intent as string) ?? null,
+      amountTotal: s.amount_total ?? null,
+      currency: s.currency ?? null,
     };
   }
   if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
@@ -63,16 +70,30 @@ Deno.serve(async (req) => {
     const plan = planForEvent(normalize(event), prices);
 
     if (plan?.kind === "unlock") {
+      const now = new Date();
       await admin.from("project_unlocks").upsert(
         {
           project_id: plan.projectId,
           unlocked: true,
           stripe_payment_intent: plan.paymentIntent,
-          unlocked_at: new Date().toISOString(),
+          unlocked_at: now.toISOString(),
+          origin: "pass", // a one-off Report Pass (outside the monthly credit allotment)
         },
         { onConflict: "project_id" },
       );
       await admin.from("projects").update({ status: "paid" }).eq("id", plan.projectId);
+      // Record the pass so it can be credited toward a first subscription (14 days).
+      if (plan.workspaceId) {
+        const expires = new Date(now.getTime() + PASS_CREDIT_WINDOW_DAYS * 86_400_000);
+        await admin.from("report_passes").insert({
+          workspace_id: plan.workspaceId,
+          stripe_payment_intent: plan.paymentIntent,
+          amount_cents: plan.amountCents,
+          currency: plan.currency,
+          purchased_at: now.toISOString(),
+          expires_at: expires.toISOString(),
+        });
+      }
     } else if (plan?.kind === "entitlement") {
       if (plan.workspaceId) {
         await admin

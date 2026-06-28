@@ -24,6 +24,21 @@ export interface NormalizedEvent {
   subStatus?: string | null; // subscription status
   periodEnd?: number | null; // unix seconds
   priceId?: string | null; // the subscription's current price
+  amountTotal?: number | null; // checkout total, minor units (for the Report Pass credit)
+  currency?: string | null; // checkout currency (for the Report Pass credit)
+}
+
+/** A Report Pass is creditable toward a first subscription for this many days. */
+export const PASS_CREDIT_WINDOW_DAYS = 14;
+
+/** When a Report Pass purchased at `purchasedAtMs` stops being creditable (ms). */
+export function passExpiresAtMs(purchasedAtMs: number): number {
+  return purchasedAtMs + PASS_CREDIT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+}
+
+/** Is a Report Pass purchased at `purchasedAtMs` still creditable at `nowMs`? */
+export function isPassCreditable(purchasedAtMs: number, nowMs: number): boolean {
+  return nowMs <= passExpiresAtMs(purchasedAtMs);
 }
 
 export interface EntitlementPatch {
@@ -35,7 +50,16 @@ export interface EntitlementPatch {
 }
 
 export type Plan =
-  | { kind: "unlock"; projectId: string; paymentIntent: string | null }
+  | {
+      kind: "unlock";
+      projectId: string;
+      paymentIntent: string | null;
+      // Pass-credit bookkeeping: who bought it + how much, so the webhook can record
+      // a creditable Report Pass alongside the project unlock.
+      workspaceId: string | null;
+      amountCents: number;
+      currency: string;
+    }
   | { kind: "entitlement"; workspaceId: string | null; byCustomer: string | null; patch: EntitlementPatch }
   | null;
 
@@ -62,8 +86,15 @@ export function planForEvent(e: NormalizedEvent, prices: PriceMap = {}): Plan {
     case "checkout.session.completed": {
       const meta = e.metadata ?? {};
       if (e.mode === "payment" && meta.project_id) {
-        // One-off per-report unlock (the per-deliverable lever).
-        return { kind: "unlock", projectId: meta.project_id, paymentIntent: e.paymentIntent ?? null };
+        // One-off Report Pass: unlock the project AND record a creditable pass.
+        return {
+          kind: "unlock",
+          projectId: meta.project_id,
+          paymentIntent: e.paymentIntent ?? null,
+          workspaceId: meta.workspace_id ?? null,
+          amountCents: e.amountTotal ?? 0,
+          currency: e.currency ?? "usd",
+        };
       }
       if (e.mode === "subscription" && meta.workspace_id) {
         return {

@@ -158,6 +158,7 @@ function unlock(projectId: string): ProjectUnlock {
     unlocked: true,
     stripe_payment_intent: "pi_dev_simulated",
     unlocked_at: daysAgoIso(1),
+    origin: "pass", // seeded unlocks predate credits → treated as one-off passes
   };
 }
 

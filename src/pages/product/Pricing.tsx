@@ -69,7 +69,7 @@ const Pricing = () => {
             </p>
             <p className="text-sm text-foreground/70 mb-4 flex-grow">
               A premium one-off: unlock one full report when you need it — no
-              subscription required.
+              subscription required, and creditable toward a subscription for 14 days.
             </p>
             <Link to={dest} className="btn-outline w-full mt-auto">
               {UNLOCK_PLAN.cta}

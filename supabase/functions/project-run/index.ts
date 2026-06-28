@@ -21,6 +21,7 @@ import {
   loadFreeRunQuota,
   loadTierCaps,
 } from "../_shared/billing/cost-cap.ts";
+import { hasCreditAvailable, loadCreditAllotment } from "../_shared/billing/credits.ts";
 import {
   checkIntakeBudget,
   estimateIntakeInputTokens,
@@ -367,15 +368,59 @@ Deno.serve(async (req) => {
       return json({ ok: true, status: "teaser_ready" });
     }
 
-    // phase === "full" | "experiment" — both require entitlement server-side.
-    // Tier was fetched above; only the per-project unlock remains to check.
+    // phase === "full" | "experiment" — both require an UNLOCKED project. The
+    // unlock row IS the credit ledger: it may already exist (a one-off Report Pass,
+    // origin='pass', or an earlier credit spend on this project) or — for a paid
+    // tier with a monthly credit left — we spend one now by inserting an
+    // origin='credit' row. The FULL report's two passes and the later experiment
+    // phase all reuse that one unlock, so a project costs at most one credit.
     const { data: unlock } = await admin
       .from("project_unlocks")
       .select("unlocked")
       .eq("project_id", projectId)
       .maybeSingle();
-    if (!isPaidTier(tier) && !unlock?.unlocked) {
-      return json({ error: "Payment required" }, 402);
+
+    if (!unlock?.unlocked) {
+      if (!isPaidTier(tier)) {
+        return json({ error: "Payment required" }, 402);
+      }
+      // Paid tier, project not yet unlocked → spend a monthly report credit if one
+      // remains. Consumed-this-month = origin='credit' unlocks for the workspace
+      // since the 1st (same calendar-month window as the spend cap).
+      const monthStart = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        1,
+      ).toISOString();
+      const { data: credited } = await admin
+        .from("project_unlocks")
+        .select("project_id, projects!inner(workspace_id)")
+        .eq("origin", "credit")
+        .gte("unlocked_at", monthStart)
+        .eq("projects.workspace_id", project.workspace_id);
+      const consumedThisMonth = (credited ?? []).length;
+      if (
+        !hasCreditAvailable({
+          tier,
+          consumedThisMonth,
+          allotment: loadCreditAllotment((k) => Deno.env.get(k)),
+        })
+      ) {
+        return json(
+          { error: "Out of report credits this month — buy a Report Pass or upgrade." },
+          402,
+        );
+      }
+      // Spend the credit: record the unlock (idempotent on the project_id PK).
+      await admin.from("project_unlocks").upsert(
+        {
+          project_id: projectId,
+          unlocked: true,
+          origin: "credit",
+          unlocked_at: new Date().toISOString(),
+        },
+        { onConflict: "project_id" },
+      );
     }
 
     if (phase === "full") {

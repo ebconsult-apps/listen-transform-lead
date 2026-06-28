@@ -21,9 +21,13 @@ import type { GapFlag, IntakeInput, ResearchFocusGap } from "../_shared/clear/ty
 import {
   capForTier,
   exceedsCostCap,
-  isPaidTier,
   loadTierCaps,
 } from "../_shared/billing/cost-cap.ts";
+import {
+  exceedsResearchRunCap,
+  loadMaxResearchRuns,
+  loadUnlockedProjectBudgetUsd,
+} from "../_shared/billing/credits.ts";
 import {
   checkIntakeBudget,
   estimateIntakeInputTokens,
@@ -78,6 +82,9 @@ async function dispatchResearchWorker(
     return { ok: false, error: `Worker dispatch failed (HTTP ${res.status}).${text ? " " + text : ""}` };
   } catch (e) {
     return { ok: false, error: `Worker dispatch error: ${(e as Error).message}` };
+  }
+}
+
 /** A guard failure with a specific HTTP status, mapped to a JSON response below. */
 class HttpError extends Error {
   status: number;
@@ -162,9 +169,13 @@ async function deidentify(finding: any): Promise<PromoteEntry> {
 }
 
 /**
- * Entitlement gate — research is a paid feature (mirrors the full/experiment gate
- * in project-run). Free-tier workspaces without a project unlock can't run it.
- * This is `canViewFull(entitlement, unlock)` enforced server-side. Returns the tier.
+ * Entitlement gate for research. Research is part of a project's full-report
+ * unlock, so the project must ALREADY be unlocked — by a spent credit or a one-off
+ * Report Pass (project_unlocks). A paid tier alone no longer implies access to
+ * every project: that limit is what credits enforce in project-run, where the
+ * unlock (= the spent credit) is created. Also applies the hard per-project
+ * research-run ceiling — the abuse bound on the otherwise-unlimited phase. Returns
+ * the tier (the spend guards then floor the $ cap for unlocked projects).
  */
 // deno-lint-ignore no-explicit-any
 async function requireResearchEntitlement(project: any, projectId: string): Promise<string> {
@@ -173,7 +184,26 @@ async function requireResearchEntitlement(project: any, projectId: string): Prom
     admin.from("project_unlocks").select("unlocked").eq("project_id", projectId).maybeSingle(),
   ]);
   const tier = ent?.tier ?? "free";
-  if (!isPaidTier(tier) && !unlock?.unlocked) throw new HttpError("Payment required", 402);
+  if (!unlock?.unlocked) {
+    throw new HttpError("Unlock the full report before running research.", 402);
+  }
+  // Hard ceiling on research runs per project (count includes done + in-flight).
+  const { count } = await admin
+    .from("runs")
+    .select("id", { count: "exact", head: true })
+    .eq("project_id", projectId)
+    .eq("phase", "research");
+  if (
+    exceedsResearchRunCap({
+      projectResearchRunCount: count ?? 0,
+      cap: loadMaxResearchRuns((k) => Deno.env.get(k)),
+    })
+  ) {
+    throw new HttpError(
+      "Research limit reached for this project — you've used all available research runs.",
+      429,
+    );
+  }
   return tier;
 }
 
@@ -471,7 +501,13 @@ Deno.serve(async (req) => {
       const budget = checkIntakeBudget(documents);
       if (!budget.ok) return json({ error: budget.reason }, 413);
 
-      const cap = capForTier(tier, loadTierCaps((k) => Deno.env.get(k)));
+      // Research only runs on an UNLOCKED project (gate above), so floor the $ cap
+      // at the unlocked-project budget — otherwise a Report Pass on a free
+      // workspace would starve at the $1 free cap after ~2 research runs.
+      const cap = Math.max(
+        capForTier(tier, loadTierCaps((k) => Deno.env.get(k))),
+        loadUnlockedProjectBudgetUsd((k) => Deno.env.get(k)),
+      );
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
       const { data: spend } = await admin
         .from("runs")

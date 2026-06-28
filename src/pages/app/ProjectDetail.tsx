@@ -6,8 +6,10 @@ import {
   getProject,
   getEntitlement,
   getUnlock,
+  getCreditUsage,
   listRuns,
   type Project,
+  type CreditUsage,
 } from "@/lib/db";
 import { runClarify, runLeverage, runFull, latestOutput } from "@/lib/clear/run";
 import { approveClarify, getClarifyApproval, getClarifyApprovedAt } from "@/lib/clarify";
@@ -104,6 +106,7 @@ const ProjectDetail = () => {
   const [full, setFull] = useState<LeverageFull | null>(null);
   const [experimentOutput, setExperimentOutput] = useState<ExperimentOutput | null>(null);
   const [entitled, setEntitled] = useState(false);
+  const [creditUsage, setCreditUsage] = useState<CreditUsage | null>(null);
   const [devUnlocked, setDevUnlocked] = useState(false);
   // null = follow the data (show the furthest-reached step); a value = pinned by a stepper click.
   const [activeStep, setActiveStep] = useState<StepId | null>(null);
@@ -140,8 +143,13 @@ const ProjectDetail = () => {
     setTeaserAt(lastAt("leverage_teaser"));
     setFullAt(lastAt("leverage_full"));
     setExperimentAt(lastAt("experiment"));
-    const [ent, unlock] = await Promise.all([getEntitlement(proj.workspace_id), getUnlock(proj.id)]);
+    const [ent, unlock, usage] = await Promise.all([
+      getEntitlement(proj.workspace_id),
+      getUnlock(proj.id),
+      getCreditUsage(proj.workspace_id),
+    ]);
     setEntitled(canViewFull(ent, unlock));
+    setCreditUsage(usage);
   }, [id]);
 
   const reload = useCallback(() => {
@@ -455,6 +463,8 @@ const ProjectDetail = () => {
                           projectId={project.id}
                           objective={clarify.objective}
                           onDevPreview={onDevPreview}
+                          remainingCredits={creditUsage?.remaining ?? 0}
+                          onSpendCredit={onGenerateFull}
                         />
                       </div>
                     </div>

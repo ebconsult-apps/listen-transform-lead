@@ -88,21 +88,23 @@ Config, packaging, copy, and the free-tier cap only:
 
 ---
 
-## 5. What code changes are allowed before validation
+## 5. Enforcement status
 
-**Allowed now (this PR):** pricing config, package copy, credits *language*, free-tier caps, layout.
+**Now implemented (this PR):**
+- **Report-credit ledger + enforcement.** A credit = one whole-project unlock; consumption is recorded
+  as `origin='credit'` rows in `project_unlocks` and enforced in `project-run` (paid tiers are now
+  capped at their monthly allotment; out of credits → 402). Remaining is *derived*
+  (`allotment − consumed-this-month`); the pure logic + caps live in
+  `supabase/functions/_shared/billing/credits.ts`. Research stays unlimited within an unlocked project
+  but gets a hard per-project run cap; the per-tier $ spend cap remains the abuse backstop.
+- **Report Pass creditable toward a first subscription (14 days).** Recorded in `report_passes` by the
+  Stripe webhook and applied as a Stripe customer-balance credit by `stripe-checkout`
+  (`isPassCreditable` is unit-tested). The "creditable" promise is now real, so it's advertised in the
+  Pricing/Paywall copy.
 
-**Gated follow-ups (each needs its own work + validation, NOT in this PR):**
-- **Report-credit ledger + enforcement** — meter runs as credits in
-  `supabase/functions/project-run/index.ts`. Until built, the advertised credit counts (5 / 20) are
-  packaging targets, *not* hard-enforced limits (the live guardrail is still the per-tier spend cap +
-  free run quota). This under-enforces in the customer's favor; it must be reconciled before credits
-  are marketed as a hard cap.
-- **"Report Pass creditable toward first subscription within 14 days"** — a Stripe/entitlements
-  mechanic. **Do not advertise "creditable toward a subscription" in live UI until it exists** — a
-  refund promise we cannot honor burns trust. The intent is recorded here and as a code comment on
-  `UNLOCK_PLAN`.
-- **New Stripe Prices + env** — see §8.
+**Still gated (ops / not built):**
+- **New Stripe Prices + env** — see §8 (the credit *amounts* and the pass-credit currency both ride on
+  the provisioned Prices).
 - **Making Agency $499 public** — deferred (§3).
 
 ---

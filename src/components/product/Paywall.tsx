@@ -16,16 +16,39 @@ const Paywall = ({
   projectId,
   onDevPreview,
   objective,
+  remainingCredits = 0,
+  onSpendCredit,
 }: {
   projectId: string;
   onDevPreview?: () => void;
   /** The project's Clarify objective, used to frame the unlock around the
    *  user's own result. Falls back to generic copy when absent/empty. */
   objective?: string;
+  /** Report credits left this month (paid tiers). >0 → offer spend-a-credit. */
+  remainingCredits?: number;
+  /** Spend one credit to unlock + generate the full report (runs the full phase,
+   *  which consumes the credit server-side). */
+  onSpendCredit?: () => void | Promise<void>;
 }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // A paid tier with credits left unlocks by spending one (no Stripe); everyone
+  // else (free, or out of credits) buys the one-off Report Pass.
+  const canSpendCredit = remainingCredits > 0 && !!onSpendCredit;
+
+  const spendCredit = async () => {
+    if (!onSpendCredit) return;
+    setLoading(true);
+    try {
+      await onSpendCredit();
+    } catch {
+      // The parent surfaces run errors via toast; just release the button.
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const trimmedObjective = objective?.trim();
   const personalObjective =
@@ -101,14 +124,35 @@ const Paywall = ({
       </ul>
       <p className="text-sm text-foreground/50 mb-6">Plus PDF & Markdown export.</p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
-        <button onClick={unlock} disabled={loading} className="btn-primary">
-          {loading ? "Starting checkout…" : `Unlock this report: ${UNLOCK_PLAN.price}`}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </button>
-        <Link to="/pricing" className="btn-secondary">
-          Or subscribe
-        </Link>
+        {canSpendCredit ? (
+          <>
+            <button onClick={spendCredit} disabled={loading} className="btn-primary">
+              {loading
+                ? "Unlocking…"
+                : `Unlock this report — uses 1 of ${remainingCredits} credit${remainingCredits === 1 ? "" : "s"}`}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </button>
+            <button onClick={unlock} disabled={loading} className="btn-secondary">
+              Or buy a Report Pass
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={unlock} disabled={loading} className="btn-primary">
+              {loading ? "Starting checkout…" : `Unlock this report: ${UNLOCK_PLAN.price}`}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </button>
+            <Link to="/pricing" className="btn-secondary">
+              Or subscribe
+            </Link>
+          </>
+        )}
       </div>
+      {!canSpendCredit && (
+        <p className="text-xs text-foreground/40 mt-3">
+          The Report Pass is creditable toward a subscription for 14 days.
+        </p>
+      )}
       {DEV_ACCESS_ENABLED && onDevPreview && (
         <button
           onClick={onDevPreview}

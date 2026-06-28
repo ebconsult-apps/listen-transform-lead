@@ -5,9 +5,11 @@ import SEO from "@/components/SEO";
 import { useAuth } from "@/hooks/useAuth";
 import {
   getEntitlement,
+  getCreditUsage,
   getMyProfile,
   getMyWorkspace,
   updateMyProfile,
+  type CreditUsage,
   type Entitlement,
   type Profile,
 } from "@/lib/db";
@@ -23,6 +25,7 @@ const Account = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
+  const [credit, setCredit] = useState<CreditUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -42,12 +45,13 @@ const Account = () => {
     setError(null);
     Promise.all([
       getMyProfile(),
-      getMyWorkspace().then((ws) => getEntitlement(ws.id)),
+      getMyWorkspace().then((ws) => Promise.all([getEntitlement(ws.id), getCreditUsage(ws.id)])),
     ])
-      .then(([prof, ent]) => {
+      .then(([prof, [ent, usage]]) => {
         if (cancelled) return;
         setProfile(prof);
         setEntitlement(ent);
+        setCredit(usage);
         setName(prof?.full_name ?? "");
       })
       .catch((e) => {
@@ -204,6 +208,11 @@ const Account = () => {
             {entitlement?.current_period_end && (
               <p className="text-sm text-foreground/60 mt-4">
                 Renews {new Date(entitlement.current_period_end).toLocaleDateString()}.
+              </p>
+            )}
+            {tier !== "free" && credit && (
+              <p className="text-sm text-foreground/60 mt-2">
+                {credit.remaining} of {credit.allotment} report credits left this month.
               </p>
             )}
             <Link
