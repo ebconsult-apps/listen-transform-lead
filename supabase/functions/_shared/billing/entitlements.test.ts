@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { planForEvent, tierFromMetadata, tierFromPriceId, type NormalizedEvent } from "./entitlements.ts";
+import {
+  isPassCreditable,
+  passExpiresAtMs,
+  PASS_CREDIT_WINDOW_DAYS,
+  planForEvent,
+  tierFromMetadata,
+  tierFromPriceId,
+  type NormalizedEvent,
+} from "./entitlements.ts";
 
 const prices = { solo: "price_solo", team: "price_team", business: "price_biz" };
 
@@ -21,14 +29,31 @@ describe("tierFromPriceId", () => {
 });
 
 describe("planForEvent — checkout.session.completed", () => {
-  it("one-off payment with project_id → unlock", () => {
+  it("one-off Report Pass with project_id → unlock + pass-credit bookkeeping", () => {
     const e: NormalizedEvent = {
       type: "checkout.session.completed",
       mode: "payment",
-      metadata: { project_id: "proj-1" },
+      metadata: { project_id: "proj-1", workspace_id: "ws-1" },
       paymentIntent: "pi_123",
+      amountTotal: 9900,
+      currency: "usd",
     };
-    expect(planForEvent(e, prices)).toEqual({ kind: "unlock", projectId: "proj-1", paymentIntent: "pi_123" });
+    expect(planForEvent(e, prices)).toEqual({
+      kind: "unlock",
+      projectId: "proj-1",
+      paymentIntent: "pi_123",
+      workspaceId: "ws-1",
+      amountCents: 9900,
+      currency: "usd",
+    });
+  });
+
+  it("unlock defaults pass fields when amount/workspace are absent", () => {
+    const plan = planForEvent(
+      { type: "checkout.session.completed", mode: "payment", metadata: { project_id: "proj-2" } },
+      prices,
+    );
+    expect(plan).toMatchObject({ kind: "unlock", workspaceId: null, amountCents: 0, currency: "usd" });
   });
 
   it("subscription with workspace_id → entitlement upsert with mapped tier", () => {
@@ -103,5 +128,21 @@ describe("planForEvent — subscription lifecycle", () => {
 describe("planForEvent — ignored events", () => {
   it("returns null for unrelated event types", () => {
     expect(planForEvent({ type: "invoice.paid" }, prices)).toBeNull();
+  });
+});
+
+describe("Report Pass creditability window", () => {
+  const DAY = 24 * 60 * 60 * 1000;
+  const bought = Date.parse("2026-06-01T00:00:00Z");
+
+  it("expiry is exactly the window after purchase", () => {
+    expect(passExpiresAtMs(bought)).toBe(bought + PASS_CREDIT_WINDOW_DAYS * DAY);
+  });
+
+  it("creditable up to and including the expiry, not after", () => {
+    expect(isPassCreditable(bought, bought)).toBe(true); // same instant
+    expect(isPassCreditable(bought, bought + 13 * DAY)).toBe(true);
+    expect(isPassCreditable(bought, passExpiresAtMs(bought))).toBe(true); // boundary
+    expect(isPassCreditable(bought, bought + 15 * DAY)).toBe(false); // expired
   });
 });

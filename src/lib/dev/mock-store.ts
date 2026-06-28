@@ -12,6 +12,7 @@
  */
 import type {
   AssumptionGapRow,
+  CreditUsage,
   DocumentRow,
   Entitlement,
   ExperimentDesign,
@@ -55,6 +56,11 @@ import {
 } from "./fixtures";
 import { delay, nowIso, uid } from "./util";
 import { defaultPriority } from "@/lib/clear/labels";
+import { CREDIT_ALLOTMENT } from "@/config/billing";
+
+/** First-of-month ISO, for the credit-consumption window (mirrors the server). */
+const monthStartIso = () =>
+  new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
 
 const READ_MS = 200;
 const RUN_MS = 900;
@@ -188,6 +194,17 @@ export async function getUnlock(projectId: string): Promise<ProjectUnlock | null
   return clone(db.unlocks[projectId] ?? null);
 }
 
+export async function getCreditUsage(_workspaceId: string): Promise<CreditUsage> {
+  await delay(READ_MS);
+  const tier = db.entitlement.tier;
+  const allotment = CREDIT_ALLOTMENT[tier] ?? 0;
+  const monthStart = monthStartIso();
+  const consumed = Object.values(db.unlocks).filter(
+    (u) => u.unlocked && u.origin === "credit" && (u.unlocked_at ?? "") >= monthStart,
+  ).length;
+  return { tier, allotment, consumed, remaining: Math.max(0, allotment - consumed) };
+}
+
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {
   requireProject(id).status = status;
 }
@@ -233,6 +250,19 @@ export async function runLeverage(projectId: string): Promise<void> {
 export async function runFull(projectId: string): Promise<void> {
   if (!approvedClarify(projectId)) {
     throw new Error("Approve Clarify before generating the full report.");
+  }
+  // Mirror the server credit gate: a paid tier spends one monthly credit on a
+  // not-yet-unlocked project (records an origin='credit' unlock), so the credits
+  // remaining visibly decrements in dev too. Free tier is let through here for the
+  // DevPanel preview without minting a credit (the client shows it via devUnlocked).
+  if (!db.unlocks[projectId]?.unlocked && db.entitlement.tier !== "free") {
+    db.unlocks[projectId] = {
+      project_id: projectId,
+      unlocked: true,
+      stripe_payment_intent: null,
+      unlocked_at: nowIso(),
+      origin: "credit",
+    };
   }
   await setProjectStatus(projectId, "running");
   await delay(RUN_MS);
@@ -664,6 +694,7 @@ export function simulateCheckout(opts: { tier?: string; projectId?: string }): v
       unlocked: true,
       stripe_payment_intent: "pi_dev_simulated",
       unlocked_at: nowIso(),
+      origin: "pass", // a one-off Report Pass (outside the monthly credit allotment)
     };
   }
   if (opts.tier && ["free", "solo", "team", "business"].includes(opts.tier)) {

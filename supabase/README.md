@@ -190,7 +190,10 @@ with live keys.
 > **Fees / tax:** Stripe is pay-per-transaction (≈1.5% + €0.25 EEA cards, **+0.5%**
 > on subscriptions; verify current rates). Selling SaaS across the EU has VAT/OSS
 > obligations — consider enabling **Stripe Tax**. The prices in `src/config/billing.ts`
-> ($49/$299/$999) are hypotheses — validate before charging real customers.
+> (Solo $79 / Team $249 / Report Pass $99) are a **launch experiment**, not validated
+> pricing — see `docs/research/self-serve-pricing.md`. Changing a price string there does
+> **not** change what Stripe charges: provision new Stripe Prices and update
+> `VITE_STRIPE_PRICE_*` before charging real customers.
 
 ## 5. Going live (M5)
 

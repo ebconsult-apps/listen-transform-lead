@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
-import { getMyWorkspace, getEntitlement, type Entitlement } from "@/lib/db";
+import {
+  getMyWorkspace,
+  getEntitlement,
+  getCreditUsage,
+  type Entitlement,
+  type CreditUsage,
+} from "@/lib/db";
 import { openBillingPortal, startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PLANS, PRICE_IDS } from "@/config/billing";
 import { toast } from "sonner";
@@ -12,13 +18,16 @@ type PaidTier = "solo" | "team" | "business";
 
 const Billing = () => {
   const [entitlement, setEntitlement] = useState<Entitlement | null>(null);
+  const [credit, setCredit] = useState<CreditUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
       const ws = await getMyWorkspace();
-      setEntitlement(await getEntitlement(ws.id));
+      const [ent, usage] = await Promise.all([getEntitlement(ws.id), getCreditUsage(ws.id)]);
+      setEntitlement(ent);
+      setCredit(usage);
     })()
       .catch((e) => toast.error(e.message))
       .finally(() => setLoading(false));
@@ -90,6 +99,24 @@ const Billing = () => {
             )}
           </div>
 
+          {/* Report credits — the monthly allotment that unlocks full reports. */}
+          {isPaid && credit && (
+            <div className="glass-card p-8">
+              <p className="text-sm text-foreground/50">Report credits this month</p>
+              <p className="text-2xl font-bold mt-1">
+                {credit.remaining}{" "}
+                <span className="text-base font-normal text-foreground/50">
+                  of {credit.allotment} left
+                </span>
+              </p>
+              <p className="text-sm text-foreground/60 mt-3">
+                Each credit unlocks one project's full report — leverage, experiment, and unlimited
+                research on it. Credits reset at the start of each month; a one-off Report Pass adds
+                one without using your allotment.
+              </p>
+            </div>
+          )}
+
           {/* Free users: subscribe inline (the actual subscription checkout). */}
           {!isPaid && (
             <div className="glass-card p-8">
@@ -97,7 +124,7 @@ const Billing = () => {
               <p className="body-md mb-6">
                 Unlock full reports across your projects. Or grab a one-off unlock from any project's paywall.
               </p>
-              <div className="grid sm:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 {paidPlans.map((plan) => (
                   <div key={plan.id} className="border border-border rounded-xl p-4 flex flex-col">
                     <p className="font-semibold">{plan.name}</p>

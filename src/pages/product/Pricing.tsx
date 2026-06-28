@@ -25,7 +25,7 @@ const Pricing = () => {
       </section>
 
       <section className="section-container pt-0">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {PLANS.map((plan) => (
             <div
               key={plan.id}
@@ -68,8 +68,8 @@ const Pricing = () => {
               <span className="text-sm font-normal text-foreground/50">{UNLOCK_PLAN.cadence}</span>
             </p>
             <p className="text-sm text-foreground/70 mb-4 flex-grow">
-              No subscription. Unlock one full report when you need it: the
-              per-deliverable option.
+              A premium one-off: unlock one full report when you need it — no
+              subscription required, and creditable toward a subscription for 14 days.
             </p>
             <Link to={dest} className="btn-outline w-full mt-auto">
               {UNLOCK_PLAN.cta}

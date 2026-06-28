@@ -8,6 +8,7 @@ import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import { extractText } from "./extract-text";
 import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
+import { CREDIT_ALLOTMENT } from "@/config/billing";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
 export interface Profile {
@@ -94,6 +95,16 @@ export interface ProjectUnlock {
   unlocked: boolean;
   stripe_payment_intent: string | null;
   unlocked_at: string | null;
+  /** How the unlock was funded: a monthly credit, a one-off Report Pass, or comp. */
+  origin: "credit" | "pass" | "comp" | null;
+}
+
+/** Derived report-credit position for a workspace this calendar month. */
+export interface CreditUsage {
+  tier: Entitlement["tier"];
+  allotment: number;
+  consumed: number;
+  remaining: number;
 }
 
 export type InvitationStatus = "pending" | "opened" | "submitted" | "revoked";
@@ -441,6 +452,36 @@ export async function getUnlock(projectId: string): Promise<ProjectUnlock | null
     .maybeSingle();
   if (error) throw error;
   return (data as ProjectUnlock) ?? null;
+}
+
+/**
+ * Report-credit position for the workspace this calendar month. Remaining is
+ * DERIVED — allotment(tier) − count(origin='credit' unlocks this month) — matching
+ * the server-side enforcement in project-run. A one-off Report Pass (origin='pass')
+ * sits outside the allotment, so it isn't counted here.
+ */
+export async function getCreditUsage(workspaceId: string): Promise<CreditUsage> {
+  if (DEV_CAP && devActive()) return mockStore.getCreditUsage(workspaceId);
+  const sb = requireSupabase();
+  const monthStart = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    1,
+  ).toISOString();
+  const [{ data: ent }, { count, error: countErr }] = await Promise.all([
+    sb.from("entitlements").select("tier").eq("workspace_id", workspaceId).maybeSingle(),
+    sb
+      .from("project_unlocks")
+      .select("project_id, projects!inner(workspace_id)", { count: "exact", head: true })
+      .eq("origin", "credit")
+      .gte("unlocked_at", monthStart)
+      .eq("projects.workspace_id", workspaceId),
+  ]);
+  if (countErr) throw countErr;
+  const tier = (ent?.tier ?? "free") as Entitlement["tier"];
+  const allotment = CREDIT_ALLOTMENT[tier] ?? 0;
+  const consumed = count ?? 0;
+  return { tier, allotment, consumed, remaining: Math.max(0, allotment - consumed) };
 }
 
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {

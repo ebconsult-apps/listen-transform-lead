@@ -1,6 +1,16 @@
 /**
- * Tier ladder (spec §10). Prices are hypotheses — validate before going live.
+ * Tier ladder (spec §10).
+ *
+ * ⚠️ LAUNCH EXPERIMENT — not validated pricing. These prices/packages are the
+ * best ex-ante model from market analogues, not proven WTP. The canonical value
+ * metric is the *report credit*; seats are secondary. Rationale, the falsifiable
+ * hypotheses, and the telemetry that must confirm/kill each boundary live in
+ * docs/research/self-serve-pricing.md. Treat the exact numbers as a measured
+ * test, not the answer.
+ *
  * Stripe Price IDs are read from env so the same build works across test/prod.
+ * NOTE: changing a price string here does NOT change what Stripe charges — new
+ * amounts require new Stripe Prices + updated VITE_STRIPE_PRICE_* at deploy.
  */
 import type { Entitlement, ProjectUnlock } from "@/lib/db";
 
@@ -32,66 +42,95 @@ export const PRICE_IDS = {
   unlock: import.meta.env.VITE_STRIPE_PRICE_UNLOCK as string | undefined,
 } as const;
 
+/**
+ * Monthly report-credit allotment per tier — 1 credit = one whole-project unlock
+ * (leverage-full + experiment + research on that project). Mirrors
+ * DEFAULT_CREDIT_ALLOTMENT in supabase/functions/_shared/billing/credits.ts (the
+ * server-authoritative copy) — keep the two in sync. Free earns credits only via a
+ * one-off Report Pass; business is legacy.
+ */
+export const CREDIT_ALLOTMENT: Record<Tier, number> = {
+  free: 0,
+  solo: 5,
+  team: 20,
+  business: 50,
+};
+
 export const PLANS: Plan[] = [
   {
     id: "free",
     name: "Free",
     price: "$0",
     cadence: "forever",
-    features: ["1 project", "Teaser report only", "No export"],
+    // Demonstrative, not productive: enough to prove CLEAR finds something true,
+    // not enough to use as a workflow. Run cap enforced in cost-cap.ts.
+    features: ["1 teaser project", "Up to 3 runs to explore", "No export or sharing"],
     cta: "Start free",
   },
   {
     id: "solo",
     name: "Solo",
-    price: "$49",
+    price: "$79",
     cadence: "/mo",
     highlight: true,
-    features: ["Full reports", "PDF + Markdown export", "A few projects / month"],
+    features: [
+      `${CREDIT_ALLOTMENT.solo} report credits / month`,
+      "Full reports + PDF / Markdown export",
+      "Saved history",
+    ],
     cta: "Choose Solo",
     priceEnv: "VITE_STRIPE_PRICE_SOLO",
   },
   {
     id: "team",
     name: "Team",
-    price: "$299",
+    price: "$249",
     cadence: "/mo",
-    features: ["Several reports / month", "All report sections", "Workspace billing"],
+    features: [
+      `${CREDIT_ALLOTMENT.team} pooled report credits / month`,
+      "3 seats + workspace sharing",
+      "All report sections",
+    ],
     cta: "Choose Team",
     priceEnv: "VITE_STRIPE_PRICE_TEAM",
   },
-  {
-    id: "business",
-    name: "Business",
-    price: "$999",
-    cadence: "/mo",
-    features: ["Unlimited reports", "Priority processing", "Workspace billing"],
-    cta: "Choose Business",
-    priceEnv: "VITE_STRIPE_PRICE_BUSINESS",
-  },
 ];
+// Public $999 Business tier retired — self-serve tops out at Team; larger needs
+// route to Enterprise ("Contact us"). The `business` tier still exists in the
+// type/PRICE_IDS so existing subscribers and the webhook/portal mapping resolve.
+// Agency ($499) is intentionally deferred until repeat client-delivery evidence.
 
+/**
+ * The premium first-paid "front door" — one full report, no subscription. Priced
+ * to be an easy first purchase that feeds subscriptions, not a tollbooth, and
+ * creditable toward a first subscription for 14 days (recorded in report_passes by
+ * the Stripe webhook; applied as Stripe account credit by stripe-checkout).
+ */
 export const UNLOCK_PLAN: Plan = {
   id: "unlock",
-  name: "Single report unlock",
-  price: "$200+",
+  name: "Report Pass",
+  price: "$99",
   cadence: "one-off",
-  features: ["Unlock one full report", "Per-deliverable, no subscription", "PDF + Markdown export"],
-  cta: "Unlock this report",
+  features: [
+    "One full report, unlocked",
+    "Creditable toward a subscription for 14 days",
+    "PDF + Markdown export",
+  ],
+  cta: "Get a Report Pass",
   priceEnv: "VITE_STRIPE_PRICE_UNLOCK",
 };
 
-const PAID_TIERS: Tier[] = ["solo", "team", "business"];
-
 /**
- * Server-authoritative gate is enforced in the edge function; this mirrors it
- * for the client view. canViewFull = paid tier OR this project is unlocked.
+ * Server-authoritative gate is enforced in the edge functions; this mirrors it for
+ * the client view. A project is viewable once it's UNLOCKED — by a spent monthly
+ * credit (origin='credit') or a one-off Report Pass (origin='pass'). Paid tier
+ * alone no longer unlocks every project: a credit is spent per project (the unlock
+ * is created server-side in project-run). `entitlement` is retained in the
+ * signature for callers/back-compat.
  */
 export function canViewFull(
-  entitlement: Entitlement | null,
+  _entitlement: Entitlement | null,
   unlock: ProjectUnlock | null,
 ): boolean {
-  if (entitlement && PAID_TIERS.includes(entitlement.tier)) return true;
-  if (unlock?.unlocked) return true;
-  return false;
+  return Boolean(unlock?.unlocked);
 }

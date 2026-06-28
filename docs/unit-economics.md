@@ -1,12 +1,13 @@
 # CLEAR — Unit Economics & Token Usage
 
-_Last updated: 2026-06-22. Owner: product. This is an operating doc — update the
-numbers when prompts, models, prices, or plan tiers change._
+_Last updated: 2026-06-27. Owner: product. This is an operating doc — update the
+numbers when prompts, models, prices, or plan tiers change. Pricing rationale and
+the launch-experiment caveat live in `docs/research/self-serve-pricing.md`._
 
 ## TL;DR
 
 - Every plan is **profitable per unit**. A full 5-phase project costs
-  **~$0.30–0.40** in Claude tokens at typical input sizes; a Solo seat is $49/mo.
+  **~$0.30–0.40** in Claude tokens at typical input sizes; a Solo seat is $79/mo.
 - The product's real risk was never average cost — it was **abuse** (a single
   user running up unbounded spend). That is now bounded by **per-tier monthly
   caps, a per-run input ceiling, a pre-emptive cost check, a free-tier run
@@ -63,27 +64,31 @@ phases' JSON output.
 
 ## Per-plan unit economics
 
-Plans (`src/config/billing.ts`): Free $0 · Solo $49/mo · Team $299/mo · Business
-$999/mo · one-off report unlock $200. The new **monthly compute cap** per tier
-is the abuse backstop (env-tunable; defaults in `_shared/billing/cost-cap.ts`).
+Plans (`src/config/billing.ts`): Free $0 · Solo $79/mo · Team $249/mo · Report
+Pass $99 one-off. Public Business ($999) is retired (→ Enterprise "Contact us");
+Agency ($499) is deferred. The **monthly compute cap** per tier is the abuse
+backstop (env-tunable; defaults in `_shared/billing/cost-cap.ts`). These prices
+are a **launch experiment** — see `docs/research/self-serve-pricing.md`.
 
 | Plan | Price/mo | Compute cap | Typical projects to hit cap | Worst-case gross margin¹ |
 |---|--:|--:|--:|--:|
-| Free | $0 | **$1** + 10 runs/mo | ~10 free teasers | trial cost ≤ $1 (bounded) |
-| Solo | $49 | **$20** | ~50 projects | **~$27 (56%)** |
-| Team | $299 | **$60** | ~150 projects | **~$230 (77%)** |
-| Business | $999 | **$200** | ~500 projects | **~$770 (77%)** |
-| Unlock | $200 one-off | (tier cap applies) | one report (~$0.40) | **~$197 (99%)** |
+| Free | $0 | **$1** + 3 runs/mo | ~3 free teasers | trial cost ≤ $1 (bounded) |
+| Solo | $79 | **$20** | ~50 projects | **~$56 (71%)** |
+| Team | $249 | **$60** | ~150 projects | **~$181 (73%)** |
+| Report Pass | $99 one-off | (tier cap applies) | one report (~$0.40) | **~$95 (96%)** |
+
+Business ($999) is retired from the public ladder but the tier and its **$200**
+cap remain for existing subscribers (see `cost-cap.ts`).
 
 ¹ Worst case = plan price − full compute cap − Stripe fee (~2.9% + $0.30); i.e.
 the floor if a customer somehow maxes the cap every month. Typical margins are
 **>95%** because real usage is far below the cap. Caps sit well above each
 plan's stated allowance ("a few" / "several" / "unlimited" projects).
 
-**Business "unlimited":** backed by a high but finite **$200/mo fair-use cap**
-(~500 typical projects) — keeps the plan ~77% margin even at the ceiling and
-removes the old contradiction where a global $25 cap blocked an "unlimited"
-customer. Raise `BUSINESS_MONTHLY_COST_CAP_USD` for genuine outliers.
+**Legacy Business "unlimited":** the public $999 tier is retired (larger needs
+route to Enterprise), but existing subscribers keep the tier, backed by a high
+but finite **$200/mo fair-use cap** (~500 typical projects) — still ~77% margin
+at the ceiling. Raise `BUSINESS_MONTHLY_COST_CAP_USD` for genuine outliers.
 
 ## Abuse vectors (ranked) → mitigation
 
@@ -92,7 +97,7 @@ customer. Raise `BUSINESS_MONTHLY_COST_CAP_USD` for genuine outliers.
 | 1 | One global $25 cap for all tiers | Free could burn $25; Business blocked at $25 | **Per-tier caps** (`cost-cap.ts`) |
 | 2 | Unlimited document fan-out (every phase re-sends all docs) — a 100-doc project ≈ $1.50+/run | no per-run ceiling | **Per-run input cap**: ≤15 docs, ≤80k chars → HTTP 413 (`intake-budget.ts`) |
 | 3 | Research under-metering (web fees uncounted; multi-hop compounds input) | `cost_usd` too low → cap leaks | **Web-search/fetch fees folded into `cost_usd`** (`live-engine.ts`) |
-| 4 | Free tier has no server-side run/project quota | "1 project" was marketing only | **Free-tier run quota** (10 generations/mo) |
+| 4 | Free tier has no server-side run/project quota | "1 project" was marketing only | **Free-tier run quota** (3 generations/mo) |
 | 5 | Cap checked only after spend | a single run could overshoot | **Pre-emptive projection**: reject a run that _would_ breach the cap |
 
 ## Guardrails shipped
@@ -104,7 +109,7 @@ call the pure checks.
 
 - **Per-tier monthly caps** — `FREE/SOLO/TEAM/BUSINESS_MONTHLY_COST_CAP_USD`
   (defaults $1 / $20 / $60 / $200).
-- **Free-tier run quota** — `FREE_MONTHLY_RUN_QUOTA` (default 10).
+- **Free-tier run quota** — `FREE_MONTHLY_RUN_QUOTA` (default 3).
 - **Per-run input ceiling** — `MAX_DOCUMENTS` (15) / `MAX_INTAKE_CHARS` (80k).
 - **Pre-emptive cost check** — a run is rejected if `monthSpend + projectedCost`
   would exceed the tier cap.
@@ -114,10 +119,10 @@ call the pure checks.
 ## Residual risks / to confirm
 
 - **Multi-account farming** of the free tier (one free workspace per signup, via
-  the `handle_new_user` trigger) is bounded per-account by the $1 cap + 10-run
+  the `handle_new_user` trigger) is bounded per-account by the $1 cap + 3-run
   quota, but not across many throwaway accounts. Mitigation is signup friction
   (email verification / abuse monitoring) — outside this codebase.
-- **One-off unlock on a free workspace** shares the $1 free cap. A single
+- **Report Pass on a free workspace** shares the $1 free cap. A single
   unlocked report (~$0.40) fits comfortably; for heavy unlock usage, put the
   workspace on a paid tier or raise `FREE_MONTHLY_COST_CAP_USD`.
 - **Web-tool fee figure** ($0.01/request) is the historical default — confirm

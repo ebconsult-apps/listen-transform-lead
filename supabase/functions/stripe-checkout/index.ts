@@ -61,6 +61,31 @@ Deno.serve(async (req) => {
 
     if (!body.priceId) return json({ error: "Missing priceId" }, 400);
 
+    // Creditable Report Pass: if this is a subscription and the workspace has an
+    // unexpired, unapplied Report Pass, apply its amount as Stripe account credit
+    // (a negative customer-balance transaction) so it nets off the first invoice,
+    // then stamp applied_at so it's used at most once.
+    if (body.mode === "subscription") {
+      const nowIso = new Date().toISOString();
+      const { data: pass } = await admin
+        .from("report_passes")
+        .select("id, amount_cents, currency")
+        .eq("workspace_id", ws.id)
+        .is("applied_at", null)
+        .gt("expires_at", nowIso)
+        .order("purchased_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (pass && pass.amount_cents > 0) {
+        await stripe.customers.createBalanceTransaction(customerId, {
+          amount: -pass.amount_cents, // negative = credit toward upcoming invoices
+          currency: pass.currency ?? "usd",
+          description: "Report Pass credit toward first subscription",
+        });
+        await admin.from("report_passes").update({ applied_at: nowIso }).eq("id", pass.id);
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       mode: body.mode, // "subscription" | "payment"
       customer: customerId,

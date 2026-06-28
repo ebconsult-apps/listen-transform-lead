@@ -21,10 +21,10 @@ export interface TierCaps {
  * Default monthly compute ceilings (USD). A typical full project costs
  * ~$0.30–0.40, so these leave generous headroom while bounding abuse:
  *   free $1   → trial only; kills the $25 free-burn vector
- *   solo $20  → ~50+ projects/mo; ≈59% worst-case margin floor on $49
- *   team $60  → ~150+ projects/mo; ≈80% floor on $299
- *   business $200 → the "high finite fair-use cap" backing "unlimited";
- *                   ~500+ projects/mo; ≈80% floor on $999
+ *   solo $20  → ~50+ projects/mo; ≈75% worst-case margin floor on $79
+ *   team $60  → ~150+ projects/mo; ≈76% floor on $249
+ *   business $200 → legacy "unlimited" fair-use cap (tier retired from the public
+ *                   ladder; kept for existing subscribers + portal mapping)
  */
 export const DEFAULT_TIER_CAPS: TierCaps = {
   free: 1,
@@ -33,8 +33,14 @@ export const DEFAULT_TIER_CAPS: TierCaps = {
   business: 200,
 };
 
-/** Free-tier generations (run rows) allowed per calendar month. */
-export const DEFAULT_FREE_RUN_QUOTA = 10;
+/**
+ * Free-tier generations (run rows) allowed per calendar month.
+ * LAUNCH EXPERIMENT (see docs/research/self-serve-pricing.md): tightened 10 → 3
+ * so Free demonstrates value without working as a production tool. The $1 spend
+ * cap above remains the hard abuse backstop. Env-overridable via
+ * FREE_MONTHLY_RUN_QUOTA, so this is tunable without a deploy.
+ */
+export const DEFAULT_FREE_RUN_QUOTA = 3;
 
 const PAID_TIERS = ["solo", "team", "business"] as const;
 

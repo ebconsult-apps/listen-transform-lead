@@ -132,3 +132,34 @@ describe("mock-store Clarify-stage collaboration seed", () => {
     expect(await store.listReactions(ID)).toEqual([]);
   });
 });
+
+// Report credits: a credit = one whole-project unlock. Remaining is derived from
+// origin='credit' unlocks this month, so seeded one-off passes don't draw it down,
+// and generating a full report on a locked project spends exactly one.
+describe("mock-store report credits", () => {
+  const WS = "ws-dev-0001";
+
+  it("free tier has zero allotment; seeded unlocks are one-off passes, not credits", async () => {
+    const usage = await store.getCreditUsage(WS);
+    expect(usage.tier).toBe("free");
+    expect(usage.allotment).toBe(0);
+    expect(usage.remaining).toBe(0);
+    expect((await store.getUnlock("proj-full"))?.origin).toBe("pass");
+  });
+
+  it("a paid tier spends one credit when the full report is generated on a locked project", async () => {
+    store.simulateCheckout({ tier: "solo" });
+    const before = await store.getCreditUsage(WS);
+    expect(before.allotment).toBe(5);
+    expect(before.remaining).toBe(5); // seeded 'pass' unlocks don't count
+
+    // proj-teaser is approved + teaser-ready but not unlocked → spending a credit.
+    expect(await store.getUnlock("proj-teaser")).toBeNull();
+    await store.runFull("proj-teaser");
+
+    expect((await store.getUnlock("proj-teaser"))?.origin).toBe("credit");
+    const after = await store.getCreditUsage(WS);
+    expect(after.consumed).toBe(1);
+    expect(after.remaining).toBe(4);
+  });
+});
