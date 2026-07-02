@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import * as store from "./mock-store";
 import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
+import { RunError } from "@/lib/invoke-error";
 
 beforeEach(() => store.resetMockDb("seeded"));
 
@@ -162,4 +163,68 @@ describe("mock-store report credits", () => {
     expect(after.consumed).toBe(1);
     expect(after.remaining).toBe(4);
   });
+});
+
+describe("mock-store usage summary + free-run quota", () => {
+  it("seeded free tier reports the run count but never enforces the quota (states museum)", async () => {
+    const usage = await store.getUsageSummary();
+    expect(usage.tier).toBe("free");
+    expect(usage.credits.remaining).toBe(0);
+    expect(usage.freeRuns?.quota).toBe(3);
+    // The seeded runs' this-month count is calendar-dependent (they're dated
+    // daysAgo), so don't assert its value — assert the guarantee that matters:
+    // the museum dataset NEVER blocks. Four runs mean the last one executed at
+    // a count ≥ the quota, which would 402 on an enforcing dataset.
+    for (let i = 0; i < 4; i++) {
+      await expect(store.runClarify("proj-draft")).resolves.toBeUndefined();
+    }
+    expect((await store.getUsageSummary()).freeRuns!.used).toBeGreaterThan(3);
+  }, 15000);
+
+  it("a paid tier reports credits and no free-run counter", async () => {
+    store.simulateCheckout({ tier: "solo" });
+    const usage = await store.getUsageSummary();
+    expect(usage.tier).toBe("solo");
+    expect(usage.freeRuns).toBeNull();
+    expect(usage.credits.allotment).toBe(5);
+  });
+
+  it("the empty dataset enforces the free quota with the server's 402 (the walkable upsell)", async () => {
+    store.resetMockDb("empty");
+    const id = store.createProject({
+      name: "Quota test",
+      targetGroup: "team",
+      useCase: "internal",
+      challenge: "Reduce churn",
+      stakeholders: [{ role: "PM" }],
+      timeline: null,
+    });
+    await store.runClarify(id);
+    await store.runClarify(id);
+    await store.runClarify(id); // 3 of 3 — at the cap
+    const usage = await store.getUsageSummary();
+    expect(usage.freeRuns).toEqual({ used: 3, quota: 3 });
+
+    const fourth = store.runClarify(id);
+    await expect(fourth).rejects.toBeInstanceOf(RunError);
+    await expect(store.runClarify(id)).rejects.toMatchObject({
+      status: 402,
+      message: "Free plan monthly limit reached — upgrade to run more reports.",
+    });
+  }, 15000);
+
+  it("a paid tier is never quota-blocked, even on the enforcing dataset", async () => {
+    store.resetMockDb("empty");
+    store.simulateCheckout({ tier: "team" });
+    const id = store.createProject({
+      name: "Paid runs",
+      targetGroup: "team",
+      useCase: "internal",
+      challenge: "Reduce churn",
+      stakeholders: [{ role: "PM" }],
+      timeline: null,
+    });
+    for (let i = 0; i < 4; i++) await store.runClarify(id);
+    expect((await store.getUsageSummary()).freeRuns).toBeNull();
+  }, 15000);
 });

@@ -4,7 +4,41 @@ import SEO from "@/components/SEO";
 import type { ProjectStatus } from "@/lib/clear/types";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { useProjects } from "@/hooks/queries/useProjects";
+import { useUsage } from "@/hooks/queries/useUsage";
 import Pipeline from "@/components/product/Pipeline";
+
+/**
+ * Non-blocking usage line under the header: the free tier sees its run quota,
+ * paid tiers see report credits. Renders nothing while loading or on error —
+ * the dashboard must never gate on a usage read.
+ */
+const UsageStrip = () => {
+  const { data: usage } = useUsage();
+  if (!usage) return null;
+  if (usage.freeRuns) {
+    const { used, quota } = usage.freeRuns;
+    return (
+      <div className="mb-8 -mt-4 flex items-center gap-3 text-sm text-foreground/60">
+        <span>
+          {Math.min(used, quota)} of {quota} free runs used this month
+        </span>
+        <Link to="/pricing" className="font-medium text-primary hover:underline">
+          Upgrade →
+        </Link>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-8 -mt-4 flex items-center gap-3 text-sm text-foreground/60">
+      <span>
+        {usage.credits.remaining} of {usage.credits.allotment} report credits left this month
+      </span>
+      <Link to="/account/billing" className="font-medium text-primary hover:underline">
+        Manage →
+      </Link>
+    </div>
+  );
+};
 
 // What a first run actually produces — phrased to match the real Clarify/Leverage
 // output so expectations land accurately the moment a project finishes.
@@ -70,6 +104,8 @@ const Dashboard = () => {
           <Plus className="mr-2 h-4 w-4" /> New project
         </Link>
       </div>
+
+      <UsageStrip />
 
       {isPending ? (
         <LoadingState />

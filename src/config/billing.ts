@@ -56,6 +56,14 @@ export const CREDIT_ALLOTMENT: Record<Tier, number> = {
   business: 50,
 };
 
+/**
+ * Free-tier generations per calendar month — display-only client mirror of
+ * DEFAULT_FREE_RUN_QUOTA in supabase/functions/_shared/billing/cost-cap.ts
+ * (server-authoritative, env-overridable via FREE_MONTHLY_RUN_QUOTA). Keep the
+ * two in sync; the server enforces, this only labels the Dashboard counter.
+ */
+export const FREE_RUN_QUOTA = 3;
+
 export const PLANS: Plan[] = [
   {
     id: "free",

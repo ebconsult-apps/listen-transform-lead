@@ -8,7 +8,7 @@ import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import { extractText } from "./extract-text";
 import type { Apease, ProjectStatus, ResourceEnvelope, RunPhase } from "./clear/types";
-import { CREDIT_ALLOTMENT } from "@/config/billing";
+import { CREDIT_ALLOTMENT, FREE_RUN_QUOTA } from "@/config/billing";
 
 /** Row shapes mirror supabase/migrations/<timestamp>_init.sql. */
 export interface Profile {
@@ -482,6 +482,42 @@ export async function getCreditUsage(workspaceId: string): Promise<CreditUsage> 
   const allotment = CREDIT_ALLOTMENT[tier] ?? 0;
   const consumed = count ?? 0;
   return { tier, allotment, consumed, remaining: Math.max(0, allotment - consumed) };
+}
+
+/** Everything the usage UI needs in one read: tier, credits, free-run position. */
+export interface UsageSummary {
+  tier: Entitlement["tier"];
+  credits: CreditUsage;
+  /** Free tier only (null for paid tiers): this-month generation count vs the
+   *  display-only FREE_RUN_QUOTA mirror. The server stays authoritative. */
+  freeRuns: { used: number; quota: number } | null;
+}
+
+/**
+ * Usage position for the caller's workspace. For the free tier it also counts
+ * this month's generations the same way project-run's quota check does: all
+ * workspace runs since the 1st, excluding the leverage_full_systems scratch
+ * pass (which is an internal artifact, not a billable generation).
+ */
+export async function getUsageSummary(): Promise<UsageSummary> {
+  if (DEV_CAP && devActive()) return mockStore.getUsageSummary();
+  const ws = await getMyWorkspace();
+  const credits = await getCreditUsage(ws.id);
+  if (credits.tier !== "free") return { tier: credits.tier, credits, freeRuns: null };
+  const sb = requireSupabase();
+  const monthStart = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    1,
+  ).toISOString();
+  const { count, error } = await sb
+    .from("runs")
+    .select("id, projects!inner(workspace_id)", { count: "exact", head: true })
+    .neq("phase", "leverage_full_systems")
+    .gte("created_at", monthStart)
+    .eq("projects.workspace_id", ws.id);
+  if (error) throw error;
+  return { tier: "free", credits, freeRuns: { used: count ?? 0, quota: FREE_RUN_QUOTA } };
 }
 
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {

@@ -13,13 +13,10 @@ import {
   type Entitlement,
   type Profile,
 } from "@/lib/db";
-import { changePassword } from "@/lib/account";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-const MIN_PASSWORD = 8;
 
 const Account = () => {
   const { user } = useAuth();
@@ -33,11 +30,6 @@ const Account = () => {
   // Display name
   const [name, setName] = useState("");
   const [savingName, setSavingName] = useState(false);
-
-  // Password
-  const [pw1, setPw1] = useState("");
-  const [pw2, setPw2] = useState("");
-  const [savingPw, setSavingPw] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,28 +68,6 @@ const Account = () => {
       toast.error((e as Error).message);
     } finally {
       setSavingName(false);
-    }
-  };
-
-  const savePassword = async () => {
-    if (pw1.length < MIN_PASSWORD) {
-      toast.error(`Password must be at least ${MIN_PASSWORD} characters.`);
-      return;
-    }
-    if (pw1 !== pw2) {
-      toast.error("Passwords don't match.");
-      return;
-    }
-    setSavingPw(true);
-    try {
-      await changePassword(pw1);
-      setPw1("");
-      setPw2("");
-      toast.success("Password updated.");
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSavingPw(false);
     }
   };
 
@@ -154,42 +124,6 @@ const Account = () => {
                   <p className="mt-1">{new Date(joined).toLocaleDateString()}</p>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Security */}
-          <div className="glass-card p-8">
-            <h2 className="heading-md mb-4">Security</h2>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="pw1">New password</Label>
-                <Input
-                  id="pw1"
-                  type="password"
-                  autoComplete="new-password"
-                  value={pw1}
-                  onChange={(e) => setPw1(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="pw2">Confirm new password</Label>
-                <Input
-                  id="pw2"
-                  type="password"
-                  autoComplete="new-password"
-                  value={pw2}
-                  onChange={(e) => setPw2(e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <button
-                onClick={savePassword}
-                disabled={savingPw || !pw1 || !pw2}
-                className="btn-primary disabled:opacity-50"
-              >
-                {savingPw ? "…" : "Update password"}
-              </button>
             </div>
           </div>
 

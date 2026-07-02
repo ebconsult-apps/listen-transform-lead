@@ -50,10 +50,10 @@ const Pricing = () => {
                 ))}
               </ul>
               <Link
-                to={plan.id === "free" ? "/signup" : dest}
+                to={plan.id === "free" ? (session ? "/app" : "/signup") : dest}
                 className={plan.highlight ? "btn-primary w-full" : "btn-outline w-full"}
               >
-                {plan.cta}
+                {plan.id === "free" && session ? "Go to your dashboard" : plan.cta}
               </Link>
             </div>
           ))}

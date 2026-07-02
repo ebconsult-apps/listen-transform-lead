@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { openCookieSettings } from "@/components/CookieConsent";
 import { useAuth } from "@/hooks/useAuth";
+import { useUsage } from "@/hooks/queries/useUsage";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,9 @@ function initials(source: string): string {
 const ProductLayout = () => {
   const { session, user, signOut } = useAuth();
   const navigate = useNavigate();
+  // Credit pill data. useUsage only fetches with a session, so the public,
+  // prerendered pages (/product, /pricing) stay fetch-free.
+  const { data: usage } = useUsage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -46,6 +50,15 @@ const ProductLayout = () => {
           </Link>
 
           <nav className="flex items-center gap-1 sm:gap-2">
+            {session && usage && usage.tier !== "free" && (
+              <Link
+                to="/account/billing"
+                className="hidden sm:inline-flex items-center rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+                title={`${usage.credits.remaining} of ${usage.credits.allotment} report credits left this month`}
+              >
+                {usage.credits.remaining} credit{usage.credits.remaining === 1 ? "" : "s"}
+              </Link>
+            )}
             <NavLink to="/pricing" className="nav-link">
               Pricing
             </NavLink>
@@ -96,6 +109,9 @@ const ProductLayout = () => {
             </Link>
             <Link to="/methodology" className="hover:text-foreground transition-colors">
               Methodology
+            </Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
             </Link>
             <Link to="/" className="hover:text-foreground transition-colors">
               clear-framework.com

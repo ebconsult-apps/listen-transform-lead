@@ -13,6 +13,7 @@ import { listAcceptedResearch } from "@/lib/research";
 import { getClearEngine } from "./index";
 import { defaultPriority } from "./labels";
 import { devActive, effectiveAiMode } from "@/lib/dev/config";
+import { toRunError } from "@/lib/invoke-error";
 import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
 import type {
@@ -183,7 +184,7 @@ export async function runClarify(projectId: string): Promise<void> {
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "clarify" },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Clarify failed.");
     return;
   }
 
@@ -215,7 +216,7 @@ export async function runLeverage(projectId: string): Promise<void> {
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "leverage" },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Leverage failed.");
     return;
   }
 
@@ -249,11 +250,11 @@ export async function runFull(projectId: string): Promise<void> {
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "full", part: 1 },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Full report generation failed.");
     const { error: error2 } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "full", part: 2 },
     });
-    if (error2) throw error2;
+    if (error2) throw await toRunError(error2, "Full report generation failed.");
     return;
   }
 
@@ -302,7 +303,7 @@ export async function runExperiment(projectId: string): Promise<void> {
     const { error } = await sb.functions.invoke("project-run", {
       body: { projectId, phase: "experiment" },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Experiment design failed.");
     return;
   }
 
@@ -397,7 +398,7 @@ export async function runResearch(projectId: string): Promise<void> {
     const { error } = await sb.functions.invoke("project-research", {
       body: { action: "run", projectId },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Research failed.");
     return;
   }
 
@@ -462,7 +463,7 @@ export async function runResearchGaps(projectId: string, gapIds: string[]): Prom
     const { error } = await sb.functions.invoke("project-research", {
       body: { action: "research-gaps", projectId, gapIds },
     });
-    if (error) throw error;
+    if (error) throw await toRunError(error, "Research failed.");
     return;
   }
 

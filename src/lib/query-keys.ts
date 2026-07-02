@@ -20,4 +20,6 @@ export const qk = {
   projects: () => ["projects"] as const,
   assumptionGaps: (projectId: string) => ["assumptionGaps", projectId] as const,
   findings: (projectId: string) => ["findings", projectId] as const,
+  /** Workspace usage position (tier, credits, free runs) — session-scoped. */
+  usage: () => ["usage"] as const,
 } as const;

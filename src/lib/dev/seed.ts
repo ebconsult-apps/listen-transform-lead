@@ -48,6 +48,11 @@ export interface MockDb {
   workspace: Workspace;
   profile: Profile;
   entitlement: Entitlement;
+  /** When true, mock runs enforce the free-tier monthly run quota (throwing the
+   *  same 402 RunError as the server) so the upsell flow is walkable. Off for
+   *  the seeded dataset — its states museum has more runs than the quota and
+   *  must stay fully navigable. */
+  enforceFreeQuota: boolean;
   projects: Project[];
   inputs: Record<string, ProjectInput>;
   documents: Record<string, DocumentRow[]>;
@@ -168,6 +173,7 @@ function buildSeeded(): MockDb {
     workspace: workspace(),
     profile: profile(),
     entitlement: entitlement(),
+    enforceFreeQuota: false, // states museum: never block the QA walkthrough
     projects: [],
     inputs: {},
     documents: {},
@@ -599,6 +605,7 @@ function buildEmpty(): MockDb {
     workspace: workspace(),
     profile: profile(),
     entitlement: entitlement(),
+    enforceFreeQuota: true, // realistic sandbox: the free cap behaves like prod
     projects: [],
     inputs: {},
     documents: {},

@@ -19,4 +19,8 @@ describe("query-keys", () => {
     expect(qk.findings("p1")).toEqual(["findings", "p1"]);
     expect(qk.findings("p1")).not.toEqual(qk.findings("p2"));
   });
+
+  it("usage() is a stable top-level key", () => {
+    expect(qk.usage()).toEqual(["usage"]);
+  });
 });
