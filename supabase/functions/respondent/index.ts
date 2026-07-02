@@ -7,6 +7,7 @@
 //   { token, action: "upload-complete", path, filename, mime, bytes, extractedText }
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 import { hashToken } from "../_shared/token.ts";
 import { buildRespondentPrepPrompt } from "../_shared/clear/prep-prompt.ts";
 
@@ -203,6 +204,6 @@ Deno.serve(async (req) => {
 
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
-    return json({ error: (e as Error).message }, 500);
+    return json({ error: safeErrorMessage(e, "respondent") }, 500);
   }
 });

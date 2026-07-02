@@ -10,6 +10,7 @@
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import Anthropic from "npm:@anthropic-ai/sdk@^0.32";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 import { getClearEngine } from "../_shared/clear/index.ts";
 import {
   buildResearchIntake,
@@ -588,6 +589,6 @@ Deno.serve(async (req) => {
     return json({ ok: true, status: "running", runId: runRow.id });
   } catch (e) {
     if (e instanceof HttpError) return json({ error: e.message }, e.status);
-    return json({ error: (e as Error).message }, 500);
+    return json({ error: safeErrorMessage(e, "project-research") }, 500);
   }
 });

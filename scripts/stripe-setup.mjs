@@ -61,12 +61,18 @@ async function ensurePrice({ name, lookup, amount, recurring }) {
   return price.id;
 }
 
-// Amounts are in the smallest currency unit (cents). Adjust to your real pricing.
+// Amounts are in the smallest currency unit (cents). Source of truth for the
+// ladder: src/config/billing.ts + docs/research/self-serve-pricing.md (launch
+// experiment: Solo $79 / Team $249 / Report Pass $99). Lookup keys embed the
+// amount because ensurePrice REUSES an existing price by lookup_key — the old
+// keys (clear_solo @ $49, clear_team @ $299, clear_unlock @ $200) would silently
+// keep their old amounts. New numbers → new lookup key.
+// The public $999 Business tier is retired (legacy subscribers keep it); no
+// Business price is created for new setups.
 const plans = [
-  { name: "CLEAR Solo", lookup: "clear_solo", amount: 4900, recurring: true },
-  { name: "CLEAR Team", lookup: "clear_team", amount: 29900, recurring: true },
-  { name: "CLEAR Business", lookup: "clear_business", amount: 99900, recurring: true },
-  { name: "CLEAR — single report unlock", lookup: "clear_unlock", amount: 20000, recurring: false },
+  { name: "CLEAR Solo", lookup: "clear_solo_7900", amount: 7900, recurring: true },
+  { name: "CLEAR Team", lookup: "clear_team_24900", amount: 24900, recurring: true },
+  { name: "CLEAR Report Pass", lookup: "clear_pass_9900", amount: 9900, recurring: false },
 ];
 
 const id = {};
@@ -84,16 +90,15 @@ console.log(`webhook -> ${wh.id}`);
 
 console.log(`
 === supabase secrets set … (edge function secrets) ===
-STRIPE_PRICE_SOLO=${id.clear_solo}
-STRIPE_PRICE_TEAM=${id.clear_team}
-STRIPE_PRICE_BUSINESS=${id.clear_business}${wh.secret ? `
+STRIPE_PRICE_SOLO=${id.clear_solo_7900}
+STRIPE_PRICE_TEAM=${id.clear_team_24900}
+# STRIPE_PRICE_BUSINESS: retired tier — only keep an existing value for legacy subscribers.${wh.secret ? `
 STRIPE_WEBHOOK_SECRET=${wh.secret}` : `
 # (reused endpoint — copy STRIPE_WEBHOOK_SECRET from the dashboard)`}
 
 === GitHub → Settings → Secrets and variables → Actions → Variables ===
-VITE_STRIPE_PRICE_SOLO=${id.clear_solo}
-VITE_STRIPE_PRICE_TEAM=${id.clear_team}
-VITE_STRIPE_PRICE_BUSINESS=${id.clear_business}
-VITE_STRIPE_PRICE_UNLOCK=${id.clear_unlock}
+VITE_STRIPE_PRICE_SOLO=${id.clear_solo_7900}
+VITE_STRIPE_PRICE_TEAM=${id.clear_team_24900}
+VITE_STRIPE_PRICE_UNLOCK=${id.clear_pass_9900}
 # also set VITE_STRIPE_PUBLISHABLE_KEY and VITE_BILLING_ENABLED=true
 `);

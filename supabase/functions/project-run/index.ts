@@ -21,7 +21,8 @@ import {
   loadFreeRunQuota,
   loadTierCaps,
 } from "../_shared/billing/cost-cap.ts";
-import { hasCreditAvailable, loadCreditAllotment } from "../_shared/billing/credits.ts";
+import { allotmentForTier, loadCreditAllotment } from "../_shared/billing/credits.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 import {
   checkIntakeBudget,
   estimateIntakeInputTokens,
@@ -385,42 +386,29 @@ Deno.serve(async (req) => {
         return json({ error: "Payment required" }, 402);
       }
       // Paid tier, project not yet unlocked → spend a monthly report credit if one
-      // remains. Consumed-this-month = origin='credit' unlocks for the workspace
-      // since the 1st (same calendar-month window as the spend cap).
+      // remains. Check-and-spend runs as ONE transaction in the DB
+      // (spend_report_credit, advisory-locked per workspace) so concurrent runs
+      // can't both pass a "1 credit left" check and over-grant. Consumed-this-
+      // month = origin='credit' unlocks since the 1st (same window as the spend
+      // cap); the env-tunable allotment is resolved here and passed in.
       const monthStart = new Date(
         new Date().getFullYear(),
         new Date().getMonth(),
         1,
       ).toISOString();
-      const { data: credited } = await admin
-        .from("project_unlocks")
-        .select("project_id, projects!inner(workspace_id)")
-        .eq("origin", "credit")
-        .gte("unlocked_at", monthStart)
-        .eq("projects.workspace_id", project.workspace_id);
-      const consumedThisMonth = (credited ?? []).length;
-      if (
-        !hasCreditAvailable({
-          tier,
-          consumedThisMonth,
-          allotment: loadCreditAllotment((k) => Deno.env.get(k)),
-        })
-      ) {
+      const { data: spent, error: spendErr } = await admin.rpc("spend_report_credit", {
+        p_project_id: projectId,
+        p_workspace_id: project.workspace_id,
+        p_allotment: allotmentForTier(tier, loadCreditAllotment((k) => Deno.env.get(k))),
+        p_month_start: monthStart,
+      });
+      if (spendErr) throw spendErr;
+      if (!spent) {
         return json(
           { error: "Out of report credits this month — buy a Report Pass or upgrade." },
           402,
         );
       }
-      // Spend the credit: record the unlock (idempotent on the project_id PK).
-      await admin.from("project_unlocks").upsert(
-        {
-          project_id: projectId,
-          unlocked: true,
-          origin: "credit",
-          unlocked_at: new Date().toISOString(),
-        },
-        { onConflict: "project_id" },
-      );
     }
 
     if (phase === "full") {
@@ -548,6 +536,6 @@ Deno.serve(async (req) => {
         await admin.from("projects").update({ status: "error" }).eq("id", projectId);
       } catch { /* best-effort */ }
     }
-    return json({ error: (e as Error).message }, 500);
+    return json({ error: safeErrorMessage(e, "project-run") }, 500);
   }
 });
