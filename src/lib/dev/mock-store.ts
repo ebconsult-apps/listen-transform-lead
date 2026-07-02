@@ -31,6 +31,7 @@ import type {
   Run,
   TestCardRow,
   Workspace,
+  UsageSummary,
 } from "@/lib/db";
 import type {
   Apease,
@@ -56,7 +57,8 @@ import {
 } from "./fixtures";
 import { delay, nowIso, uid } from "./util";
 import { defaultPriority } from "@/lib/clear/labels";
-import { CREDIT_ALLOTMENT } from "@/config/billing";
+import { CREDIT_ALLOTMENT, FREE_RUN_QUOTA } from "@/config/billing";
+import { RunError } from "@/lib/invoke-error";
 
 /** First-of-month ISO, for the credit-consumption window (mirrors the server). */
 const monthStartIso = () =>
@@ -205,6 +207,41 @@ export async function getCreditUsage(_workspaceId: string): Promise<CreditUsage>
   return { tier, allotment, consumed, remaining: Math.max(0, allotment - consumed) };
 }
 
+/** This-month generation count, mirroring the server: scratch passes excluded. */
+function monthRunCount(): number {
+  const monthStart = monthStartIso();
+  return Object.values(db.runs)
+    .flat()
+    .filter((r) => r.phase !== "leverage_full_systems" && (r.created_at ?? "") >= monthStart)
+    .length;
+}
+
+export async function getUsageSummary(): Promise<UsageSummary> {
+  await delay(READ_MS);
+  const credits = await getCreditUsage(db.workspace.id);
+  if (credits.tier !== "free") return { tier: credits.tier, credits, freeRuns: null };
+  return {
+    tier: "free",
+    credits,
+    freeRuns: { used: monthRunCount(), quota: FREE_RUN_QUOTA },
+  };
+}
+
+/**
+ * Mirror the server's free-tier quota 402 (exact message from project-run) so the
+ * upsell flow is walkable offline — but only on datasets that opt in
+ * (enforceFreeQuota), because the seeded states museum exceeds the quota by design.
+ */
+function assertFreeRunQuota(): void {
+  if (
+    db.enforceFreeQuota &&
+    db.entitlement.tier === "free" &&
+    monthRunCount() >= FREE_RUN_QUOTA
+  ) {
+    throw new RunError("Free plan monthly limit reached — upgrade to run more reports.", 402);
+  }
+}
+
 export async function setProjectStatus(id: string, status: ProjectStatus): Promise<void> {
   requireProject(id).status = status;
 }
@@ -232,6 +269,7 @@ export async function approveClarify(projectId: string, output: ClarifyOutput): 
 
 // ── clear/run.ts (mock engine: reuse fixtures, mirror the stub orchestration) ────
 export async function runClarify(projectId: string): Promise<void> {
+  assertFreeRunQuota();
   await setProjectStatus(projectId, "running");
   await delay(RUN_MS);
   db.runs[projectId] = [...(db.runs[projectId] ?? []), mkRun(projectId, "clarify", CLARIFY)];
@@ -240,6 +278,7 @@ export async function runClarify(projectId: string): Promise<void> {
 }
 
 export async function runLeverage(projectId: string): Promise<void> {
+  assertFreeRunQuota();
   if (!approvedClarify(projectId)) throw new Error("Approve Clarify before generating Leverage.");
   await setProjectStatus(projectId, "running");
   await delay(RUN_MS);
@@ -248,6 +287,7 @@ export async function runLeverage(projectId: string): Promise<void> {
 }
 
 export async function runFull(projectId: string): Promise<void> {
+  assertFreeRunQuota();
   if (!approvedClarify(projectId)) {
     throw new Error("Approve Clarify before generating the full report.");
   }

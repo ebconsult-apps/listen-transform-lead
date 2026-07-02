@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import SEO from "@/components/SEO";
 import {
@@ -11,7 +11,10 @@ import {
 } from "@/lib/db";
 import { openBillingPortal, startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PLANS, PRICE_IDS } from "@/config/billing";
+import { DEV_ACCESS_ENABLED, devActive } from "@/lib/dev/config";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { qk } from "@/lib/query-keys";
 import { LoadingState } from "@/components/ui/data-states";
 
 type PaidTier = "solo" | "team" | "business";
@@ -21,6 +24,9 @@ const Billing = () => {
   const [credit, setCredit] = useState<CreditUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     (async () => {
@@ -31,7 +37,16 @@ const Billing = () => {
     })()
       .catch((e) => toast.error(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [reloadKey]);
+
+  // Back from a real Stripe checkout — the tier just changed, so the cached
+  // usage (header pill, dashboard strip) must not serve the stale plan.
+  useEffect(() => {
+    if (searchParams.get("checkout") === "success") {
+      queryClient.invalidateQueries({ queryKey: qk.usage() });
+      setReloadKey((k) => k + 1);
+    }
+  }, [searchParams, queryClient]);
 
   const tier = entitlement?.tier ?? "free";
   const isPaid = tier !== "free";
@@ -46,15 +61,23 @@ const Billing = () => {
 
   const subscribe = async (planId: PaidTier) => {
     const priceId = PRICE_IDS[planId];
-    if (!BILLING_ENABLED || !priceId) {
+    const devSimulated = DEV_ACCESS_ENABLED && devActive();
+    // In dev/QA mock mode startCheckout simulates the purchase — a missing
+    // Stripe Price ID must not block the paid-state walkthrough.
+    if (!devSimulated && (!BILLING_ENABLED || !priceId)) {
       toast.error("Billing isn't configured yet.");
       return;
     }
     setBusy(true);
     try {
       await startCheckout({ mode: "subscription", priceId, tier: planId });
+      // Live checkout navigates away; the dev-simulated one resolves here — make
+      // this page and the shared usage counters reflect the new plan immediately.
+      queryClient.invalidateQueries({ queryKey: qk.usage() });
+      setReloadKey((k) => k + 1);
     } catch {
       toast.error("Couldn't start checkout. Is the stripe-checkout function deployed?");
+    } finally {
       setBusy(false);
     }
   };
@@ -134,7 +157,9 @@ const Billing = () => {
                     </p>
                     <button
                       onClick={() => subscribe(plan.id as PaidTier)}
-                      disabled={busy || !PRICE_IDS[plan.id as PaidTier]}
+                      // In dev/QA mock mode startCheckout simulates the purchase, so a
+                      // missing Stripe Price ID must not disable the paid-state walkthrough.
+                      disabled={busy || (!PRICE_IDS[plan.id as PaidTier] && !(DEV_ACCESS_ENABLED && devActive()))}
                       className="btn-primary w-full mt-auto disabled:opacity-50"
                     >
                       {busy ? "…" : "Subscribe"}

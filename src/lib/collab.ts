@@ -5,6 +5,7 @@
 // new tables have no client write policies and respondents have no Supabase session.
 import { requireSupabase } from "@/lib/supabase";
 import { extractText } from "@/lib/extract-text";
+import { unwrapInvokeError } from "@/lib/invoke-error";
 import { devActive } from "@/lib/dev/config";
 import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
@@ -131,7 +132,8 @@ export async function respondentLoad(token: string): Promise<RespondentLoad> {
   const { data, error } = await sb.functions.invoke("respondent", {
     body: { token, action: "load" },
   });
-  if (error) throw new Error(await readInvokeError(error, "This link is no longer valid."));
+  if (error)
+    throw new Error((await unwrapInvokeError(error, "This link is no longer valid.")).message);
   return data as RespondentLoad;
 }
 
@@ -188,20 +190,6 @@ export async function respondentUpload(token: string, file: File): Promise<void>
     },
   });
   if (completeError) throw completeError;
-}
-
-/** Supabase FunctionsHttpError hides the body; pull the server message when present. */
-async function readInvokeError(error: unknown, fallback: string): Promise<string> {
-  const ctx = (error as { context?: Response }).context;
-  if (ctx && typeof ctx.json === "function") {
-    try {
-      const body = await ctx.json();
-      if (body?.error) return String(body.error);
-    } catch {
-      /* ignore */
-    }
-  }
-  return (error as Error)?.message || fallback;
 }
 
 // ── Engine intake helper ─────────────────────────────────────────────────────

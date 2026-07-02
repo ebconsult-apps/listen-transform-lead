@@ -33,6 +33,10 @@ import { FULL_REPORT_STEPS } from "@/lib/clear/report-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { exportReportMarkdown } from "@/lib/export";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { qk } from "@/lib/query-keys";
+import { RunError } from "@/lib/invoke-error";
+import UpsellDialog from "@/components/product/UpsellDialog";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 
 // The four linear phases shown in the stepper. Research/Collaborate are auxiliary
@@ -111,6 +115,8 @@ const ProjectDetail = () => {
   // null = follow the data (show the furthest-reached step); a value = pinned by a stepper click.
   const [activeStep, setActiveStep] = useState<StepId | null>(null);
   const [busy, setBusy] = useState(false);
+  const [upsellMessage, setUpsellMessage] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   // Per-phase "last produced at" timestamps, for non-destructive staleness checks.
@@ -170,9 +176,10 @@ const ProjectDetail = () => {
   useEffect(() => {
     if (searchParams.get("checkout") === "success") {
       toast.success("Payment received, generating your full report.");
+      queryClient.invalidateQueries({ queryKey: qk.usage() });
       reload();
     }
-  }, [searchParams, reload]);
+  }, [searchParams, reload, queryClient]);
 
   const run = useCallback(
     async (fn: () => Promise<void>) => {
@@ -181,13 +188,19 @@ const ProjectDetail = () => {
       try {
         await fn();
         await load();
+        // A run can consume a credit or a free run — keep the counters honest.
+        queryClient.invalidateQueries({ queryKey: qk.usage() });
       } catch (e) {
-        toast.error((e as Error).message);
+        if (e instanceof RunError && e.status === 402) {
+          setUpsellMessage(e.message); // the upgrade moment, not an error toast
+        } else {
+          toast.error((e as Error).message);
+        }
       } finally {
         setBusy(false);
       }
     },
-    [id, load],
+    [id, load, queryClient],
   );
 
   const onRunClarify = () => run(() => runClarify(id!));
@@ -498,6 +511,11 @@ const ProjectDetail = () => {
             </TabsContent>
           </Tabs>
         ))}
+      <UpsellDialog
+        open={upsellMessage !== null}
+        onOpenChange={(o) => !o && setUpsellMessage(null)}
+        message={upsellMessage ?? ""}
+      />
     </div>
   );
 };
