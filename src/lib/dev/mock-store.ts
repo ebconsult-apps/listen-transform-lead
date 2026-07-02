@@ -207,13 +207,14 @@ export async function getCreditUsage(_workspaceId: string): Promise<CreditUsage>
   return { tier, allotment, consumed, remaining: Math.max(0, allotment - consumed) };
 }
 
-/** This-month generation count, mirroring the server: scratch passes excluded. */
+/** This-month generation count. The server additionally excludes its internal
+ *  leverage_full_systems scratch pass; that phase is server-only (not in the
+ *  client RunPhase type) and never exists in mock data, so no filter here. */
 function monthRunCount(): number {
   const monthStart = monthStartIso();
   return Object.values(db.runs)
     .flat()
-    .filter((r) => r.phase !== "leverage_full_systems" && (r.created_at ?? "") >= monthStart)
-    .length;
+    .filter((r) => (r.created_at ?? "") >= monthStart).length;
 }
 
 export async function getUsageSummary(): Promise<UsageSummary> {
