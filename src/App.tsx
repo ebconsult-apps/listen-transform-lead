@@ -17,6 +17,7 @@ import GetTheBook from "./pages/GetTheBook";
 import Framework from "./pages/Framework";
 import Methodology from "./pages/Methodology";
 import FAQ from "./pages/FAQ";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
 import CookieConsent from "./components/CookieConsent";
@@ -139,6 +140,7 @@ const App = () => (
               <Route path="booking-confirmed" element={<BookingConfirmation />} />
               <Route path="thank-you" element={<ThankYou />} />
               <Route path="assessment" element={<Assessment />} />
+              <Route path="privacy" element={<PrivacyPolicy />} />
               <Route path="services/change-management" element={<ChangeManagementService />} />
               <Route path="services/leadership-development" element={<LeadershipDevelopmentService />} />
               <Route path="services/executive-coaching" element={<ExecutiveCoachingService />} />

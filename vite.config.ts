@@ -22,6 +22,7 @@ const routes = [
   "/book-call",
   "/booking-confirmed",
   "/assessment",
+  "/privacy",
   "/lp/organizational-change",
   "/lp/clear-whitepaper",
   "/lp/sustainability",

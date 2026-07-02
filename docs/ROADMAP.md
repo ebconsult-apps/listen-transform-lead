@@ -2,7 +2,7 @@
 
 **Purpose:** the single sequencing document for CLEAR (the self-serve app) and its supporting
 surfaces. It says what we build next, why, in what order, and how we know it worked.
-**Last updated:** 2026-07-01 · **Owner:** product (Erik) · **Maintained by:** whoever ships —
+**Last updated:** 2026-07-02 · **Owner:** product (Erik) · **Maintained by:** whoever ships —
 usually a Claude Code session.
 
 > **Direction (decided 2026-07):** CLEAR product first — the consulting site remains a lead
@@ -127,13 +127,14 @@ the project unlock already covers it, matching current `project_unlocks` semanti
 3. **Real document extraction [C]:** implement `DOC_EXTRACT_MODE=live` for PDF/DOCX/XLSX —
    uploaded binaries currently contribute nothing to intake.
 
-### A4 — Credits & caps become visible `[C, M]` · `todo`
-Dashboard shows runs/credits remaining (new `getUsageSummary()` in `src/lib/billing.ts` +
-mock-store entry — honor the data seam); hitting a cap renders a friendly upgrade moment instead
-of a raw server-error toast; credit badge in the project header. *DoD:* free-tier cap hit in
-mock mode shows the upsell modal.
+### A4 — Credits & caps become visible `[C, M]` · `done (2026-07-02)`
+Dashboard shows runs/credits remaining (`getUsageSummary()` in `src/lib/db.ts` — with its
+sibling reads, not billing.ts — + mock-store entry per the data seam); hitting a cap renders the
+UpsellDialog with the server's message instead of a raw error toast (run.ts now unwraps invoke
+errors via `src/lib/invoke-error.ts`); credit pill in the product header. *DoD met:* free-tier
+cap hit in mock mode (empty dataset) opens the upsell modal — Playwright-verified.
 
-### A5 — Dead-end sweep `[C, S]` · `todo`
+### A5 — Dead-end sweep `[C, S]` · `done (2026-07-02)`
 Remove the set-password UI from `Account.tsx` (login is passwordless-only); dedupe the two
 sample surfaces (`src/pages/product/Sample.tsx` vs `src/pages/app/SampleProject.tsx`);
 `Pricing.tsx` "Start free" should route authed users to `/app`; fix the marketing footer's dead
@@ -143,7 +144,7 @@ sample surfaces (`src/pages/product/Sample.tsx` vs `src/pages/app/SampleProject.
 
 ## 5. Track B — Trust & reliability
 
-### B1 — Billing & data integrity pack `[C, M]` · `in progress (this PR)`
+### B1 — Billing & data integrity pack `[C, M]` · `done (PR #87, merged 2026-07-02)`
 Closes the four verified money-path holes: members could DELETE their own `runs` rows and reset
 quota/spend accounting (RLS was `for all`); Stripe webhook had no event dedup (replays create
 duplicate `report_passes`); pass-credit application was read-then-write (double-apply race);
@@ -236,6 +237,11 @@ and tracked only in the checklist.
 
 ## 9. Changelog
 
+- **2026-07-02** — A4 + A5 shipped: usage strip on the Dashboard, header credit pill,
+  UpsellDialog on 402 (server message preserved end-to-end via `invoke-error.ts`), free-run
+  quota mirror, mock-mode quota enforcement on the empty dataset; dead-end sweep (set-password
+  UI removed, samples deduped via `SampleReport`, authed Pricing CTA, `/privacy` page + footer
+  links, dead Terms anchor removed pending C1).
 - **2026-07-01** — Roadmap created. B1 (billing & data integrity pack) implemented in the same
   PR: runs-table RLS tightened to insert-only, hot-path indexes, `stripe_events` idempotency
   ledger, `report_passes` payment-intent dedup, atomic `spend_report_credit` RPC, safe edge

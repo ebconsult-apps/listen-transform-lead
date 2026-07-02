@@ -130,8 +130,7 @@ const Layout = () => {
           <div className="mt-12 pt-8 border-t border-foreground/10 flex flex-col gap-4 text-center sm:flex-row sm:justify-between sm:text-left items-center text-sm text-foreground/50">
             <p>© {new Date().getFullYear()} CLEAR Change Framework. All rights reserved.</p>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
+              <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
               <button type="button" onClick={openCookieSettings} className="hover:text-foreground transition-colors">Cookie settings</button>
             </div>
           </div>
