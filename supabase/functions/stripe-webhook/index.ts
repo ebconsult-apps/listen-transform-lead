@@ -13,6 +13,7 @@ import {
   type NormalizedEvent,
   type PriceMap,
 } from "../_shared/billing/entitlements.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
 const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
@@ -66,55 +67,135 @@ Deno.serve(async (req) => {
     return new Response(`Webhook signature error: ${(e as Error).message}`, { status: 400 });
   }
 
+  // Replay protection: record the event id, then process; processed_at is
+  // stamped only after every mutation succeeded. A redelivery of a PROCESSED
+  // event is a no-op; a redelivery of an UNPROCESSED one (a prior attempt
+  // crashed mid-handler or failed) is reprocessed — every mutation below is
+  // idempotent, so reprocessing is safe and self-healing.
+  const claim = await admin
+    .from("stripe_events")
+    .upsert({ id: event.id, type: event.type }, { onConflict: "id", ignoreDuplicates: true })
+    .select("id");
+  if (claim.error) {
+    console.error("stripe-webhook: event-ledger claim failed", claim.error);
+    return new Response("Event ledger error", { status: 500 });
+  }
+  if (!claim.data?.length) {
+    const { data: prior } = await admin
+      .from("stripe_events")
+      .select("processed_at")
+      .eq("id", event.id)
+      .maybeSingle();
+    if (prior?.processed_at) {
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    // Known event id but never fully processed → fall through and reprocess.
+  }
+
+  // supabase-js returns errors in the result instead of throwing; every mutation
+  // must be checked or a failed write would still ACK the event with 200.
+  const must = <T extends { error: unknown }>(result: T): T => {
+    if (result.error) throw result.error;
+    return result;
+  };
+
   try {
     const plan = planForEvent(normalize(event), prices);
 
     if (plan?.kind === "unlock") {
       const now = new Date();
-      await admin.from("project_unlocks").upsert(
-        {
-          project_id: plan.projectId,
-          unlocked: true,
-          stripe_payment_intent: plan.paymentIntent,
-          unlocked_at: now.toISOString(),
-          origin: "pass", // a one-off Report Pass (outside the monthly credit allotment)
-        },
-        { onConflict: "project_id" },
+      must(
+        await admin.from("project_unlocks").upsert(
+          {
+            project_id: plan.projectId,
+            unlocked: true,
+            stripe_payment_intent: plan.paymentIntent,
+            unlocked_at: now.toISOString(),
+            origin: "pass", // a one-off Report Pass (outside the monthly credit allotment)
+          },
+          { onConflict: "project_id" },
+        ),
       );
-      await admin.from("projects").update({ status: "paid" }).eq("id", plan.projectId);
+      must(await admin.from("projects").update({ status: "paid" }).eq("id", plan.projectId));
       // Record the pass so it can be credited toward a first subscription (14 days).
+      // Upsert on the payment intent (unique-indexed) so a redelivered event can
+      // never mint a second creditable pass.
       if (plan.workspaceId) {
-        const expires = new Date(now.getTime() + PASS_CREDIT_WINDOW_DAYS * 86_400_000);
-        await admin.from("report_passes").insert({
-          workspace_id: plan.workspaceId,
-          stripe_payment_intent: plan.paymentIntent,
-          amount_cents: plan.amountCents,
-          currency: plan.currency,
-          purchased_at: now.toISOString(),
-          expires_at: expires.toISOString(),
-        });
+        if (plan.paymentIntent) {
+          const expires = new Date(now.getTime() + PASS_CREDIT_WINDOW_DAYS * 86_400_000);
+          must(
+            await admin.from("report_passes").upsert(
+              {
+                workspace_id: plan.workspaceId,
+                stripe_payment_intent: plan.paymentIntent,
+                amount_cents: plan.amountCents,
+                currency: plan.currency,
+                purchased_at: now.toISOString(),
+                expires_at: expires.toISOString(),
+              },
+              { onConflict: "stripe_payment_intent", ignoreDuplicates: true },
+            ),
+          );
+        } else {
+          // Without a payment intent there is no idempotency key — skip rather
+          // than risk minting duplicate creditable passes on a reprocess.
+          console.error("stripe-webhook: unlock event without payment_intent — pass not recorded", event.id);
+        }
       }
     } else if (plan?.kind === "entitlement") {
       if (plan.workspaceId) {
-        await admin
-          .from("entitlements")
-          .upsert({ workspace_id: plan.workspaceId, ...plan.patch }, { onConflict: "workspace_id" });
+        must(
+          await admin
+            .from("entitlements")
+            .upsert({ workspace_id: plan.workspaceId, ...plan.patch }, { onConflict: "workspace_id" }),
+        );
       } else if (plan.byCustomer) {
-        const { data: ent } = await admin
+        const { data: ent, error: entErr } = await admin
           .from("entitlements")
           .select("workspace_id")
           .eq("stripe_customer_id", plan.byCustomer)
           .maybeSingle();
+        if (entErr) throw entErr;
         if (ent) {
-          await admin.from("entitlements").update(plan.patch).eq("workspace_id", ent.workspace_id);
+          must(await admin.from("entitlements").update(plan.patch).eq("workspace_id", ent.workspace_id));
+        } else {
+          // Ordering gap: a subscription.updated can arrive before the checkout
+          // event that stamps stripe_customer_id onto the entitlement row. Fall
+          // back to the workspace id recorded in the Stripe customer's metadata
+          // (set at customer creation in stripe-checkout) instead of dropping
+          // the update silently.
+          const customer = await stripe.customers.retrieve(plan.byCustomer);
+          const wsId = customer.deleted ? undefined : customer.metadata?.workspace_id;
+          if (wsId) {
+            must(
+              await admin.from("entitlements").upsert(
+                { workspace_id: wsId, stripe_customer_id: plan.byCustomer, ...plan.patch },
+                { onConflict: "workspace_id" },
+              ),
+            );
+          } else {
+            console.error("stripe-webhook: no entitlement or metadata for customer", plan.byCustomer);
+          }
         }
       }
     }
+
+    // Everything applied — mark the event processed so replays become no-ops.
+    must(
+      await admin
+        .from("stripe_events")
+        .update({ processed_at: new Date().toISOString() })
+        .eq("id", event.id),
+    );
 
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(`Handler error: ${(e as Error).message}`, { status: 500 });
+    // The event row stays unprocessed, so Stripe's retry (or a manual dashboard
+    // resend) reprocesses it instead of being swallowed as a duplicate.
+    return new Response(safeErrorMessage(e, "stripe-webhook"), { status: 500 });
   }
 });

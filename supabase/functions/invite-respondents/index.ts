@@ -5,6 +5,7 @@
 //   { action: "revoke", invitationId }                         -> status = revoked
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 import { generateToken, hashToken } from "../_shared/token.ts";
 import { sendBrevoEmail } from "../_shared/email.ts";
 import { buildRespondentPrepPrompt } from "../_shared/clear/prep-prompt.ts";
@@ -215,6 +216,6 @@ Deno.serve(async (req) => {
 
     return json({ error: "Unknown action" }, 400);
   } catch (e) {
-    return json({ error: (e as Error).message }, 500);
+    return json({ error: safeErrorMessage(e, "invite-respondents") }, 500);
   }
 });

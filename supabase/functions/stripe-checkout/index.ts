@@ -6,6 +6,7 @@
 import Stripe from "npm:stripe@^17";
 import { createClient } from "npm:@supabase/supabase-js@^2";
 import { corsHeaders, json } from "../_shared/cors.ts";
+import { safeErrorMessage } from "../_shared/errors.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, { apiVersion: "2024-06-20" });
 const admin = createClient(
@@ -63,8 +64,10 @@ Deno.serve(async (req) => {
 
     // Creditable Report Pass: if this is a subscription and the workspace has an
     // unexpired, unapplied Report Pass, apply its amount as Stripe account credit
-    // (a negative customer-balance transaction) so it nets off the first invoice,
-    // then stamp applied_at so it's used at most once.
+    // (a negative customer-balance transaction) so it nets off the first invoice.
+    // CLAIM the pass first (conditional update on applied_at IS NULL) so two
+    // concurrent checkouts can't both read it unapplied and credit it twice;
+    // only the request that wins the claim creates the balance transaction.
     if (body.mode === "subscription") {
       const nowIso = new Date().toISOString();
       const { data: pass } = await admin
@@ -77,12 +80,38 @@ Deno.serve(async (req) => {
         .limit(1)
         .maybeSingle();
       if (pass && pass.amount_cents > 0) {
-        await stripe.customers.createBalanceTransaction(customerId, {
-          amount: -pass.amount_cents, // negative = credit toward upcoming invoices
-          currency: pass.currency ?? "usd",
-          description: "Report Pass credit toward first subscription",
-        });
-        await admin.from("report_passes").update({ applied_at: nowIso }).eq("id", pass.id);
+        const { data: claimed, error: claimErr } = await admin
+          .from("report_passes")
+          .update({ applied_at: nowIso })
+          .eq("id", pass.id)
+          .is("applied_at", null)
+          .select("id");
+        // A failed claim must abort checkout (retryable) — silently skipping
+        // would drop the customer's credit while still selling the subscription.
+        if (claimErr) throw claimErr;
+        if (claimed?.length) {
+          try {
+            await stripe.customers.createBalanceTransaction(customerId, {
+              amount: -pass.amount_cents, // negative = credit toward upcoming invoices
+              currency: pass.currency ?? "usd",
+              description: "Report Pass credit toward first subscription",
+            });
+          } catch (stripeErr) {
+            // Credit never landed — release the claim so the pass stays usable.
+            const { error: revertErr } = await admin
+              .from("report_passes")
+              .update({ applied_at: null })
+              .eq("id", pass.id);
+            if (revertErr) {
+              // Pass is now stamped applied without a credit — needs manual fix.
+              console.error(
+                `stripe-checkout: FAILED to revert pass claim ${pass.id} after Stripe error — pass is burned without credit`,
+                revertErr,
+              );
+            }
+            throw stripeErr;
+          }
+        }
       }
     }
 
@@ -100,6 +129,6 @@ Deno.serve(async (req) => {
     });
     return json({ url: session.url });
   } catch (e) {
-    return json({ error: (e as Error).message }, 500);
+    return json({ error: safeErrorMessage(e, "stripe-checkout") }, 500);
   }
 });
