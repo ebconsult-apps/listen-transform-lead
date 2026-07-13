@@ -43,6 +43,7 @@ import {
 } from "./fixtures";
 import { daysAgoIso, uid } from "./util";
 import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
+import { TERMS_VERSION } from "@/content/terms-of-service";
 
 export interface MockDb {
   workspace: Workspace;
@@ -85,7 +86,8 @@ function workspace(): Workspace {
 /**
  * The signed-in user's profile. Stored in the mock db (not a fresh literal) so an
  * edit via `updateMyProfile` persists across navigations within the session.
- * Privacy is pre-accepted so the New Project flow never gates the QA walkthrough.
+ * Privacy and Terms are pre-accepted so the New Project / signup flows never gate
+ * the QA walkthrough.
  */
 function profile(): Profile {
   return {
@@ -94,6 +96,8 @@ function profile(): Profile {
     created_at: daysAgoIso(30),
     privacy_accepted_at: daysAgoIso(30),
     privacy_policy_version: PRIVACY_POLICY_VERSION,
+    terms_accepted_at: daysAgoIso(30),
+    terms_version: TERMS_VERSION,
   };
 }
 
