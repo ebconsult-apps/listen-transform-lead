@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Check, ArrowRight } from "lucide-react";
 import SEO from "@/components/SEO";
-import { PLANS, UNLOCK_PLAN } from "@/config/billing";
+import { PLANS, UNLOCK_PLAN, PRICE_TAX_NOTE } from "@/config/billing";
 import { useAuth } from "@/hooks/useAuth";
 
 const Pricing = () => {
@@ -88,6 +88,15 @@ const Pricing = () => {
             </Link>
           </div>
         </div>
+
+        <p className="mt-6 text-center text-xs text-foreground/50">
+          {PRICE_TAX_NOTE}{" "}
+          See our{" "}
+          <Link to="/refund" className="underline hover:text-foreground">
+            refund &amp; cancellation policy
+          </Link>
+          .
+        </p>
       </section>
     </div>
   );

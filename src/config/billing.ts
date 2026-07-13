@@ -32,6 +32,19 @@ export const BILLING_ENABLED =
   (import.meta.env.VITE_BILLING_ENABLED as string | undefined) !== "false";
 
 /**
+ * Every price string below is denominated in EUR — the currency Stripe charges
+ * (see scripts/stripe-setup.mjs → CURRENCY). Displaying "$" while charging EUR was
+ * the C2 launch-blocker (legal/REMEDIATION-CHECKLIST.md Tier 0, §3.10).
+ *
+ * Tax note shown on every price surface. Buyers span B2B and B2C across the EU,
+ * so we don't invent per-country prices: Stripe Checkout + Stripe Tax computes
+ * the exact tax at checkout. VAT is included where it applies (typically B2C);
+ * B2B reverse-charge / VAT-ID handling also resolves at checkout.
+ */
+export const PRICE_TAX_NOTE =
+  "Prices in EUR, incl. VAT where applicable — the final tax is shown at checkout.";
+
+/**
  * Stripe Price IDs. Accessed statically (Vite only inlines literal
  * `import.meta.env.VITE_*` references — dynamic indexing is not replaced).
  */
@@ -68,7 +81,7 @@ export const PLANS: Plan[] = [
   {
     id: "free",
     name: "Free",
-    price: "$0",
+    price: "€0",
     cadence: "forever",
     // Demonstrative, not productive: enough to prove CLEAR finds something true,
     // not enough to use as a workflow. Run cap enforced in cost-cap.ts.
@@ -78,7 +91,7 @@ export const PLANS: Plan[] = [
   {
     id: "solo",
     name: "Solo",
-    price: "$79",
+    price: "€79",
     cadence: "/mo",
     highlight: true,
     features: [
@@ -92,7 +105,7 @@ export const PLANS: Plan[] = [
   {
     id: "team",
     name: "Team",
-    price: "$249",
+    price: "€249",
     cadence: "/mo",
     features: [
       `${CREDIT_ALLOTMENT.team} pooled report credits / month`,
@@ -117,7 +130,7 @@ export const PLANS: Plan[] = [
 export const UNLOCK_PLAN: Plan = {
   id: "unlock",
   name: "Report Pass",
-  price: "$99",
+  price: "€99",
   cadence: "one-off",
   features: [
     "One full report, unlocked",
