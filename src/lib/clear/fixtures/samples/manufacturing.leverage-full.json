@@ -1,0 +1,67 @@
+{
+  "systemsMapSummary": "Under-reporting is held in place by three reinforcing loops: a friction loop (the only channel is a 15-minute paper form kept by the office, not the machine), a black-hole loop (supervisors rarely follow up, so operators who reported 'never heard back' and stop bothering), and a fear loop (the shift bonus's 'zero-incident' component makes a report feel like it dents the team's payout). Hard to report, plus nothing changes when you do, plus a reason not to, equals about four reports a month against a floor of 180 operators.",
+  "headline": "If reporting took two minutes at the machine, every report visibly led to action, and it couldn't dent the bonus, we'd likely see near-miss reports rise from ~4 toward a healthy leading-indicator rate — a sign risk is surfacing earlier, not that the plant got less safe.",
+  "topLeveragePoints": [
+    { "rank": 1, "point": "Put a fast, tear-off report card at every machine", "currentState": "The only channel is a 15-minute paper form by the office; an operator already suggested a tear-off card at the line.", "impact": "High", "ease": "High", "confidence": 77 },
+    { "rank": 2, "point": "Close the loop visibly — acknowledge every report and show what changed", "currentState": "'Last time I reported something, I never heard back'; supervisors rarely follow up, so reporting feels pointless.", "impact": "High", "ease": "Medium", "confidence": 66 },
+    { "rank": 3, "point": "Separate near-miss reporting from the shift-bonus calculation", "currentState": "The bonus's 'zero-incident' component makes operators fear a report dents the shift's payout.", "impact": "High", "ease": "Medium", "confidence": 60, "assumptionBased": true },
+    { "rank": 4, "point": "Add a 5-minute near-miss review to shift handover", "currentState": "Nothing in the shift routine surfaces near-misses; handover is a natural, existing moment.", "impact": "Medium", "ease": "Medium", "confidence": 58 },
+    { "rank": 5, "point": "Have supervisors visibly thank reporters rather than treat reports as a problem", "currentState": "Reporting currently carries mild social risk; recognition would reframe it as valued.", "impact": "Medium", "ease": "Medium", "confidence": 54, "assumptionBased": true }
+  ],
+  "behaviors": [
+    { "id": "b1", "description": "Operator logs a near-miss at the machine right after it happens", "who": "Line operator", "doesWhat": "Fills a short tear-off card", "when": "Immediately after a near-miss", "where": "At the machine", "howOften": "Every near-miss", "withWhom": "Alone", "level": "detail", "genre": "register" },
+    { "id": "b2", "description": "Supervisor acknowledges the report and logs an action or a reason", "who": "Shift supervisor", "doesWhat": "Acknowledges and actions the report", "when": "Within 48 hours", "where": "At the line / at handover", "howOften": "Every report", "withWhom": "With the reporting operator", "level": "detail", "genre": "carry_out_process" },
+    { "id": "b3", "description": "Supervisor raises near-misses at shift handover", "who": "Shift supervisor", "doesWhat": "Reviews near-misses with the next shift", "when": "At each handover", "where": "On the floor", "howOften": "Every shift", "withWhom": "With operators", "level": "high", "genre": "social" }
+  ],
+  "behaviorPriorities": [
+    { "behaviorId": "b1", "effect": 5, "ease": 4, "centrality": 5, "measurability": 4 },
+    { "behaviorId": "b2", "effect": 4, "ease": 3, "centrality": 5, "measurability": 3 },
+    { "behaviorId": "b3", "effect": 3, "ease": 3, "centrality": 3, "measurability": 3 }
+  ],
+  "keyActors": [
+    { "actor": "Line operator", "behavior": "Decides whether a near-miss is worth the 15-minute form and the perceived bonus risk" },
+    { "actor": "Shift supervisor", "behavior": "Either closes the loop and thanks the reporter, or lets reports vanish" },
+    { "actor": "Plant HSE Manager", "behavior": "Owns the reporting channel and the currently-missing report-to-action process" },
+    { "actor": "Operations Director", "behavior": "Owns the bonus design that currently discourages reporting" }
+  ],
+  "causeEffect": [
+    { "from": "15-minute form kept by the office", "to": "Near-miss goes unreported", "polarity": "+", "note": "The report rarely survives the walk and the wait" },
+    { "from": "Supervisors rarely follow up", "to": "Belief that reporting is pointless", "polarity": "+", "note": "'I never heard back'" },
+    { "from": "Zero-incident bonus component", "to": "Willingness to report", "polarity": "-", "note": "A report feels like it dents the team's payout" },
+    { "from": "Visible action after a report", "to": "Willingness to report", "polarity": "+", "note": "Closing the loop makes reporting feel worthwhile" }
+  ],
+  "loops": [
+    "Friction loop: hard-to-use form -> fewer reports -> reporting stays invisible -> the form stays a low priority to fix -> still hard to use.",
+    "Black-hole loop: no follow-up -> reporting feels pointless -> fewer reports -> supervisors see little to action -> follow-up never becomes routine."
+  ],
+  "comb": [
+    { "component": "capability_physical", "barrier": "Filling a short report is not physically demanding; the constraint is the channel, not the operator.", "impact": "Low", "changeability": "High", "evidenceFlag": "NA" },
+    { "component": "capability_psychological", "barrier": "Operators aren't always sure what counts as a reportable near-miss or how to describe it quickly.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "A", "source": "Inferred: no line-side guidance; a short card would prompt the essentials" },
+    { "component": "opportunity_physical", "barrier": "The only channel is a 15-minute paper form kept by the office, not the line — reporting means leaving the machine and finding the form.", "significance": "The dominant structural barrier", "impact": "High", "changeability": "High", "evidenceFlag": "V", "source": "floor-interviews.txt: 'the form is by the office, not the line'; ~15 minutes to complete" },
+    { "component": "opportunity_social", "barrier": "Reporting carries mild social risk — 'lads worry it dents the shift's safety bonus' — and supervisors treat reports as extra work rather than as valued.", "impact": "High", "changeability": "Medium", "evidenceFlag": "V", "source": "floor-interviews.txt + shift-bonus 'zero-incident' component" },
+    { "component": "motivation_reflective", "barrier": "Operators don't believe reporting leads to anything — 'last time I reported something, I never heard back' — so the effort feels wasted.", "impact": "High", "changeability": "Medium", "evidenceFlag": "V", "source": "floor-interviews.txt" },
+    { "component": "motivation_automatic", "barrier": "There is no habit or prompt at the machine, so reporting depends on a deliberate choice against friction each time.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "G", "source": "Reporting not broken down by cause; habit strength unmeasured" }
+  ],
+  "strongestBarriers": [
+    { "barrier": "The only channel is a slow form kept away from the line", "component": "opportunity_physical", "rationale": "Highest impact and highly changeable; a tear-off card at the machine removes the walk and the wait that suppress most reports." },
+    { "barrier": "Reports vanish, so operators believe reporting is pointless", "component": "motivation_reflective", "rationale": "High impact; visibly closing the loop is what converts a one-off report into a habit." },
+    { "barrier": "The bonus and mild social risk make reporting feel costly", "component": "opportunity_social", "rationale": "Reframing reporting as valued, and decoupling it from the bonus, removes the strongest reason to stay quiet." }
+  ],
+  "barrierNarratives": [
+    { "point": "Put a fast, tear-off report card at every machine", "narrative": "The report has to survive the moment it's needed. A two-minute card at the machine removes the walk to the office and the 15-minute form — it takes friction away rather than adding a rule, and an operator already asked for exactly this." },
+    { "point": "Close the loop visibly — acknowledge every report and show what changed", "narrative": "A report that 'goes into a black hole' teaches operators not to bother. Acknowledging every report and showing what changed is what turns a single report into a habit, because effort finally has a visible payoff." },
+    { "point": "Separate near-miss reporting from the shift bonus so it can't cost the team", "narrative": "As long as a near-miss can dent the team's payout, the rational move is silence. Decoupling reporting from the bonus removes the strongest reason not to report, so the other levers can work." }
+  ],
+  "gapLog": [
+    { "type": "assumption", "content": "The low report rate reflects suppressed reporting rather than genuinely few near-misses — the rising injury trend supports this but does not prove it.", "source": "hse-metrics.md" },
+    { "type": "gap", "content": "Time from report to action is not tracked, so the 'black hole' barrier is described by operators but not yet measured.", "source": "hse-metrics.md" },
+    { "type": "input_needed", "content": "Confirm exactly how the shift bonus treats near-misses (policy doc not attached) — whether a report affects the bonus, or only a recordable injury does." },
+    { "type": "gap", "content": "The 10-20 near-misses per recordable benchmark was heard at a forum, not a cited source — treat as directional." }
+  ],
+  "discoveryActivities": [
+    "6-8 short interviews with operators across all three shifts to confirm whether friction, futility, or fear suppresses reporting most.",
+    "A walkthrough timing the current paper-form process from the line to the office to quantify the reporting friction.",
+    "Review a sample of past reports to see how many received any documented follow-up, establishing the report-to-action baseline.",
+    "Clarify with Operations how the 'zero-incident' bonus component actually treats near-misses, and whether operators' belief matches the policy."
+  ]
+}

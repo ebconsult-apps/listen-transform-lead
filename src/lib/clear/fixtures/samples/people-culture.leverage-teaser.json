@@ -1,0 +1,9 @@
+{
+  "systemsMapSummary": "1:1s are the first thing to fall out of a busy week, and three reinforcing loops explain why. First, a priority loop: nothing protects the slot, so a 1:1 loses every collision with delivery work and gets bumped 'just this once' — which makes it easier to bump next time. Second, a visibility loop: no one can see who is actually holding 1:1s, so there is no accountability and no positive norm — managers who skip pay no cost and managers who hold them get no signal that it matters. Third, a skill loop: managers who were never coached on how to run a 1:1 find them awkward, don't know what to cover, and quietly let them lapse. These compound — an unprotected slot, held by an unsure manager, that no one is watching, reliably disappears. The highest-leverage moment is the calendar itself: a protected, recurring slot that a busy week can't quietly delete.",
+  "topLeveragePoints": [
+    { "rank": 1, "point": "Protect the 1:1 as a recurring, hard-to-move calendar hold", "currentState": "1:1s sit in an already-full calendar with nothing defending the slot, so they lose every collision with delivery work.", "impact": "High", "ease": "High", "confidence": 74 },
+    { "rank": 2, "point": "Make holding 1:1s visible to managers and their leaders", "currentState": "No one can see who is actually holding 1:1s, so there is no accountability and no norm.", "impact": "High", "ease": "Medium", "confidence": 63 },
+    { "rank": 3, "point": "Give managers a simple, reusable 1:1 structure so it feels easy to run", "currentState": "Managers who were never coached on 1:1s are unsure what to cover, so the meeting feels awkward and gets dropped.", "impact": "Medium", "ease": "Medium", "confidence": 56, "assumptionBased": true }
+  ],
+  "headline": "If we protected the slot, made cadence visible, and gave managers a simple structure to run, we'd likely see 1:1 coverage move from 38% toward the 80% target without adding a new tool."
+}

@@ -29,6 +29,7 @@ import ClarifyRunningCard from "@/components/product/ClarifyRunningCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
 import ReportBuildingLoader from "@/components/product/ReportBuildingLoader";
 import AiGeneratedNotice from "@/components/product/AiGeneratedNotice";
+import ReportFeedbackCard from "@/components/product/ReportFeedbackCard";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
 import { FULL_REPORT_STEPS } from "@/lib/clear/report-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -490,6 +491,9 @@ const ProjectDetail = () => {
                       </div>
                     </div>
                   ))}
+
+                {/* Report-happiness prompt — near the AI notice, at the foot of the report */}
+                <ReportFeedbackCard variant="report" />
               </div>
             </TabsContent>
 

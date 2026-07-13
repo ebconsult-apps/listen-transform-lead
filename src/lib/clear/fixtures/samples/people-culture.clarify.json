@@ -1,0 +1,15 @@
+{
+  "whyItMatters": "Only 38% of direct reports say they had a one-to-one with their manager in the last month, against a company expectation that everyone gets one — and the gap is not that managers disagree with 1:1s. In the manager pulse, 82% call them important; they still don't happen. The behaviour breaks under pressure: when the week gets busy the 1:1 is the first thing bumped, because nothing protects the slot, no one sees whether it happened, and managers who were never coached on how to run one quietly let it lapse. Naming a measurable target — a regular, kept 1:1 with each report — keeps later phases focused on the few changes that move coverage rather than on another reminder that managers already agree with. Getting this right means coaching and problems surface in a steady rhythm instead of only at review time.",
+  "objective": "More managers hold a regular, protected one-to-one with each direct report, so people get consistent coaching and issues surface early rather than at review time.",
+  "keyResults": [
+    { "kr": "Increase the share of direct reports who had a 1:1 in the last 30 days", "metric": "1:1 coverage (engagement pulse)", "baseline": "38% of direct reports", "target": "80% of direct reports", "timeline": "Within two quarters", "owner": "People / HR Business Partner", "confidence": "Medium" },
+    { "kr": "Reduce the share of scheduled 1:1s that are cancelled or bumped", "metric": "1:1 cancellation / no-show rate", "baseline": "~45% of booked 1:1s bumped or cancelled (two-team calendar sample)", "target": "≤15%", "timeline": "Within two quarters", "owner": "People / HR Business Partner", "confidence": "Medium" },
+    { "kr": "Sustain cadence across a full quarter, not just after a push", "metric": "Manager–report pairs with ≥3 monthly 1:1s in the quarter", "baseline": "Not measured", "target": "≥70% of pairs", "timeline": "One quarter after rollout", "owner": "People Analytics", "confidence": "Low" }
+  ],
+  "gapLog": [
+    { "type": "gap", "content": "'Held a 1:1' is self-reported in the engagement pulse, not instrumented — occurrence and quality are both unverified." },
+    { "type": "assumption", "content": "The 45% bump rate from a two-team calendar sample generalises to all teams.", "source": "Calendar sample (2 teams)" },
+    { "type": "input_needed", "content": "Confirm whether monthly 1:1s are a written manager expectation or only a cultural norm — ownership of the expectation is unclear." },
+    { "type": "gap", "content": "There is no measure of 1:1 quality; a rushed status update and a real coaching conversation currently count the same." }
+  ]
+}
