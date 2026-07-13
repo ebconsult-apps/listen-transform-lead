@@ -67,42 +67,15 @@ function getOrAssignVariant(): HeroVariant {
 
 const Hero = () => {
   const [variant] = useState<HeroVariant>(getOrAssignVariant);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const sloganRef = useRef<HTMLDivElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
   const bgPatternRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Fire A/B test event to GA4
     trackEvent("hero_ab_impression", { hero_variant: variant.id });
 
-    if (titleRef.current) {
-      titleRef.current.style.opacity = '1';
-      titleRef.current.classList.add('animate-fade-in');
-    }
-
-    setTimeout(() => {
-      if (sloganRef.current) {
-        sloganRef.current.style.opacity = '1';
-        sloganRef.current.classList.add('animate-fade-in');
-      }
-    }, 200);
-
-    setTimeout(() => {
-      if (subtitleRef.current) {
-        subtitleRef.current.style.opacity = '1';
-        subtitleRef.current.classList.add('animate-fade-in-up');
-      }
-    }, 400);
-
-    setTimeout(() => {
-      if (ctaRef.current) {
-        ctaRef.current.style.opacity = '1';
-        ctaRef.current.classList.add('animate-fade-in-up');
-      }
-    }, 600);
-
+    // The foreground copy reveals via CSS animations (see JSX below) so it stays
+    // visible in the prerendered HTML even before JS runs. Only the decorative
+    // ambient background — safe to hide — is faded in from script.
     if (bgPatternRef.current) {
       bgPatternRef.current.style.opacity = '1';
       bgPatternRef.current.classList.add('animate-fade-in');
@@ -126,35 +99,19 @@ const Hero = () => {
 
       {/* Content */}
       <div className="section-container relative z-10 flex flex-col items-center text-center">
-        <div
-          ref={sloganRef}
-          className="mb-2 tag text-lg md:text-xl"
-          style={{ opacity: '0' }}
-        >
+        <div className="mb-2 tag text-lg md:text-xl motion-safe:animate-fade-in motion-safe:[animation-delay:200ms] motion-safe:[animation-fill-mode:backwards]">
           {variant.tag}
         </div>
 
-        <h1
-          ref={titleRef}
-          className="heading-xl"
-          style={{ opacity: '0' }}
-        >
+        <h1 className="heading-xl motion-safe:animate-fade-in">
           {variant.headline}
         </h1>
 
-        <p
-          ref={subtitleRef}
-          className="mt-6 body-lg max-w-2xl"
-          style={{ opacity: '0' }}
-        >
+        <p className="mt-6 body-lg max-w-2xl motion-safe:animate-fade-in-up motion-safe:[animation-delay:400ms] motion-safe:[animation-fill-mode:backwards]">
           {variant.subtitle}
         </p>
-        
-        <div 
-          ref={ctaRef}
-          className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center"
-          style={{ opacity: '0' }}
-        >
+
+        <div className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center motion-safe:animate-fade-in-up motion-safe:[animation-delay:600ms] motion-safe:[animation-fill-mode:backwards]">
           <Link to="/assessment" className="btn-primary" onClick={() => trackCTAClick("hero_assessment")}>
             Take the Free Assessment
             <ArrowRight className="ml-2 h-4 w-4" />

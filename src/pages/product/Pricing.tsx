@@ -22,6 +22,13 @@ const Pricing = () => {
           The teaser is always free. Pay per-report or subscribe, whichever fits
           how often you ship change.
         </p>
+        <p className="text-sm text-foreground/60 mt-4">
+          Not sure yet?{" "}
+          <Link to="/product/sample" className="text-primary font-medium hover:underline">
+            See a full sample report
+          </Link>{" "}
+          before you pay.
+        </p>
       </section>
 
       <section className="section-container pt-0">
@@ -61,17 +68,27 @@ const Pricing = () => {
 
         {/* One-off unlock + enterprise */}
         <div className="grid md:grid-cols-2 gap-6 mt-6">
-          <div className="glass-card p-6 flex flex-col bg-primary/5">
+          <div className="glass-card p-6 flex flex-col bg-primary/5 ring-2 ring-primary/40">
+            <div className="mb-3 h-6">
+              <span className="tag">Best first purchase</span>
+            </div>
             <h3 className="text-lg font-semibold">{UNLOCK_PLAN.name}</h3>
             <p className="text-3xl font-bold mt-2 mb-4">
               {UNLOCK_PLAN.price}{" "}
               <span className="text-sm font-normal text-foreground/50">{UNLOCK_PLAN.cadence}</span>
             </p>
-            <p className="text-sm text-foreground/70 mb-4 flex-grow">
-              A premium one-off: unlock one full report when you need it — no
-              subscription required, and creditable toward a subscription for 14 days.
+            <p className="text-sm text-foreground/70 mb-2">
+              The easiest way to start: one full report, no subscription. If you
+              upgrade to a plan within 14 days, it credits toward your first payment.
             </p>
-            <Link to={dest} className="btn-outline w-full mt-auto">
+            <p className="text-sm text-foreground/60 mb-4 flex-grow">
+              Want to see the output first?{" "}
+              <Link to="/product/sample" className="text-primary hover:underline">
+                See a full sample report
+              </Link>
+              .
+            </p>
+            <Link to={dest} className="btn-primary w-full mt-auto">
               {UNLOCK_PLAN.cta}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

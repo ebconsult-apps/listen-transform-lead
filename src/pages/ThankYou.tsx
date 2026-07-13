@@ -47,6 +47,21 @@ const ThankYou = () => {
               </Link>
             </div>
 
+            <div className="glass-card p-6 sm:p-8 bg-primary/5 mb-10 text-left sm:text-center">
+              <p className="font-medium mb-1">See what a full CLEAR report looks like</p>
+              <p className="text-sm text-foreground/60 mb-4">
+                Our self-serve app turns a behavior-change challenge into a measurable
+                objective, a systems map, and the COM-B barriers to act on.
+              </p>
+              <Link
+                to="/product/sample"
+                className="inline-flex items-center text-primary font-medium hover:underline"
+              >
+                View a sample report
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+
             <Link
               to="/"
               className="text-sm text-foreground/50 hover:text-foreground/70 transition-colors"
