@@ -64,6 +64,21 @@ const dimensionKeys = [
   "refinement",
 ] as const;
 
+/**
+ * Map the quiz's "most pressing challenge" answer onto the closest sample-report
+ * segment, so "See a sample report" opens the version nearest to the visitor's
+ * situation. Unmapped challenges fall through to the default sample (no param).
+ */
+const CHALLENGE_TO_SEGMENT: Record<string, string> = {
+  "Culture & Collaboration": "people-culture",
+  "Growth & Scaling": "product-growth",
+};
+
+function sampleHrefForChallenge(challenge: string | undefined): string {
+  const segment = challenge ? CHALLENGE_TO_SEGMENT[challenge] : undefined;
+  return segment ? `/product/sample?segment=${segment}` : "/product/sample";
+}
+
 const inputClasses =
   "w-full p-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow";
 
@@ -383,7 +398,7 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
             Try CLEAR free
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
-          <Link to="/product/sample" className="btn-secondary">
+          <Link to={sampleHrefForChallenge(data.challenge)} className="btn-secondary">
             See a sample report
           </Link>
         </div>
