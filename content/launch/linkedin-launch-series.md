@@ -22,7 +22,7 @@ show you built something, teach the method, prove it, make the offer, handle the
 **Hook:** Most change programs don't fail on the strategy. They fail on the behavior.
 
 I've spent my career as a psychologist inside organizations that were trying to change
-something — how people sell, how they lead, how citizens act on a new policy. The pattern is
+something: how people sell, how they lead, how citizens act on a new policy. The pattern is
 almost always the same.
 
 Leaders assume that once people understand the change, they'll adopt it. They won't.
@@ -31,7 +31,7 @@ nothing move.
 
 So the plan gets more communication. More town halls. More slides. And the behavior still
 doesn't budge, because the actual barrier was never about understanding. It was about capability,
-or opportunity, or motivation — and nobody diagnosed which.
+or opportunity, or motivation, and nobody diagnosed which.
 
 The teams that succeed treat change the way a psychologist treats behavior change. They find out
 what's really holding the current behavior in place before they push a new one.
@@ -49,9 +49,9 @@ What's the change effort you've watched stall for reasons no one named out loud?
 **Hook:** For years my method lived in my head and a stack of workshop decks. I just turned it
 into software.
 
-I'm a licensed psychologist. Most of my work has been helping organizations move behavior —
-[ERIK: insert one true, non-confidential line about the kind of work, e.g. "including a long
-engagement with one of Sweden's large pension providers"]. Over time that work hardened into a
+I'm a licensed psychologist. Most of my work has been helping organizations move behavior.
+[ERIK: insert one true, non-confidential line about the kind of work, e.g. "That includes a long
+engagement with one of Sweden's large pension providers."] Over time that work hardened into a
 repeatable method I call CLEAR: Clarify, Leverage, Experiment, Analyse, Refine.
 
 The problem with a method that lives in one person's head is that it doesn't scale, and it isn't
@@ -63,7 +63,7 @@ points, and a barrier analysis grounded in behavioral science.
 
 It's live at clear-framework.com, and I'm launching it properly over the next few weeks.
 
-I'll be building in public here — what's working, what isn't, what I'm learning from real users.
+I'll be building in public here: what's working, what isn't, what I'm learning from real users.
 
 If you want to follow along, follow me here.
 
@@ -134,14 +134,14 @@ Take a look and tell me what you'd want to see added.
 **Hook:** I'm taking on five Founding Partners for CLEAR. Here's the deal.
 
 I built CLEAR so behavioral analysis doesn't have to mean a six-figure consulting engagement.
-To launch it, I want five real challenges to run personally — and I want the people behind them
+To launch it, I want five real challenges to run personally, and I want the people behind them
 to be glad they did it.
 
 So, for the first five:
 
 You bring one behavior you want a specific group to change. We do a 30-minute intake call. I run
 your challenge through the full CLEAR method myself and curate it with my own read as a
-psychologist — not a raw output. You get a polished, decision-ready report and a 30-minute debrief
+psychologist, not a raw output. You get a polished, decision-ready report and a 30-minute debrief
 to walk through it.
 
 €200, one-off. And a 14-day happiness guarantee: if it isn't worth it, I refund you in full, no
@@ -169,8 +169,8 @@ thirty seconds. Sometimes that's enough.
 Here's where it falls short for this specific job, and where CLEAR is built differently:
 
 **It doesn't hold a method.** Ask a chat model and it improvises. CLEAR runs the same disciplined
-sequence every time — clarify the behavior, map the system, locate leverage, design the
-experiment — because the order is what prevents you from solving the wrong problem well.
+sequence every time: clarify the behavior, map the system, locate leverage, design the
+experiment. It does that because the order is what stops you from solving the wrong problem well.
 
 **It doesn't show its uncertainty.** A chat answer sounds equally confident whether it knows or is
 guessing. CLEAR separates what's grounded in your inputs from what it's assuming, and logs the
@@ -179,7 +179,7 @@ gaps.
 **It isn't accountable.** With the Founding Partner Report, a licensed psychologist reads every
 output and puts his name on it.
 
-I'm not anti-AI — CLEAR *is* AI, pointed at one job and disciplined by a real methodology and a
+I'm not anti-AI. CLEAR *is* AI, pointed at one job and disciplined by a real methodology and a
 real expert. That combination is the point.
 
 Where have you seen a confident AI answer quietly solve the wrong problem?
@@ -232,7 +232,7 @@ default, put the right option where the hand already reaches.
 by making the desired action the easy one.]
 
 This is why I distrust change plans built entirely on communication. Communication targets
-motivation. But if the barrier is opportunity — friction, defaults, environment — no amount of
+motivation. But if the barrier is opportunity (friction, defaults, environment), no amount of
 messaging fixes it. You have to change the path.
 
 The question I ask on every engagement: if we did nothing to motivate anyone, and only made the
