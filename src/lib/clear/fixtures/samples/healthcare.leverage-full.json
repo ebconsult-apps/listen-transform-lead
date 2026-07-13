@@ -1,0 +1,67 @@
+{
+  "systemsMapSummary": "Compliance is highest after patient contact (74%) and lowest before it (41%), which points away from knowledge and toward the moment itself. Three things pull compliance down at the before-contact moment: time pressure on the morning round, an environment that sometimes fails (empty bed-bay dispensers with no time to hunt for a refill), and a mixed social signal, since juniors follow whether the senior gels first. A busy round, plus an empty dispenser, plus a senior who skipped, makes 'keep moving' the safest default — and Moment 1 compliance sits at 41%.",
+  "headline": "If gel were always within reach, seniors modelled it first on the round, and a simple cue marked the before-contact moment, we'd likely see Moment 1 compliance move from 41% toward the 90% target without more training.",
+  "topLeveragePoints": [
+    { "rank": 1, "point": "Put alcohol gel within arm's reach at every point of care and keep it filled", "currentState": "6 of 56 bed-bay dispensers were empty on spot check; staff 'don't have time to hunt for a refill'.", "impact": "High", "ease": "High", "confidence": 79 },
+    { "rank": 2, "point": "Have the senior clinician gel first and visibly at the start of the round", "currentState": "Compliance rises when a senior visibly gels first; modelling is currently inconsistent.", "impact": "High", "ease": "Medium", "confidence": 68 },
+    { "rank": 3, "point": "Add a brief before-contact cue to the morning-round routine", "currentState": "Nothing on the busy round cues the before-contact moment, so it depends on memory under pressure.", "impact": "Medium", "ease": "Medium", "confidence": 57, "assumptionBased": true },
+    { "rank": 4, "point": "Give facilities a scheduled point-of-care restocking round", "currentState": "Refilling appears reactive; there is no scheduled point-of-care restock, so bays run empty.", "impact": "Medium", "ease": "High", "confidence": 64 },
+    { "rank": 5, "point": "Include healthcare assistants in hand-hygiene training and audit", "currentState": "HCAs were excluded from the last training and are not separately audited during personal care.", "impact": "Medium", "ease": "Medium", "confidence": 55 }
+  ],
+  "behaviors": [
+    { "id": "b1", "description": "Clinician cleans hands immediately before patient contact on the round", "who": "Ward nurse / junior doctor", "doesWhat": "Cleans hands with alcohol gel", "when": "Before touching the patient", "where": "At the bed bay", "howOften": "Every before-contact moment", "withWhom": "During the round", "level": "detail", "genre": "carry_out_process" },
+    { "id": "b2", "description": "Senior clinician gels first and visibly at the start of the round", "who": "Consultant / senior physician", "doesWhat": "Cleans hands first, in view of the team", "when": "At the start of each round", "where": "On the ward", "howOften": "Every round", "withWhom": "With juniors present", "level": "detail", "genre": "social" },
+    { "id": "b3", "description": "Facilities restocks bed-bay dispensers before they run out", "who": "Facilities / supplies coordinator", "doesWhat": "Checks and refills dispensers", "when": "On a scheduled point-of-care round", "where": "At every bed bay", "howOften": "Daily", "withWhom": "Alone", "level": "high", "genre": "carry_out_process" }
+  ],
+  "behaviorPriorities": [
+    { "behaviorId": "b1", "effect": 5, "ease": 3, "centrality": 5, "measurability": 4 },
+    { "behaviorId": "b2", "effect": 4, "ease": 3, "centrality": 4, "measurability": 3 },
+    { "behaviorId": "b3", "effect": 4, "ease": 4, "centrality": 4, "measurability": 4 }
+  ],
+  "keyActors": [
+    { "actor": "Ward nurse / junior doctor", "behavior": "Cleans — or skips — hands at the before-contact moment under time pressure" },
+    { "actor": "Senior clinician", "behavior": "Sets the ward norm by modelling, or not modelling, the moment on the round" },
+    { "actor": "Facilities / supplies coordinator", "behavior": "Keeps gel available at the point of care, or lets bays run empty" },
+    { "actor": "Infection Prevention & Control Nurse", "behavior": "Owns the audit and the currently-missing point-of-care restocking routine" }
+  ],
+  "causeEffect": [
+    { "from": "Empty bed-bay dispenser", "to": "Missed before-contact moment", "polarity": "+", "note": "No gel within reach and no time to hunt for a refill" },
+    { "from": "Time pressure on the morning round", "to": "Skipped hand-hygiene moments", "polarity": "+", "note": "Staff are 'three patients behind before you know it'" },
+    { "from": "Senior gels first on the round", "to": "Junior compliance", "polarity": "+", "note": "Juniors follow the senior's lead" },
+    { "from": "Scheduled point-of-care restocking", "to": "Empty dispensers", "polarity": "-", "note": "Regular refills keep gel available" }
+  ],
+  "loops": [
+    "Pressure loop: busy round -> skip the moment -> skipping becomes the round's norm -> even easier to skip next round.",
+    "Modelling loop: senior skips -> juniors read skipping as acceptable -> mixed norm -> seniors get no pushback -> keep skipping."
+  ],
+  "comb": [
+    { "component": "capability_physical", "barrier": "Cleaning hands is quick and physically simple; technique is not the limiting factor here.", "impact": "Low", "changeability": "High", "evidenceFlag": "NA" },
+    { "component": "capability_psychological", "barrier": "Staff know the five moments but, under load, don't consciously register the before-contact moment as it passes.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "V", "source": "staff-comments.txt: 'on rounds you're three patients behind before you know it'" },
+    { "component": "opportunity_physical", "barrier": "Gel is not reliably within reach — 6 of 56 bed-bay dispensers were empty and refills are hard to find on a busy round.", "significance": "The dominant structural barrier", "impact": "High", "changeability": "High", "evidenceFlag": "V", "source": "audit-summary.md: 6/56 dispensers empty; staff report no time to hunt for a refill" },
+    { "component": "opportunity_social", "barrier": "Senior clinicians model the moment inconsistently, so juniors get a mixed norm and stopping the round feels awkward.", "impact": "High", "changeability": "Medium", "evidenceFlag": "V", "source": "audit-summary.md: compliance higher when a senior visibly gels first" },
+    { "component": "motivation_reflective", "barrier": "Staff believe hand hygiene matters but, in the moment, prioritise keeping the round moving over a two-second detour.", "impact": "Medium", "changeability": "Low", "evidenceFlag": "A", "source": "Inferred: knowledge high, Moment 1 compliance 41%" },
+    { "component": "motivation_automatic", "barrier": "The before-contact moment is not yet an automatic habit on the round; it depends on remembering under pressure.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "G", "source": "Habit strength not measured; compliance decays as the round gets busier" }
+  ],
+  "strongestBarriers": [
+    { "barrier": "Gel is not reliably within reach at the point of care", "component": "opportunity_physical", "rationale": "Highest impact and highly changeable; if gel is always at the bed bay, the before-contact moment stops competing with a walk across the ward." },
+    { "barrier": "Senior clinicians model the moment inconsistently", "component": "opportunity_social", "rationale": "High impact; when a senior gels first, juniors follow, so the cheapest cultural lever is upstream, not more training." },
+    { "barrier": "The before-contact moment isn't consciously registered under load", "component": "capability_psychological", "rationale": "A light, well-placed cue converts existing knowledge into action at the exact moment it is needed." }
+  ],
+  "barrierNarratives": [
+    { "point": "Put alcohol gel within arm's reach at every point of care and keep it filled", "narrative": "Effort at the moment of contact is the dominant barrier. If gel is always at the bed bay, cleaning hands stops competing with the round — the cheapest, fastest lever, and it removes an excuse rather than adding a rule." },
+    { "point": "Have the senior clinician gel first and visibly at the start of the round", "narrative": "Juniors take their cue from seniors. A senior who gels first at the start of every round flips the ward's social signal from mixed to clear, without a poster or a lecture." },
+    { "point": "Add a brief before-contact cue to the morning-round routine", "narrative": "Even staff who know the five moments miss them under load. A simple cue anchored to the round turns memory-dependence into a reliable trigger at the busiest time." }
+  ],
+  "gapLog": [
+    { "type": "gap", "content": "The audit is direct observation, so the Hawthorne effect may inflate the measured 52% — true unobserved compliance is unknown." },
+    { "type": "assumption", "content": "The 6-of-56 empty-dispenser finding reflects routine stocking, not a one-off supply gap.", "source": "audit-summary.md" },
+    { "type": "input_needed", "content": "Confirm who owns bed-bay dispenser refills — staff describe hunting for refills, suggesting no clear point-of-care restocking routine." },
+    { "type": "gap", "content": "Healthcare assistants were excluded from the last training and are not separately audited during personal care." }
+  ],
+  "discoveryActivities": [
+    "Shadow 2-3 morning rounds to time the before-contact moment and see where gel is (and isn't) within reach.",
+    "A dispenser-stocking audit across all 56 bed bays over a week to measure how often bays run empty and how fast they are refilled.",
+    "Brief interviews with junior staff on how senior modelling affects whether they stop the round to gel.",
+    "Compare Moment 1 compliance on days a senior gelled first versus days they didn't, to test the modelling link."
+  ]
+}

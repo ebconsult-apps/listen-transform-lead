@@ -1,0 +1,15 @@
+{
+  "whyItMatters": "Near-miss reporting sits at about 4 reports a month across 180 operators while recordable injuries have crept up from 6 to 9 — a pattern mature safety programmes read as under-reporting, not as a safe plant. Operators say near-misses are happening but not logged, and the reasons are structural: the paper form 'takes 15 minutes and goes into a black hole', it lives by the office rather than at the line, supervisors rarely follow up, and the shift bonus's 'zero-incident' component makes reporting feel like it costs the team. The goal here is a leading indicator, not a scoreboard — more near-misses reported is a sign the system is surfacing risk earlier, before it becomes an injury. Naming that target — a fast, no-blame report at the line that visibly leads to action — keeps later phases focused on the friction and fear that suppress reporting rather than on exhorting people to 'be safer'.",
+  "objective": "More operators report near-misses quickly and without fear, and every report visibly leads to action, so risks surface before they become injuries.",
+  "keyResults": [
+    { "kr": "Increase near-miss reports per month (treated as a leading indicator, not a failure)", "metric": "Near-miss reports / month", "baseline": "~4/month (48 in the trailing year)", "target": "≥40/month across the floor", "timeline": "Within one quarter", "owner": "Plant HSE Manager", "confidence": "Medium" },
+    { "kr": "Cut the time from a report to a visible action or response", "metric": "Median time report → documented action", "baseline": "Not tracked — reports 'go into a black hole'", "target": "Every report acknowledged ≤48h; action or reason logged ≤2 weeks", "timeline": "Within one quarter", "owner": "Shift Supervisor (representative)", "confidence": "Low" },
+    { "kr": "Make reporting quick at the line", "metric": "Median time to submit a report", "baseline": "~15 minutes on a paper form by the office", "target": "≤2 minutes at the machine", "timeline": "Within 6 weeks", "owner": "Plant HSE Manager", "confidence": "Medium" }
+  ],
+  "gapLog": [
+    { "type": "assumption", "content": "The low report rate reflects suppressed reporting rather than genuinely few near-misses — the rising injury trend supports this but does not prove it.", "source": "hse-metrics.md" },
+    { "type": "gap", "content": "Time from report to action is not tracked today, so KR2's baseline must be established before the target holds.", "source": "hse-metrics.md" },
+    { "type": "input_needed", "content": "Confirm exactly how the shift bonus treats near-misses (policy doc not attached) — whether a report affects the bonus, or only a recordable injury does." },
+    { "type": "gap", "content": "The 10-20 near-misses per recordable benchmark was heard at an industry forum, not a cited source — treat as directional only.", "source": "hse-metrics.md" }
+  ]
+}

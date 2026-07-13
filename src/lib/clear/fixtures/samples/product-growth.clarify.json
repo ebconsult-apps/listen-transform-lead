@@ -1,0 +1,15 @@
+{
+  "whyItMatters": "Only 6.0% of free trials become paying teams, yet the funnel shows exactly where the value is lost: 54% create a first project, but just 29% ever invite a teammate and only 22% reach a shared board. The product is a team tool used, at first, by one person migrating off spreadsheets or Trello — so it stays quiet in week one and never earns the second project. The most striking signal is behavioural, not attitudinal: trials that invite a teammate within 48 hours convert at 19% versus 3% otherwise. Fixing conversion is therefore less about persuasion and more about getting the team into the workspace before the trial goes cold. Naming that as the measurable target keeps later phases focused on the few behaviours that move paid conversion rather than on discounting.",
+  "objective": "More trial teams reach a genuinely shared workspace in week one — a teammate invited and a shared board created early — so that trial-to-paid conversion rises without discounting.",
+  "keyResults": [
+    { "kr": "Increase the share of trials that create a shared board (activation) in week one", "metric": "Activation rate — first shared board", "baseline": "22% of signups", "target": "40% of signups", "timeline": "Within two quarters", "owner": "Product Manager, Activation", "confidence": "Medium" },
+    { "kr": "Increase the share of trials that invite a teammate within the first 48 hours", "metric": "Trials inviting a teammate within 48h", "baseline": "29% of signups invite at all; invite-within-48h not separately tracked", "target": "Grow the within-48h invite share (set once instrumented)", "timeline": "Within two quarters", "owner": "Head of Growth", "confidence": "Medium" },
+    { "kr": "Lift trial-to-paid conversion from its current baseline", "metric": "Trial-to-paid conversion", "baseline": "6.0%", "target": "Low double-digit conversion", "timeline": "Before the annual pricing change", "owner": "Head of Growth", "confidence": "Low" }
+  ],
+  "gapLog": [
+    { "type": "gap", "content": "Week-one 'quiet' is reported by Sales but not instrumented — there is no in-product engagement measure for the first seven days." },
+    { "type": "assumption", "content": "The 19%-vs-3% invite/no-invite conversion gap is treated as directional, not proven causal; a teammate invite may be a marker of already-committed teams.", "source": "trial-funnel-q2.md" },
+    { "type": "input_needed", "content": "Confirm which team owns the 7-step workspace-setup wizard, since fixing it spans Product and Support." },
+    { "type": "gap", "content": "Invite-within-48h is not separately tracked today, so KR2's target cannot be set until the metric exists." }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "whyItMatters": "Audited hand-hygiene compliance on the two medical wards sits at 52% against a 90% target, and the gap is not knowledge — staff can recite the WHO 'five moments'. It is behaviour under pressure. Compliance collapses at the moments that matter most: 41% before patient contact and 38% during the 08:00-11:00 round, when the ward is busiest and a missed moment is most likely to transmit infection. Two things make the moment harder than it needs to be: alcohol-gel dispensers are sometimes empty at the bed bay, and senior clinicians model the behaviour inconsistently, so juniors take their cue from a mixed signal. Naming a measurable target — compliance at the before-contact moment, on the round, with gel always within reach — keeps later phases focused on the few changes that move the audited number rather than on repeating training everyone has already had.",
+  "objective": "More staff clean their hands at the moments that matter — especially before patient contact and during the morning round — so audited compliance rises toward the 90% target and holds there.",
+  "keyResults": [
+    { "kr": "Lift before-patient-contact (Moment 1) compliance", "metric": "Moment 1 compliance (direct observation)", "baseline": "41%", "target": "≥80%", "timeline": "Next quarterly audit (~3 months)", "owner": "Infection Prevention & Control Nurse", "confidence": "Medium" },
+    { "kr": "Lift compliance during the 08:00-11:00 round", "metric": "Compliance during morning rounds", "baseline": "38%", "target": "≥75%", "timeline": "Next quarterly audit", "owner": "Ward Manager", "confidence": "Medium" },
+    { "kr": "Eliminate empty bed-bay dispensers at the point of care", "metric": "Bed-bay dispensers found stocked on spot check", "baseline": "50 of 56 stocked (6 empty)", "target": "≥55 of 56 at every check", "timeline": "Within 6 weeks", "owner": "Facilities / supplies coordinator", "confidence": "Medium" }
+  ],
+  "gapLog": [
+    { "type": "gap", "content": "The audit is direct observation (n=300 opportunities), so the Hawthorne effect may inflate the measured 52% — true unobserved compliance is unknown." },
+    { "type": "assumption", "content": "The 6-of-56 empty-dispenser finding reflects routine stocking, not a one-off supply gap.", "source": "audit-summary.md" },
+    { "type": "input_needed", "content": "Confirm who owns bed-bay dispenser refills at ward level — staff describe hunting for a refill, suggesting no clear point-of-care restocking routine." },
+    { "type": "gap", "content": "Healthcare assistants were excluded from the last training and are not separately audited during personal care, so their baseline compliance is unknown." }
+  ]
+}
