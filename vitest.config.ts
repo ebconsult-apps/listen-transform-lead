@@ -8,7 +8,7 @@ import path from "path";
 // (e.g. the data libs' dev-mode guards) resolve under test too.
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts", "supabase/functions/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "supabase/functions/**/*.test.ts", "evals/**/*.test.ts"],
     environment: "node",
   },
   resolve: {
