@@ -28,6 +28,7 @@ import ResearchValue from "@/components/product/ResearchValue";
 import ClarifyRunningCard from "@/components/product/ClarifyRunningCard";
 import WorkflowStepper from "@/components/product/WorkflowStepper";
 import ReportBuildingLoader from "@/components/product/ReportBuildingLoader";
+import AiGeneratedNotice from "@/components/product/AiGeneratedNotice";
 import { stepDoneMap, stepUnlockedMap, furthestStep, isStale, type StepId, type StepDef } from "@/lib/clear/steps";
 import { FULL_REPORT_STEPS } from "@/lib/clear/report-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -301,6 +302,10 @@ const ProjectDetail = () => {
           onStepClick={onStepClick}
         />
       </div>
+
+      {/* AI-transparency label (EU AI Act Art. 50) — shown once an AI report
+          exists; print-visible so it also lands in the exported PDF. */}
+      {hasClarify && <AiGeneratedNotice className="mb-6" />}
 
       {/* Step 0 — not yet run: kick off Clarify */}
       {!hasClarify && (
