@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { DEV_ACCESS_ENABLED, enterDevMode } from "@/lib/dev/config";
+import { Checkbox } from "@/components/ui/checkbox";
+import { TERMS_VERSION } from "@/content/terms-of-service";
+import { setPendingTermsAcceptance } from "@/lib/terms-acceptance";
 import { toast } from "sonner";
 
 /**
@@ -14,13 +17,18 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Signup only: the versioned Terms acceptance is recorded once the session lands
+  // (AuthCallback). Login never shows this — existing users already accepted.
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
 
   const isSignup = mode === "signup";
+  const blockedByTerms = isSignup && !agreedToTerms;
 
   const sendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase || blockedByTerms) return;
+    if (isSignup) setPendingTermsAcceptance(TERMS_VERSION);
     setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -35,7 +43,8 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
   };
 
   const google = async () => {
-    if (!supabase) return;
+    if (!supabase || blockedByTerms) return;
+    if (isSignup) setPendingTermsAcceptance(TERMS_VERSION);
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
@@ -97,6 +106,27 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
           </div>
         ) : (
           <>
+            {isSignup && (
+              <div className="flex items-start gap-3 text-sm mb-4">
+                <Checkbox
+                  id="terms-accept"
+                  checked={agreedToTerms}
+                  onCheckedChange={(v) => setAgreedToTerms(v === true)}
+                  className="mt-0.5"
+                />
+                <label htmlFor="terms-accept" className="text-foreground/80 cursor-pointer select-none">
+                  I agree to the{" "}
+                  <Link to="/terms" target="_blank" className="text-primary underline hover:no-underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy" target="_blank" className="text-primary underline hover:no-underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+            )}
             <form onSubmit={sendMagicLink} className="space-y-4">
               <label htmlFor="login-email" className="sr-only">
                 Email address
@@ -110,7 +140,11 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-input px-4 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-ring"
               />
-              <button type="submit" disabled={loading} className="btn-primary w-full">
+              <button
+                type="submit"
+                disabled={loading || blockedByTerms}
+                className="btn-primary w-full disabled:opacity-50"
+              >
                 {loading ? "Sending…" : "Email me a magic link"}
               </button>
             </form>
@@ -118,7 +152,11 @@ const AuthForm = ({ mode }: { mode: "login" | "signup" }) => {
               <div className="h-px bg-border flex-grow" /> or{" "}
               <div className="h-px bg-border flex-grow" />
             </div>
-            <button onClick={google} className="btn-secondary w-full">
+            <button
+              onClick={google}
+              disabled={blockedByTerms}
+              className="btn-secondary w-full disabled:opacity-50"
+            >
               Continue with Google
             </button>
           </>

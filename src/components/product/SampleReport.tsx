@@ -1,6 +1,7 @@
 import TeaserReport from "@/components/product/TeaserReport";
 import ClarifyCard from "@/components/product/ClarifyCard";
 import FullReport from "@/components/product/FullReport";
+import AiGeneratedNotice from "@/components/product/AiGeneratedNotice";
 import type { ClarifyOutput, LeverageTeaser, LeverageFull } from "@/lib/clear/types";
 import clarifyFixture from "@/lib/clear/fixtures/clarify.json";
 import teaserFixture from "@/lib/clear/fixtures/leverage-teaser.json";
@@ -20,6 +21,7 @@ const full = fullFixture as LeverageFull;
 export default function SampleReport() {
   return (
     <div className="space-y-8">
+      <AiGeneratedNotice />
       <ClarifyCard clarify={clarify} />
       <TeaserReport teaser={teaser} />
       <FullReport full={full} />

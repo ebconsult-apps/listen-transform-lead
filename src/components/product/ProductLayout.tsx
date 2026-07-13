@@ -11,6 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { CONTACT_EMAIL } from "@/config/site";
+
+/** In-app "Support" links open the user's mail client with a prefilled subject. */
+const SUPPORT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CLEAR support")}`;
 
 /** Two-letter monogram from a display name or email for the avatar fallback. */
 function initials(source: string): string {
@@ -83,6 +87,9 @@ const ProductLayout = () => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/app")}>Dashboard</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate("/account")}>Account</DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <a href={SUPPORT_MAILTO}>Support</a>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
                 </DropdownMenuContent>
@@ -103,7 +110,7 @@ const ProductLayout = () => {
       <footer className="bg-muted py-10 mt-16 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-foreground/50">
           <p>© {new Date().getFullYear()} CLEAR: Behavioral insights, productized.</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
             <Link to="/framework" className="hover:text-foreground transition-colors">
               Method
             </Link>
@@ -113,6 +120,15 @@ const ProductLayout = () => {
             <Link to="/privacy" className="hover:text-foreground transition-colors">
               Privacy
             </Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
+            <Link to="/refund" className="hover:text-foreground transition-colors">
+              Refunds
+            </Link>
+            <a href={SUPPORT_MAILTO} className="hover:text-foreground transition-colors">
+              Support
+            </a>
             <Link to="/" className="hover:text-foreground transition-colors">
               clear-framework.com
             </Link>

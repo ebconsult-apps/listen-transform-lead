@@ -16,7 +16,10 @@ import {
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CONTACT_EMAIL } from "@/config/site";
 import { toast } from "sonner";
+
+const SUPPORT_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("CLEAR support")}`;
 
 const Account = () => {
   const { user } = useAuth();
@@ -155,6 +158,45 @@ const Account = () => {
             >
               Manage billing →
             </Link>
+          </div>
+
+          {/* Help & support — always reachable while signed in (no ticket system) */}
+          <div className="glass-card p-8">
+            <h2 className="heading-md mb-4">Help &amp; support</h2>
+            <dl className="space-y-4 text-sm">
+              <div>
+                <dt className="font-medium text-foreground">How long does a report take?</dt>
+                <dd className="text-foreground/70 mt-1">
+                  Clarify returns in about a minute. The full Leverage report usually finishes in
+                  30–60 seconds once you unlock it — you can keep the tab open while it builds.
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-foreground">What if a run fails?</dt>
+                <dd className="text-foreground/70 mt-1">
+                  Re-run the phase from the project page — nothing is charged for a failed run, and
+                  your inputs are saved. If it keeps failing, email us the project name and we&rsquo;ll
+                  look into it.
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium text-foreground">How do refunds and cancellations work?</dt>
+                <dd className="text-foreground/70 mt-1">
+                  Cancel anytime from{" "}
+                  <Link to="/account/billing" className="text-primary hover:underline">
+                    billing
+                  </Link>
+                  ; see the{" "}
+                  <Link to="/refund" className="text-primary hover:underline">
+                    Refund &amp; Cancellation Policy
+                  </Link>{" "}
+                  for the full details.
+                </dd>
+              </div>
+            </dl>
+            <a href={SUPPORT_MAILTO} className="btn-secondary inline-flex mt-6">
+              Email support
+            </a>
           </div>
         </div>
       )}

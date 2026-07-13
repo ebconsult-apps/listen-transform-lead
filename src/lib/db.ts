@@ -19,6 +19,10 @@ export interface Profile {
   privacy_accepted_at: string | null;
   /** The PRIVACY_POLICY_VERSION the user accepted. */
   privacy_policy_version: string | null;
+  /** Set when the user accepts the Terms of Service at signup (null = not yet). */
+  terms_accepted_at: string | null;
+  /** The TERMS_VERSION the user accepted. */
+  terms_version: string | null;
 }
 
 export interface Workspace {
@@ -306,6 +310,27 @@ export async function recordPrivacyAcceptance(version: string): Promise<void> {
     .update({
       privacy_accepted_at: new Date().toISOString(),
       privacy_policy_version: version,
+    })
+    .eq("id", userId);
+  if (error) throw error;
+}
+
+/**
+ * Record the current user's acceptance of the given Terms of Service version.
+ * Called just after signup completes (see AuthCallback). Mirrors the Privacy
+ * acceptance pattern; the mock-mode seam keeps dev/QA off the real backend.
+ */
+export async function recordTermsAcceptance(version: string): Promise<void> {
+  if (DEV_CAP && devActive()) return mockStore.recordTermsAcceptance(version);
+  const sb = requireSupabase();
+  const { data: auth } = await sb.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error("Not signed in.");
+  const { error } = await sb
+    .from("profiles")
+    .update({
+      terms_accepted_at: new Date().toISOString(),
+      terms_version: version,
     })
     .eq("id", userId);
   if (error) throw error;

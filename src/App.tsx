@@ -18,6 +18,8 @@ import Framework from "./pages/Framework";
 import Methodology from "./pages/Methodology";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import RefundPolicy from "./pages/RefundPolicy";
 import NotFound from "./pages/NotFound";
 import ThankYou from "./pages/ThankYou";
 import CookieConsent from "./components/CookieConsent";
@@ -141,6 +143,8 @@ const App = () => (
               <Route path="thank-you" element={<ThankYou />} />
               <Route path="assessment" element={<Assessment />} />
               <Route path="privacy" element={<PrivacyPolicy />} />
+              <Route path="terms" element={<TermsOfService />} />
+              <Route path="refund" element={<RefundPolicy />} />
               <Route path="services/change-management" element={<ChangeManagementService />} />
               <Route path="services/leadership-development" element={<LeadershipDevelopmentService />} />
               <Route path="services/executive-coaching" element={<ExecutiveCoachingService />} />

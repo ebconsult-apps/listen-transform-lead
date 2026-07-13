@@ -124,6 +124,15 @@ export async function updateMyProfile(patch: { full_name: string }): Promise<voi
   db.profile = { ...db.profile, full_name: patch.full_name };
 }
 
+/** Persist ToS acceptance within the session (mirrors db.recordTermsAcceptance). */
+export async function recordTermsAcceptance(version: string): Promise<void> {
+  db.profile = {
+    ...db.profile,
+    terms_accepted_at: nowIso(),
+    terms_version: version,
+  };
+}
+
 export async function listProjects(): Promise<Project[]> {
   await delay(READ_MS);
   return clone(
