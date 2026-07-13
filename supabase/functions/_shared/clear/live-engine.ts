@@ -58,18 +58,21 @@ function extractJson<T>(text: string): T {
 
 /**
  * LiveClearEngine — real Claude calls. Model ids come from env so they can be
- * upgraded without code changes. While we verify end-to-end delivery of the full
- * suite, every phase defaults to the cheapest model (claude-haiku-4-5) for fast,
- * low-cost runs; set any phase's env var (e.g. LEVERAGE_MODEL=claude-sonnet-4-6
- * or claude-opus-4-8) to run it on a deeper model. Temperature is applied to
- * non-Opus models only (see isOpus).
+ * upgraded (or pinned) without code changes. The DEFAULTS below are the documented
+ * production matrix (docs/unit-economics.md §"What CLEAR spends money on"): every
+ * paid/analytical phase — Clarify, Leverage (teaser + full), Experiment, Research —
+ * runs on Sonnet-class (claude-sonnet-4-6), the quality the unit economics were
+ * written for. The De-identify step (Haiku 4.5) lives in project-research/index.ts,
+ * not here. Ops can still pin any phase to a cheaper/deeper model via its env var
+ * (e.g. CLARIFY_MODEL=claude-haiku-4-5 to cut cost, or LEVERAGE_MODEL=claude-opus-4-8
+ * to go deeper). Temperature is applied to non-Opus models only (see isOpus).
  */
 export class LiveClearEngine implements ClearEngine {
   private client = new Anthropic({ apiKey: Deno.env.get("ANTHROPIC_API_KEY")! });
-  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-haiku-4-5";
-  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-haiku-4-5";
-  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-haiku-4-5";
-  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-haiku-4-5";
+  private clarifyModel = Deno.env.get("CLARIFY_MODEL") ?? "claude-sonnet-4-6";
+  private leverageModel = Deno.env.get("LEVERAGE_MODEL") ?? "claude-sonnet-4-6";
+  private experimentModel = Deno.env.get("EXPERIMENT_MODEL") ?? "claude-sonnet-4-6";
+  private researchModel = Deno.env.get("RESEARCH_MODEL") ?? "claude-sonnet-4-6";
 
   private async call<T>(
     model: string,

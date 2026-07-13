@@ -2,6 +2,13 @@
  * Site-wide configuration. Single place to update external IDs and URLs.
  */
 
+/**
+ * Contact address for support, billing, and legal enquiries. Matches the verified
+ * sender used across the marketing site and legal pages. In-app "Support" links
+ * point here with a prefilled subject.
+ */
+export const CONTACT_EMAIL = "erik@eb-consulting.se";
+
 /** Outlook "Book with me" discovery-call link used by every booking CTA. */
 export const BOOKING_URL =
   "https://outlook.office.com/bookwithme/user/167d92190d9d4c67817f5d3f0b60c1e3@eb-consulting.se/meetingtype/K9Lm6Ith2UyhTSG6sgq4KA2?anonymous&ismsaljsauthenabled&ep=mlink";

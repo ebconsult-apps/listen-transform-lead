@@ -62,6 +62,7 @@ const Layout = () => {
                     <NavLink to="/methodology" className="nav-link">Methodology</NavLink>
                     <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
                     <NavLink to="/contact" className="nav-link">Contact</NavLink>
+                    <Link to="/product" className="btn-primary justify-center mt-2">Try CLEAR</Link>
                   </nav>
                 </div>
               )}
@@ -75,6 +76,7 @@ const Layout = () => {
               <NavLink to="/methodology" className="nav-link">Methodology</NavLink>
               <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
               <NavLink to="/contact" className="nav-link">Contact</NavLink>
+              <Link to="/product" className="btn-primary ml-3 px-5 py-2">Try CLEAR</Link>
             </nav>
           )}
         </div>
@@ -113,6 +115,16 @@ const Layout = () => {
                 </ul>
               </div>
               
+              {/* Product column — CLEAR self-serve app (D1 funnel wiring, additive) */}
+              <div>
+                <h3 className="font-medium text-sm uppercase tracking-wider text-foreground/70 mb-3">CLEAR App</h3>
+                <ul className="space-y-2">
+                  <li><Link to="/product" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Try CLEAR</Link></li>
+                  <li><Link to="/product/sample" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Sample report</Link></li>
+                  <li><Link to="/pricing" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Pricing</Link></li>
+                </ul>
+              </div>
+
               <div>
                 <h3 className="font-medium text-sm uppercase tracking-wider text-foreground/70 mb-3">Contact</h3>
                 <address className="not-italic text-sm text-foreground/60">
@@ -129,8 +141,10 @@ const Layout = () => {
           
           <div className="mt-12 pt-8 border-t border-foreground/10 flex flex-col gap-4 text-center sm:flex-row sm:justify-between sm:text-left items-center text-sm text-foreground/50">
             <p>© {new Date().getFullYear()} CLEAR Change Framework. All rights reserved.</p>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
               <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+              <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+              <Link to="/refund" className="hover:text-foreground transition-colors">Refunds</Link>
               <button type="button" onClick={openCookieSettings} className="hover:text-foreground transition-colors">Cookie settings</button>
             </div>
           </div>

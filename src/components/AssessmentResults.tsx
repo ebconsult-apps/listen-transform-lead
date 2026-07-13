@@ -369,6 +369,25 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
       </div>
+
+      {/* Self-serve on-ramp — run a specific challenge through the CLEAR app */}
+      <div className="glass-card p-6 sm:p-8 md:p-10 text-center bg-primary/5">
+        <h3 className="text-xl font-bold mb-3">Run Your Challenge Through CLEAR</h3>
+        <p className="text-foreground/70 mb-6 max-w-xl mx-auto">
+          Want to go deeper on one specific behavior? Bring your challenge to the CLEAR
+          app and get a measurable objective, a systems map, and the COM-B barriers
+          holding it back, in minutes. The teaser is always free.
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <Link to="/product" className="btn-primary">
+            Try CLEAR free
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+          <Link to="/product/sample" className="btn-secondary">
+            See a sample report
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,67 @@
+{
+  "systemsMapSummary": "The trial is a team product that begins as a single-player experience. A team lead signs up, works through a 7-step workspace-setup wizard alone, and creates a first project (54% do). But the product's value only appears once the team is inside it, and three things block that: nothing prompts an invite after the first project (71% never invite), imported cards from spreadsheets or Trello are hard to find again, and the trial is quiet in week one so there is no reason to return. Solo setup means no teammates; no teammates means no shared board (only 22% reach one); no shared board means the collaborative value never lands, and conversion sits at 6.0%.",
+  "headline": "If we turned solo setup into a team invite at the first-project moment, we'd likely see activation move from 22% toward the target and conversion rise from 6.0% without discounting.",
+  "topLeveragePoints": [
+    { "rank": 1, "point": "Prompt a teammate invite at the moment the first project is created", "currentState": "No in-product prompt to invite after the first project; 71% never invite.", "impact": "High", "ease": "High", "confidence": 76 },
+    { "rank": 2, "point": "Make imported cards from spreadsheets or Trello easy to find after migration", "currentState": "'Where did my imported cards go?' is a top support theme.", "impact": "High", "ease": "Medium", "confidence": 64 },
+    { "rank": 3, "point": "Give the team lead a reason to return within the first 48 hours", "currentState": "The trial is 'too quiet' in week one; nothing pulls the lead back.", "impact": "Medium", "ease": "Medium", "confidence": 55, "assumptionBased": true },
+    { "rank": 4, "point": "Shorten the 7-step workspace-setup wizard to first value", "currentState": "Median time-to-first-project is 3 days; the 7-step wizard front-loads effort.", "impact": "Medium", "ease": "Medium", "confidence": 58 },
+    { "rank": 5, "point": "Show the team lead what changes once a teammate joins", "currentState": "The single-player view hides the collaborative payoff, so inviting feels optional.", "impact": "Medium", "ease": "Medium", "confidence": 50, "assumptionBased": true }
+  ],
+  "behaviors": [
+    { "id": "b1", "description": "Team lead invites a teammate right after creating the first project", "who": "Team lead (5-30 person team)", "doesWhat": "Sends a teammate invite", "when": "Immediately after first project creation", "where": "In the product", "howOften": "Once per trial", "withWhom": "A colleague", "level": "detail", "genre": "carry_out_process" },
+    { "id": "b2", "description": "Invited teammate accepts and opens a shared board", "who": "Invited teammate", "doesWhat": "Accepts the invite and opens a shared board", "when": "Within 48 hours of invite", "where": "In the product", "howOften": "Once", "withWhom": "The team lead", "level": "detail", "genre": "carry_out_process" },
+    { "id": "b3", "description": "Team lead returns to the workspace during week one", "who": "Team lead", "doesWhat": "Re-opens the workspace", "when": "Within the first 7 days", "where": "In the product", "howOften": "Two or more sessions", "withWhom": "Alone or with team", "level": "high", "genre": "register" }
+  ],
+  "behaviorPriorities": [
+    { "behaviorId": "b1", "effect": 5, "ease": 4, "centrality": 5, "measurability": 4 },
+    { "behaviorId": "b2", "effect": 4, "ease": 3, "centrality": 4, "measurability": 4 },
+    { "behaviorId": "b3", "effect": 3, "ease": 3, "centrality": 3, "measurability": 3 }
+  ],
+  "keyActors": [
+    { "actor": "Team lead", "behavior": "Decides whether to set up alone or bring the team in" },
+    { "actor": "Invited teammate", "behavior": "Accepts (or ignores) an invite and joins a shared board" },
+    { "actor": "Product Manager, Activation", "behavior": "Owns the first-project and invite surfaces" },
+    { "actor": "Customer Support Lead", "behavior": "Sees the recurring setup and import confusion first" }
+  ],
+  "causeEffect": [
+    { "from": "No invite prompt after first project", "to": "Solo setup", "polarity": "+", "note": "Setup ends without bringing the team in" },
+    { "from": "Solo setup", "to": "No shared board", "polarity": "+" },
+    { "from": "Lost imported cards", "to": "Trust in the tool", "polarity": "-", "note": "Missing work discourages showing colleagues" },
+    { "from": "Quiet week one", "to": "Return visits", "polarity": "-" }
+  ],
+  "loops": [
+    "Solo loop: solo setup -> no teammate -> no shared board -> no collaborative value -> no reason to invite -> stays solo.",
+    "Trust loop: lost imported cards -> lower trust -> lead won't show colleagues -> fewer teammates -> less shared usage."
+  ],
+  "comb": [
+    { "component": "capability_physical", "barrier": "The 7-step wizard front-loads effort before any value; median time-to-first-project is 3 days.", "significance": "Adds friction at the moment motivation is highest", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "V", "source": "trial-funnel-q2.md" },
+    { "component": "capability_psychological", "barrier": "After migration, users can't find imported cards, so they doubt they set it up correctly.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "V", "source": "support-themes.txt" },
+    { "component": "opportunity_physical", "barrier": "There is no in-product prompt to invite a teammate after the first project is created.", "significance": "The dominant structural gap", "impact": "High", "changeability": "High", "evidenceFlag": "V", "source": "support-themes.txt" },
+    { "component": "opportunity_social", "barrier": "Setup is a single-player experience; teammates are absent, so there is no social pull to collaborate.", "impact": "High", "changeability": "Medium", "evidenceFlag": "A", "source": "Inferred from 71% never inviting" },
+    { "component": "motivation_reflective", "barrier": "Leads may not see why a shared board beats their spreadsheet until a teammate is in it.", "impact": "Medium", "changeability": "Medium", "evidenceFlag": "A", "source": "Inferred from single-player setup" },
+    { "component": "motivation_automatic", "barrier": "Nothing makes returning in week one feel natural; the quiet trial builds no habit.", "impact": "Medium", "changeability": "Low", "evidenceFlag": "G", "source": "Week-one engagement not instrumented" }
+  ],
+  "strongestBarriers": [
+    { "barrier": "No invite prompt at the first-project moment, so setup ends solo", "component": "opportunity_physical", "rationale": "Highest impact and highly changeable — a defaults-and-friction problem: the absence of a prompt at the moment of peak intent is why 71% never invite. Adding it converts existing intent into a team the product can prove value to." },
+    { "barrier": "Lost imported cards erode trust right after migration", "component": "capability_psychological", "rationale": "Trust is fragile at migration; a broken 'where did my work go?' moment (salience + loss aversion about migrated data) stops leads from showing colleagues." },
+    { "barrier": "Single-player setup removes any social proof to collaborate", "component": "opportunity_social", "rationale": "Because teammates are absent, the descriptive norm inside the workspace is 'work alone', reinforcing the solo loop." }
+  ],
+  "barrierNarratives": [
+    { "point": "Prompt a teammate invite at the moment the first project is created", "narrative": "The intent to build a team is highest just after the first project exists, but nothing acts on it. Placing the invite at that moment removes friction rather than adding persuasion — the cheapest, most reversible lever." },
+    { "point": "Make imported cards from spreadsheets or Trello easy to find after migration", "narrative": "A lead who can't find migrated work assumes the tool failed and won't risk showing colleagues. Restoring visibility protects trust at the exact moment it is most brittle." },
+    { "point": "Give the team lead a reason to return within the first 48 hours", "narrative": "A quiet week one lets the trial go cold. A single, well-timed reason to return keeps the account warm long enough for the team to arrive." }
+  ],
+  "gapLog": [
+    { "type": "gap", "content": "Week-one in-product engagement is not instrumented, so the 'quiet trial' barrier is inferred, not measured." },
+    { "type": "assumption", "content": "The 19%-vs-3% invite/no-invite gap is treated as directional; inviting may mark already-committed teams rather than cause conversion.", "source": "trial-funnel-q2.md" },
+    { "type": "input_needed", "content": "Confirm ownership of the 7-step workspace-setup wizard across Product and Support before changing it." },
+    { "type": "gap", "content": "No data on how often imported cards are actually lost versus merely hard to find." }
+  ],
+  "discoveryActivities": [
+    "5-8 contextual interviews with recent team leads at the first-project moment to confirm why setup ends solo.",
+    "A journey/friction audit of the 7-step workspace-setup wizard, timing each step to first value.",
+    "A support-ticket audit quantifying how often 'where did my imported cards go?' recurs and its resolution.",
+    "Instrument week-one in-product engagement so the 'quiet trial' barrier can be measured rather than assumed."
+  ]
+}

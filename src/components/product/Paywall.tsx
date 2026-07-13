@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Lock, ArrowRight, Check } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { startCheckout } from "@/lib/billing";
-import { BILLING_ENABLED, PRICE_IDS, UNLOCK_PLAN } from "@/config/billing";
+import { BILLING_ENABLED, PRICE_IDS, UNLOCK_PLAN, PRICE_TAX_NOTE } from "@/config/billing";
 import { devActive, DEV_ACCESS_ENABLED } from "@/lib/dev/config";
 import { toast } from "sonner";
 
@@ -156,6 +156,7 @@ const Paywall = ({
           The Report Pass is creditable toward a subscription for 14 days.
         </p>
       )}
+      <p className="text-xs text-foreground/40 mt-2">{PRICE_TAX_NOTE}</p>
       {DEV_ACCESS_ENABLED && onDevPreview && (
         <button
           onClick={onDevPreview}

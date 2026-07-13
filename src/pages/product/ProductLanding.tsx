@@ -39,17 +39,29 @@ const ProductLanding = () => {
           on, in minutes, not months.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link to="/login" className="btn-primary text-lg px-8 py-3">
-            Log in
+          <Link to="/signup" className="btn-primary text-lg px-8 py-3">
+            Start free
             <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
-          <Link to="/signup" className="btn-secondary text-lg px-8 py-3">
-            Start free
-          </Link>
           <Link to="/product/sample" className="btn-secondary text-lg px-8 py-3">
-            See a sample report
+            See a full sample report
           </Link>
         </div>
+        <p className="text-sm text-foreground/50 mt-4">
+          No credit card. Already have an account?{" "}
+          <Link to="/login" className="text-primary hover:underline">
+            Log in
+          </Link>
+          .
+        </p>
+        <p className="text-sm text-foreground/60 mt-6 max-w-2xl mx-auto">
+          Built on the{" "}
+          <Link to="/methodology" className="text-primary hover:underline">
+            CLEAR Change Framework
+          </Link>{" "}
+          by Erik Bohjort, a licensed psychologist and behavioral-science
+          consultant, grounded in the COM-B model of behavior.
+        </p>
       </section>
 
       {/* How it works — pipeline */}

@@ -33,6 +33,11 @@ export function exportReportMarkdown(
     );
 
   h(1, `${projectName} — CLEAR report`);
+  // AI-transparency label (EU AI Act Art. 50) — mirrors the on-screen notice.
+  lines.push(
+    "> _AI-generated: this report is generated with Claude (Anthropic) and may be incomplete or inaccurate — verify critical claims before acting on them._",
+    "",
+  );
 
   // ── Clarify ──
   h(2, "Clarify");

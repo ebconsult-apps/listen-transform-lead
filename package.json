@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "eval": "vite-node evals/run-eval.ts --",
+    "eval:offline": "vite-node evals/run-eval.ts -- --offline",
     "preview": "vite preview"
   },
   "dependencies": {

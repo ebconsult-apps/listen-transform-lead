@@ -6,7 +6,11 @@
 //
 //   STRIPE_SECRET_KEY=sk_test_... \
 //   WEBHOOK_URL=https://<project-ref>.supabase.co/functions/v1/stripe-webhook \
-//   CURRENCY=usd  node scripts/stripe-setup.mjs
+//   node scripts/stripe-setup.mjs
+//
+// CURRENCY defaults to EUR — the prices the app displays (src/config/billing.ts)
+// are in EUR, so the charge must be too. Override with CURRENCY=usd only for a
+// legacy USD test account.
 //
 // Then paste the printed values into `supabase secrets set …` and the GitHub
 // Actions → Variables (VITE_*), set VITE_BILLING_ENABLED=true, and test with card
@@ -18,7 +22,7 @@
 
 const KEY = process.env.STRIPE_SECRET_KEY;
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
-const CURRENCY = (process.env.CURRENCY || "usd").toLowerCase();
+const CURRENCY = (process.env.CURRENCY || "eur").toLowerCase();
 const LIVE = KEY?.startsWith("sk_live_");
 
 if (!KEY || (!KEY.startsWith("sk_test_") && !LIVE)) {
@@ -63,9 +67,9 @@ async function ensurePrice({ name, lookup, amount, recurring }) {
 
 // Amounts are in the smallest currency unit (cents). Source of truth for the
 // ladder: src/config/billing.ts + docs/research/self-serve-pricing.md (launch
-// experiment: Solo $79 / Team $249 / Report Pass $99). Lookup keys embed the
+// experiment: Solo €79 / Team €249 / Report Pass €99). Lookup keys embed the
 // amount because ensurePrice REUSES an existing price by lookup_key — the old
-// keys (clear_solo @ $49, clear_team @ $299, clear_unlock @ $200) would silently
+// keys (clear_solo @ 49, clear_team @ 299, clear_unlock @ 200) would silently
 // keep their old amounts. New numbers → new lookup key.
 // The public $999 Business tier is retired (legacy subscribers keep it); no
 // Business price is created for new setups.

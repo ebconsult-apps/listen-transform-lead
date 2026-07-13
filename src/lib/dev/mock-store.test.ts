@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import * as store from "./mock-store";
 import { PRIVACY_POLICY_VERSION } from "@/content/privacy-policy";
+import { TERMS_VERSION } from "@/content/terms-of-service";
 import { RunError } from "@/lib/invoke-error";
 
 beforeEach(() => store.resetMockDb("seeded"));
@@ -63,6 +64,19 @@ describe("mock-store seeded dataset", () => {
     const profile = await store.getMyProfile();
     expect(profile?.privacy_accepted_at).not.toBeNull();
     expect(profile?.privacy_policy_version).toBe(PRIVACY_POLICY_VERSION);
+  });
+
+  it("reports the Terms of Service as already accepted (so dev/QA signup isn't gated)", async () => {
+    const profile = await store.getMyProfile();
+    expect(profile?.terms_accepted_at).not.toBeNull();
+    expect(profile?.terms_version).toBe(TERMS_VERSION);
+  });
+
+  it("recordTermsAcceptance persists the accepted version on the mock profile", async () => {
+    await store.recordTermsAcceptance("2099-01-01-test");
+    const profile = await store.getMyProfile();
+    expect(profile?.terms_version).toBe("2099-01-01-test");
+    expect(profile?.terms_accepted_at).not.toBeNull();
   });
 
   it("seeds proj-research with a finding already linked to a real gap id", async () => {

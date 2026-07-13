@@ -48,8 +48,9 @@ loop iteration.
 
 ### 1.2 Reports are genuinely good
 Paid phases run the model matrix the economics were written for (`docs/unit-economics.md`
-assumes Sonnet-class for paid phases; production currently defaults everything to Haiku 4.5
-"while we verify e2e"). Prompt/model changes are gated by a rubric-scored eval harness
+assumes Sonnet-class for paid phases; the engine now **defaults** every analytical phase to
+Sonnet-class — `claude-sonnet-4-6` — per A3.1 below, with env-var overrides preserved so ops
+can still pin a phase). Prompt/model changes are gated by a rubric-scored eval harness
 (grounding in the intake, specificity, actionability, no invented stakeholders). Uploaded PDFs
 and DOCX actually contribute to intake (today binary extraction is a stub).
 **Measure:** eval rubric score per phase on the fixture set, tracked in-repo; run failure rate
@@ -118,14 +119,26 @@ A guided re-run: carry confirmed learnings forward, regenerate the leverage map,
 here so it doesn't reopen): a refine re-run on an unlocked project consumes **no** new credit —
 the project unlock already covers it, matching current `project_unlocks` semantics.
 
-### A3 — Report quality `[C+E, M]` · `todo`
-1. **Model matrix flip [E]:** set production phase models to the documented Sonnet target
-   (`supabase secrets set CLARIFY_MODEL=… LEVERAGE_MODEL=… EXPERIMENT_MODEL=… RESEARCH_MODEL=…`)
-   and the GitHub Actions `RESEARCH_MODEL` variable; re-check `docs/unit-economics.md` numbers.
-2. **Eval harness [C]:** rubric-scored checks (grounding, specificity, actionability, no
-   fabricated entities) over the fixture intake set; run on prompt/model changes in CI.
-3. **Real document extraction [C]:** implement `DOC_EXTRACT_MODE=live` for PDF/DOCX/XLSX —
-   uploaded binaries currently contribute nothing to intake.
+### A3 — Report quality `[C+E, M]` · `in progress`
+1. **Model matrix flip** — **`done (code) 2026-07-13`.** The engine's code DEFAULTS now match
+   the documented Sonnet matrix (`claude-sonnet-4-6` for Clarify/Leverage/Experiment/Research;
+   Haiku 4.5 for De-identify) — `live-engine.ts`, `pricing.ts` (`modelForPhase`),
+   `research-worker.yml`. Env overrides (`CLARIFY_MODEL`, …) are preserved. **[E] remaining:**
+   **unset** any per-phase Supabase secret still pinned to `claude-haiku-4-5` from the
+   e2e-verification period so the Sonnet default applies (see `supabase/README.md` §3), and set
+   the GitHub Actions `RESEARCH_MODEL` variable to `claude-sonnet-4-6` (or leave unset — the
+   workflow now falls back to Sonnet). Cost impact is within the `docs/unit-economics.md`
+   envelope (that table already assumed Sonnet).
+2. **Eval harness** — **`done 2026-07-13`.** Rubric-scored harness in `evals/` (grounding,
+   specificity, actionability, no fabricated entities, gap-honesty) over 3 fixture intakes;
+   `npm run eval` (live, LLM judge) / `npm run eval:offline` (deterministic, no network);
+   plumbing gated in CI by `evals/harness.test.ts` under `npm test`. Docs: `docs/evals.md`.
+3. **Real document extraction [C]:** PDF/DOCX/XLSX already extract **browser-native** on both
+   the owner and respondent upload paths (`src/lib/extract-text.ts`, reused by `db.ts` and
+   `collab.ts`) and flow into intake — the `DOC_EXTRACT_MODE=live` server-side extractor from
+   the collaboration design spec was never built. Residual gap = a **server-side fallback** (for
+   clients that can't/won't extract) which also removes the B4 "trust client `extractedText`"
+   surface. File-level plan + effort estimate: `docs/doc-extraction-plan.md`.
 
 ### A4 — Credits & caps become visible `[C, M]` · `done (2026-07-02)`
 Dashboard shows runs/credits remaining (`getUsageSummary()` in `src/lib/db.ts` — with its

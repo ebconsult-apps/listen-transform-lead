@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { FileText, Download, Check, CheckSquare, Square } from "lucide-react";
+import { Link } from "react-router-dom";
+import { FileText, Download, Check, CheckSquare, Square, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { CONVERSION_LABELS } from "@/config/site";
@@ -110,6 +111,18 @@ const WhitepaperGate = ({
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </a>
+              <div className="mt-8 pt-6 border-t border-foreground/10 w-full">
+                <p className="text-sm text-foreground/60 mb-2">
+                  Want to see the framework applied end-to-end?
+                </p>
+                <Link
+                  to="/product/sample"
+                  className="inline-flex items-center text-primary font-medium hover:underline"
+                >
+                  See what a full CLEAR report looks like
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
             </div>
           ) : (
             <div>
