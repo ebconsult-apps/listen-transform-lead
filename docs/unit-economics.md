@@ -34,6 +34,16 @@ are browser-native and cost nothing.
 **Prices (per 1M tokens, confirmed accurate):** Haiku `$1 / $5` · Sonnet
 `$3 / $15` · Opus `$5 / $25`. Source of truth: `_shared/clear/pricing.ts`.
 
+> **Code defaults match this table (since 2026-07-13, ROADMAP A3.1).** The engine's
+> per-phase default model ids in `_shared/clear/live-engine.ts` (mirrored by
+> `modelForPhase` in `pricing.ts` for the pre-run cost check) are now
+> `claude-sonnet-4-6` for Clarify/Leverage/Experiment/Research and
+> `claude-haiku-4-5` for De-identify — i.e. the matrix above with **no env vars
+> set**. The earlier "everything defaults to Haiku while we verify e2e" state is
+> retired. Ops can still pin any phase with `CLARIFY_MODEL` / `LEVERAGE_MODEL` /
+> `EXPERIMENT_MODEL` / `RESEARCH_MODEL`; the per-phase costs below already assume
+> Sonnet, so no re-pricing was needed for the flip.
+
 ## Cost per phase (typical project)
 
 Typical = a one-page challenge + two modest documents (~3.7k input tokens of
