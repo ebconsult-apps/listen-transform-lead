@@ -44,9 +44,6 @@ supabase secrets set \
   STRIPE_WEBHOOK_SECRET=whsec_... \
   ANTHROPIC_API_KEY=sk-ant-... \
   AI_MODE=stub \
-  CLARIFY_MODEL=claude-haiku-4-5 \
-  LEVERAGE_MODEL=claude-sonnet-4-6 \
-  EXPERIMENT_MODEL=claude-sonnet-4-6 \
   WORKSPACE_MONTHLY_COST_CAP_USD=25 \
   BREVO_API_KEY=xkeysib-... \
   PUBLIC_APP_URL=https://clear-framework.com \
@@ -55,6 +52,16 @@ supabase secrets set \
 supabase functions deploy project-run stripe-checkout stripe-webhook \
   invite-respondents respondent auth-email
 ```
+
+**Phase model overrides are optional.** The engine now defaults every analytical
+phase (Clarify, Leverage, Experiment, Research) to Sonnet-class
+(`claude-sonnet-4-6`) — the documented matrix in `docs/unit-economics.md` — and
+De-identify to `claude-haiku-4-5`. Only set `CLARIFY_MODEL` / `LEVERAGE_MODEL` /
+`EXPERIMENT_MODEL` / `RESEARCH_MODEL` (and the matching `RESEARCH_MODEL` GitHub
+Actions variable) to **pin** a phase to a different model — e.g.
+`CLARIFY_MODEL=claude-haiku-4-5` to cut cost, or `=claude-opus-4-8` to go deeper.
+If a phase secret is currently pinned to Haiku from the e2e-verification period,
+**unset it** to pick up the Sonnet default.
 
 `BREVO_API_KEY` powers respondent invitation **and** auth (magic-link) emails
 (reuses the marketing-site Brevo account; sender is the already-verified

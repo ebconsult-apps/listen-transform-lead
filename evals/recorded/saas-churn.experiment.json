@@ -1,0 +1,48 @@
+{
+  "interventionCandidates": [
+    {
+      "leveragePointRank": 1,
+      "barrier": "No invite prompt at the first-project moment, so setup ends solo",
+      "title": "Invite prompt at first-project creation",
+      "description": "The moment a team lead creates their first project, show a single inline prompt to invite a teammate (pre-filling a suggested message). Smallest reversible test: ship behind a flag to half of new trials for two weeks and compare within-48h invite rate. No new tooling needed.",
+      "apease": { "effectiveness": 5, "practicability": 5, "affordability": 5, "acceptability": "pass", "safety": "pass", "equity": "pass", "notes": "Directly targets the dominant opportunity_physical barrier; fits the one-engineer, in-app-messaging envelope." }
+    },
+    {
+      "leveragePointRank": 1,
+      "barrier": "No invite prompt at the first-project moment, so setup ends solo",
+      "title": "Post-setup email nudge to add the team",
+      "description": "If no teammate is invited within 24h of first project creation, send one lifecycle email showing what unlocks when the team joins. Reversible; measured against the invite prompt as a lighter-weight alternative.",
+      "apease": { "effectiveness": 3, "practicability": 5, "affordability": 5, "acceptability": "flag", "safety": "pass", "equity": "pass", "notes": "FLAG: coordinate with lifecycle email cadence to avoid over-mailing new trials." }
+    },
+    {
+      "leveragePointRank": 2,
+      "barrier": "Lost imported cards erode trust right after migration",
+      "title": "Post-import 'here's what we imported' summary",
+      "description": "Immediately after a spreadsheet or Trello import, show a summary of exactly what landed and where, with a link straight to it. Smallest test: add the summary screen for imports only and track repeat 'where are my cards' tickets.",
+      "apease": { "effectiveness": 4, "practicability": 4, "affordability": 4, "acceptability": "pass", "safety": "pass", "equity": "pass", "notes": "Targets the capability_psychological trust barrier at migration." }
+    },
+    {
+      "leveragePointRank": 3,
+      "barrier": "Nothing makes returning in week one feel natural",
+      "title": "Single week-one 'first win' return nudge",
+      "description": "One reminder, anchored to a concrete first win (e.g. a teammate reacted to your board), pulling the lead back within 48h. Capped at one message; measured against opt-outs.",
+      "apease": { "effectiveness": 3, "practicability": 4, "affordability": 5, "acceptability": "pass", "safety": "pass", "equity": "pass" }
+    },
+    {
+      "leveragePointRank": 1,
+      "barrier": "Single-player setup removes any social proof to collaborate",
+      "title": "Auto-add all imported email addresses as teammates",
+      "description": "Automatically create accounts for every email found in imported spreadsheets/Trello boards and email them that they've been added.",
+      "apease": { "effectiveness": 3, "practicability": 3, "affordability": 4, "acceptability": "fail", "safety": "flag", "equity": "pass", "notes": "FAIL on Acceptability: provisioning and emailing people without consent risks spam complaints and data-protection breaches. Parked regardless of score." }
+    }
+  ],
+  "faq": [
+    { "q": "Won't an invite prompt annoy solo users who genuinely want to try it alone?", "a": "It's a single, dismissible prompt at one moment (first project), and 'try it solo first' is a known request — so we make inviting easy, not mandatory, and measure dismissals." },
+    { "q": "Is the import summary worth building before we've confirmed cards are actually lost?", "a": "The support-ticket audit in Leverage will confirm frequency first; the summary screen is a small, reversible test we only scale if the audit supports it." }
+  ],
+  "gapLog": [
+    { "type": "assumption", "content": "Resource envelope taken as one PM at ~30% and one engineer at ~50% for 6 weeks; confirm before committing to all four tests.", "source": "Provided envelope" },
+    { "type": "gap", "content": "Success threshold for the week-one return nudge depends on the week-one engagement metric that is not yet instrumented." },
+    { "type": "input_needed", "content": "Legal/DPO review required before any auto-provisioning of imported email addresses (parked idea)." }
+  ]
+}
