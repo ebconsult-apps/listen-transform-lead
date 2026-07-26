@@ -1,4 +1,5 @@
 import { GOOGLE_ADS_ID } from "@/config/site";
+import { devActive } from "@/lib/dev/config";
 
 declare global {
   interface Window {
@@ -90,6 +91,57 @@ export function trackCTAClick(ctaName: string): void {
 /** Manual page view tracking for SPA navigation */
 export function trackPageView(pagePath: string): void {
   trackEvent("page_view", { page_path: pagePath });
+}
+
+// ---------------------------------------------------------------------------
+// Self-serve product funnel
+// ---------------------------------------------------------------------------
+
+/**
+ * Fire a self-serve product funnel event. These are the only three steps of the
+ * /product funnel GA4 can currently see (the app itself has no product analytics
+ * — roadmap B5), and they are what the paid-traffic experiment reads. Marked as
+ * key events in GA4 and imported into Google Ads via GA4 import, so no Google Ads
+ * conversion label is referenced here (see content/ads/google-ads-experiment.md).
+ *
+ * Two deliberate guards, on top of the `window.gtag` check in trackEvent():
+ * - Dev/QA mock mode walks the entire product against an in-memory store, so
+ *   counting it would inflate the exact funnel the experiment is judged on.
+ *   `devActive()` folds to a build-time `false` in production builds.
+ * - No `window` (Node tests) — these run inside data/UI modules that are also
+ *   imported outside the browser.
+ *
+ * Consent: identical to every other event on the site. gtag.js loads in
+ * index.html with Consent Mode v2 defaulting all storage to denied, and
+ * CookieConsent upgrades it on Accept — so this adds no tracking that the
+ * existing `lead_*` events don't already do.
+ */
+function trackProductEvent(eventName: string): void {
+  if (typeof window === "undefined" || devActive()) return;
+  trackEvent(eventName);
+}
+
+/**
+ * A new account finished the magic-link / OAuth round-trip. Signup only —
+ * returning logins go through the same callback but are not counted.
+ */
+export function trackProductSignupComplete(): void {
+  trackProductEvent("product_signup_complete");
+}
+
+/**
+ * A free Leverage teaser finished generating — the last free step before the
+ * paywall, and the activation metric for the ads experiment. Also fires on a
+ * regeneration of an existing teaser, so read it as GA4 *users* rather than
+ * event count when using it as a funnel step.
+ */
+export function trackProductTeaserGenerated(): void {
+  trackProductEvent("product_teaser_generated");
+}
+
+/** The unlock paywall rendered over the locked full report (intent to buy). */
+export function trackProductPaywallViewed(): void {
+  trackProductEvent("product_paywall_viewed");
 }
 
 // ---------------------------------------------------------------------------

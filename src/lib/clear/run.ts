@@ -13,6 +13,7 @@ import { listAcceptedResearch } from "@/lib/research";
 import { getClearEngine } from "./index";
 import { defaultPriority } from "./labels";
 import { devActive, effectiveAiMode } from "@/lib/dev/config";
+import { trackProductTeaserGenerated } from "@/utils/analytics";
 import { toRunError } from "@/lib/invoke-error";
 import * as mockStore from "@/lib/dev/mock-store";
 const DEV_CAP = import.meta.env.DEV || __DEV_BYPASS__;
@@ -207,6 +208,14 @@ export async function runClarify(projectId: string): Promise<void> {
  * (possibly owner-edited) Clarify rather than regenerating it.
  */
 export async function runLeverage(projectId: string): Promise<void> {
+  await generateLeverage(projectId);
+  // Funnel event for the paid-traffic experiment: the free teaser is the last
+  // free step before the paywall, so this is the activation metric ads are
+  // judged on (content/ads/google-ads-experiment.md). No-ops in dev/mock mode.
+  trackProductTeaserGenerated();
+}
+
+async function generateLeverage(projectId: string): Promise<void> {
   if (DEV_CAP && devActive()) {
     guardLiveInMock();
     return mockStore.runLeverage(projectId);
