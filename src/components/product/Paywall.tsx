@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock, ArrowRight, Check } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { startCheckout } from "@/lib/billing";
 import { BILLING_ENABLED, PRICE_IDS, UNLOCK_PLAN, PRICE_TAX_NOTE } from "@/config/billing";
 import { devActive, DEV_ACCESS_ENABLED } from "@/lib/dev/config";
+import { trackProductPaywallViewed } from "@/utils/analytics";
 import { toast } from "sonner";
 
 /**
@@ -33,6 +34,13 @@ const Paywall = ({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Funnel event: reaching the paywall is the strongest pre-purchase intent
+  // signal GA4 can see today. Once per mount, so a re-render (credit spend,
+  // checkout error) doesn't double-count. No-ops in dev/mock mode.
+  useEffect(() => {
+    trackProductPaywallViewed();
+  }, []);
 
   // A paid tier with credits left unlocks by spending one (no Stripe); everyone
   // else (free, or out of credits) buys the one-off Report Pass.

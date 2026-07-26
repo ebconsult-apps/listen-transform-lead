@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { recordTermsAcceptance } from "@/lib/db";
 import { takePendingTermsAcceptance } from "@/lib/terms-acceptance";
+import { trackProductSignupComplete } from "@/utils/analytics";
 import { LoadingState, ErrorState } from "@/components/ui/data-states";
 
 /**
@@ -29,6 +30,10 @@ const AuthCallback = () => {
       // exists. Best-effort: never block sign-in on it (login has none pending).
       const pending = takePendingTermsAcceptance();
       if (pending) {
+        // A pending Terms version is only stashed by /signup, so it doubles as
+        // the "this session is a brand-new account" signal — /login never has
+        // one. Fired before the write so a failed record still counts the signup.
+        trackProductSignupComplete();
         try {
           await recordTermsAcceptance(pending);
         } catch {
