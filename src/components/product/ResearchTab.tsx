@@ -49,6 +49,7 @@ const ResearchTab = ({
   const [running, setRunning] = useState(false);
   const [preview, setPreview] = useState<{ id: string; entry: PromotePreview } | null>(null);
   const [promoting, setPromoting] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   // Hold the latest onAfterRun so the poll interval doesn't resubscribe to it.
@@ -135,6 +136,27 @@ const ResearchTab = ({
       await load();
     } catch (e) {
       toast.error((e as Error).message);
+    }
+  };
+
+  // Accepting a finding also auto-saves a de-identified copy to the shared library:
+  // mark it accepted first (so it folds into the next run even if promotion fails),
+  // then run the de-identify → write steps silently (no review panel). If promotion
+  // fails (e.g. non-operator workspace), the finding stays accepted and the manual
+  // "Save to shared library" fallback below remains available to retry.
+  const acceptFinding = async (id: string) => {
+    setSavingId(id);
+    try {
+      await setFindingStatus(id, "accepted");
+      const entry = await previewPromotion(id);
+      await confirmPromotion(id, entry);
+      await load();
+      toast.success("Accepted and saved to the shared library.");
+    } catch (e) {
+      await load();
+      toast.error((e as Error).message);
+    } finally {
+      setSavingId(null);
     }
   };
 
@@ -226,10 +248,15 @@ const ResearchTab = ({
               <div className="flex gap-2 mt-4 flex-wrap">
                 {f.status === "proposed" && (
                   <>
-                    <button onClick={() => setStatus(f.id, "accepted")} className="btn-secondary text-sm">
-                      <Check className="h-4 w-4 mr-1" /> Accept
+                    <button onClick={() => acceptFinding(f.id)} disabled={savingId === f.id} className="btn-secondary text-sm">
+                      {savingId === f.id ? (
+                        <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                      ) : (
+                        <Check className="h-4 w-4 mr-1" />
+                      )}
+                      Accept
                     </button>
-                    <button onClick={() => setStatus(f.id, "dismissed")} className="inline-flex items-center px-3 py-2 text-sm text-foreground/60 hover:text-foreground transition-colors">
+                    <button onClick={() => setStatus(f.id, "dismissed")} disabled={savingId === f.id} className="inline-flex items-center px-3 py-2 text-sm text-foreground/60 hover:text-foreground transition-colors">
                       <X className="h-4 w-4 mr-1" /> Dismiss
                     </button>
                   </>
@@ -302,8 +329,9 @@ const ResearchTab = ({
 
       {findings.length > 0 && (
         <p className="text-sm text-foreground/50">
-          Accepted findings are folded into your next Clarify/Leverage run as cited, verified
-          evidence. Re-run the full report to see them applied.
+          Accepting a finding folds it into your next Clarify/Leverage run as cited, verified
+          evidence and saves a de-identified copy to the shared library for reuse on future
+          projects. Re-run the full report to see them applied.
         </p>
       )}
     </div>
