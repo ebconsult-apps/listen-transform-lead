@@ -195,7 +195,7 @@ const About = () => {
               <div className="glass-card p-8 sticky top-28">
                 <h3 className="text-xl font-bold mb-1">Erik Bohjort</h3>
                 <p className="text-foreground/70 text-sm mb-6">
-                  Licensed Psychologist & Transformative Guide
+                  Licensed Psychologist & Behaviour Change Consultant
                 </p>
                 <Link to="/contact" className="btn-primary w-full justify-center">
                   Get in touch
