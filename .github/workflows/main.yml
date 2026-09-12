@@ -81,6 +81,14 @@ jobs:
             --exclude='nurture-emails.php' \
             dist/ dwdda@pi.hostup.se:/home/dwdda/public_html/clear-framework.com/
 
+      # Tell Bing (and so ChatGPT search), Yandex and friends that the pages changed.
+      # Runs after the rsync so the IndexNow key file under public/ is already live.
+      # Google ignores IndexNow and reads the sitemap from robots.txt instead.
+      # Never fails the deploy: the site is already up by this point.
+      - name: Notify IndexNow of updated URLs
+        continue-on-error: true
+        run: node scripts/indexnow-submit.mjs
+
       - name: Sync PHP handlers to server (always — keep server code in step with the repo)
         run: |
           rsync -avz \

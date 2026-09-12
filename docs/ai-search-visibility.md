@@ -55,12 +55,28 @@ Both spellings (behaviour / behavior) appear deliberately; agents match either.
 - Add every new public route to `vite.config.ts` `routes` **and** `public/sitemap.xml`, and
   link it from at least one existing page (the footer is fine) so it is not orphaned.
 
+## Indexing (automated)
+
+Every production deploy ends by submitting all sitemap URLs to **IndexNow**
+(`scripts/indexnow-submit.mjs`, called from `.github/workflows/main.yml`). IndexNow feeds Bing,
+which is the index ChatGPT search reads, plus Yandex, Naver and Seznam, with no account needed.
+The key file is the 32-hex-character `.txt` in `public/`; the script finds it by pattern. To
+rotate the key, delete that file and generate a new one with the command in the script header.
+Run `node scripts/indexnow-submit.mjs --dry-run` locally to see the payload.
+
+Google does not support IndexNow. It discovers pages from the sitemap referenced in
+`robots.txt`, which is already in place.
+
 ## Off-site checklist (not code, but it is most of the effect)
 
-1. **Bing Webmaster Tools**: verify the site and submit `sitemap.xml`. ChatGPT search reads
-   Bing's index; a page Bing has not crawled cannot appear in ChatGPT. Turn on IndexNow there
-   so new pages are picked up within hours.
-2. **Google Search Console**: resubmit the sitemap after this deploy so the new URL is crawled.
+1. **GA4 custom dimensions** (needed for the per-whitepaper reports, see below). In GA4: Admin →
+   Data display → Custom definitions → Create custom dimension. Scope *Event*, dimension name
+   `whitepaper_id`, event parameter `whitepaper_id`. Repeat for `placement`. This cannot be done
+   from the repo; it needs an editor role on the GA4 property.
+2. **Bing Webmaster Tools** (optional, for reporting only): verifying the site there shows
+   crawl and IndexNow status. Indexing itself is already handled by the automated IndexNow
+   submission above. **Google Search Console**: likewise optional; useful to confirm the
+   sitemap was read after a deploy.
 3. **LinkedIn**: Erik's profile headline and the EB Consulting company page should use the same
    wording as the site ("Licensed psychologist · Behaviour change consultant · Stockholm,
    Sweden") and link to clear-framework.com. Agents cross-check entities across sources.
