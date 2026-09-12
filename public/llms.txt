@@ -27,8 +27,22 @@
 - [Insights](https://clear-framework.com/insights): articles on behavioural science and organisational change.
 - [Book a discovery call](https://clear-framework.com/book-call)
 
+## Whitepapers by Erik Bohjort
+
+Each page below carries a public overview, key findings and FAQ; the full PDF is a free download behind a short form.
+
+- [Attention Is the Scarce Resource](https://clear-framework.com/resources/clear-attention): attention, not touch, is the mechanism behind retail's look-and-handle effect, and the gating resource in every behaviour-change problem; four attention-first design moves.
+- [Design So the Behaviour Never Has to Happen](https://clear-framework.com/resources/clear-behaviour-free-design): defaults, elimination and constraints beat persuasion by an order of magnitude; a six-tier hierarchy of behavioural controls and three ethical tests.
+- [The Goldilocks Zone](https://clear-framework.com/resources/clear-goldilocks): match goal size to intervention size; what nudge meta-analyses really show (plan on about two percentage points for a light-touch nudge); exploration vs exploitation for a limited budget.
+- [CLEAR and the OECD's LOGIC Framework](https://clear-framework.com/resources/clear-vs-oecd-logic): how CLEAR compares with the OECD's LOGIC (2024) principles and BASIC toolkit, and which to use when.
+- [The CLEAR Change Framework](https://clear-framework.com/resources/clear-change-framework): the five-step method and how it relates to Kotter, ADKAR and Lean Change.
+- [Beyond Boundaries: CLEAR vs OBM, BCW and Design Thinking](https://clear-framework.com/resources/clear-comparison)
+- [Driving Sustainable Change Inside and Out](https://clear-framework.com/resources/clear-sustainability)
+- [Frameworks for Clarifying Purpose and Setting Goals](https://clear-framework.com/resources/clear-clarity)
+- [Iterative Change: Real-World Success Stories](https://clear-framework.com/resources/clear-case-studies)
+
 ## Optional
 
 - [Free change-readiness assessment](https://clear-framework.com/assessment)
-- [Whitepapers and resources](https://clear-framework.com/resources)
+- [All whitepapers and resources](https://clear-framework.com/resources)
 - [The book](https://clear-framework.com/get-the-book)

@@ -1,9 +1,14 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText, Download, Check, CheckSquare, Square } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { CONVERSION_LABELS } from "@/config/site";
+import {
+  trackWhitepaperDownload,
+  trackWhitepaperGateView,
+  type WhitepaperGatePlacement,
+} from "@/utils/analytics";
 
 interface WhitepaperGateProps {
   title: string;
@@ -12,6 +17,8 @@ interface WhitepaperGateProps {
   pdfUrl: string;
   coverImage?: string;
   whitepaperIdentifier: string;
+  /** Where the gate is shown; recorded on the GA4 events. Defaults to "modal". */
+  placement?: WhitepaperGatePlacement;
 }
 
 const WhitepaperGate = ({
@@ -21,6 +28,7 @@ const WhitepaperGate = ({
   pdfUrl,
   coverImage,
   whitepaperIdentifier,
+  placement = "modal",
 }: WhitepaperGateProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -30,7 +38,14 @@ const WhitepaperGate = ({
     endpoint: "/whitepaper-handler.php",
     formName: "whitepaper_download",
     conversionLabel: CONVERSION_LABELS.whitepaper,
+    eventParams: { whitepaper_id: whitepaperIdentifier, placement },
   });
+
+  // One gate view per paper shown, so GA4 can compute a per-paper
+  // view → lead → download funnel.
+  useEffect(() => {
+    trackWhitepaperGateView(whitepaperIdentifier, placement);
+  }, [whitepaperIdentifier, placement]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +121,7 @@ const WhitepaperGate = ({
                 className="btn-primary"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackWhitepaperDownload(whitepaperIdentifier)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF

@@ -20,6 +20,27 @@ complete HTML, and stating the facts plainly on the page.
 | Entity page for the target query, with the exact phrase in the URL, title, H1 and first paragraph, plus an always-visible FAQ and `FAQPage` + `Service` JSON-LD | `src/pages/niche/BehaviourChangeConsultantSweden.tsx` → `/consulting/behaviour-change-consultant-sweden` |
 | `ProfessionalService` / `Person` JSON-LD with Stockholm address, `areaServed` Sweden / Nordics / Europe, `knowsAbout`, languages, and shared `@id`s so the graph links up | `src/pages/Index.tsx`, `src/pages/About.tsx`, `src/pages/Services.tsx` |
 | "Where are you based" and "is CLEAR a behaviour change methodology" Q&As in the FAQ schema | `src/pages/FAQ.tsx` |
+| One public overview page per whitepaper (`/resources/<id>`) with summary, key facts, FAQ and `Report` + `FAQPage` JSON-LD, so gated PDFs still surface in AI answers; listed in `llms.txt` | `src/content/whitepapers.ts`, `src/pages/WhitepaperPage.tsx` |
+
+## Whitepaper analytics (GA4)
+
+Every whitepaper event now carries `whitepaper_id` (and `placement`: `modal` on /resources,
+`page` on /resources/<id>):
+
+| Event | Fires when |
+| --- | --- |
+| `whitepaper_gate_view` | the download gate renders |
+| `form_submission` / `lead_whitepaper_download` | the form is submitted successfully (existing events, now with the id) |
+| `whitepaper_download` | the unlocked "Download PDF" link is clicked |
+
+**One-time GA4 setup:** Admin → Custom definitions → create event-scoped custom dimensions
+`whitepaper_id` and `placement`. Until they exist GA4 stores the parameter but cannot report on
+it. Then an Exploration with `whitepaper_id` as the row and the three events as columns gives a
+per-paper funnel, and `lead_whitepaper_download` can stay the key event imported to Google Ads.
+
+**Adding a paper:** add the PDF to `public/whitepapers/`, an entry to `src/content/whitepapers.ts`,
+the id to `public/whitepaper-handler.php`, the route to `vite.config.ts` and `public/sitemap.xml`.
+`npm test` fails until all five agree.
 
 Both spellings (behaviour / behavior) appear deliberately; agents match either.
 

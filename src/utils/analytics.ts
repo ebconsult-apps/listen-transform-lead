@@ -69,18 +69,59 @@ export function trackEvent(
 // Conversion tracking helpers
 // ---------------------------------------------------------------------------
 
-/** Track a form submission (contact, lead, whitepaper, book, etc.) */
-export function trackFormSubmission(formName: string): void {
-  trackEvent("form_submission", { form_name: formName });
+/**
+ * Track a form submission (contact, lead, whitepaper, book, etc.).
+ * `params` adds per-form dimensions (e.g. which whitepaper) to the event.
+ */
+export function trackFormSubmission(
+  formName: string,
+  params: Record<string, string> = {},
+): void {
+  trackEvent("form_submission", { form_name: formName, ...params });
 }
 
 /**
  * Fire a distinct GA4 event per lead form (lead_contact, lead_free_chapter, ...).
  * Distinct event names can be marked as key events in GA4 (Admin → Events)
  * and imported into Google Ads as conversions — no conversion labels needed.
+ * `params` adds per-form dimensions (e.g. which whitepaper) to the event.
  */
-export function trackLead(formName: string): void {
-  trackEvent(`lead_${formName}`, { form_name: formName });
+export function trackLead(
+  formName: string,
+  params: Record<string, string> = {},
+): void {
+  trackEvent(`lead_${formName}`, { form_name: formName, ...params });
+}
+
+// ---------------------------------------------------------------------------
+// Whitepaper funnel
+// ---------------------------------------------------------------------------
+
+/**
+ * Three steps, all carrying `whitepaper_id` (and `placement` where relevant) so
+ * GA4 can report per paper rather than one undifferentiated "whitepaper" lead:
+ *
+ *   whitepaper_gate_view       the download gate rendered (placement: "modal" on
+ *                              /resources, "page" on /resources/:id)
+ *   lead_whitepaper_download   the existing lead event, now with whitepaper_id
+ *   whitepaper_download        the unlocked "Download PDF" link was clicked
+ *
+ * To see these by paper in GA4: Admin → Custom definitions → create an
+ * event-scoped custom dimension named `whitepaper_id` (and `placement`). Until
+ * the dimension exists GA4 still stores the parameter, it just can't be used in
+ * reports, so register it early.
+ */
+export type WhitepaperGatePlacement = "modal" | "page";
+
+export function trackWhitepaperGateView(
+  whitepaperId: string,
+  placement: WhitepaperGatePlacement,
+): void {
+  trackEvent("whitepaper_gate_view", { whitepaper_id: whitepaperId, placement });
+}
+
+export function trackWhitepaperDownload(whitepaperId: string): void {
+  trackEvent("whitepaper_download", { whitepaper_id: whitepaperId });
 }
 
 /** Track a CTA click (booking, whitepaper download, etc.) */

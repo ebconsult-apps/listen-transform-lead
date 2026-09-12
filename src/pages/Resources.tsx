@@ -4,125 +4,7 @@ import { FileText, Download, ArrowRight, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import SEO from "@/components/SEO";
 import WhitepaperGate from "@/components/WhitepaperGate";
-
-interface Whitepaper {
-  id: string;
-  title: string;
-  description: string;
-  takeaways: string[];
-  pdfUrl: string;
-}
-
-const whitepapers: Whitepaper[] = [
-  {
-    id: "clear-change-framework",
-    title: "The CLEAR Change Framework",
-    description:
-      "A comprehensive guide to the CLEAR methodology \u2014 from theoretical foundations to practical implementation.",
-    takeaways: [
-      "Understand the complete 5-step CLEAR process",
-      "Learn how to apply systems thinking to organizational challenges",
-      "Get actionable templates for running CLEAR workshops",
-    ],
-    pdfUrl: "/whitepapers/clear-change-framework.pdf",
-  },
-  {
-    id: "clear-comparison",
-    title: "Beyond Boundaries: CLEAR vs OBM, BCW & Design Thinking",
-    description:
-      "How the CLEAR framework compares to and integrates the strengths of established change methodologies.",
-    takeaways: [
-      "Understand the limits of single-domain approaches",
-      "See how CLEAR bridges behavioral science and systems thinking",
-      "Learn when to use CLEAR vs other frameworks",
-    ],
-    pdfUrl: "/whitepapers/clear-comparison.pdf",
-  },
-  {
-    id: "clear-sustainability",
-    title: "Driving Sustainable Change Inside and Out",
-    description:
-      "How organizations can use the CLEAR framework to embed sustainability into operations, culture, and strategy.",
-    takeaways: [
-      "Align sustainability with business strategy",
-      "Use systems mapping to identify ESG leverage points",
-      "Build lasting sustainable practices through iterative change",
-    ],
-    pdfUrl: "/whitepapers/clear-sustainability.pdf",
-  },
-  {
-    id: "clear-clarity",
-    title: "Frameworks for Clarifying Purpose and Setting Goals",
-    description:
-      "A deep dive into the Clarity step \u2014 the most critical foundation for any successful change initiative.",
-    takeaways: [
-      "Master OKR-setting for change initiatives",
-      "Align stakeholders around a shared North Star",
-      "Avoid the #1 reason change programs fail",
-    ],
-    pdfUrl: "/whitepapers/clear-clarity.pdf",
-  },
-  {
-    id: "clear-case-studies",
-    title: "Iterative Change: Real-World Success Stories",
-    description:
-      "How organizations like Domino\u2019s Pizza and others achieved transformation through iterative, listening-based change.",
-    takeaways: [
-      "Learn from real turnaround stories",
-      "See how feedback loops drive business results",
-      "Understand why iterative beats linear change",
-    ],
-    pdfUrl: "/whitepapers/clear-case-studies.pdf",
-  },
-  {
-    id: "clear-attention",
-    title: "Attention Is the Scarce Resource",
-    description:
-      "What shoppers who touch and look at products teach us about every behaviour we try to change, from checkout pages to shop floors.",
-    takeaways: [
-      "Why touch and gaze predict purchases, and what the real mechanism is",
-      "Treat attention as the gating resource in digital and physical conversion",
-      "Four design moves that win and hold attention before you add a single cue",
-    ],
-    pdfUrl: "/whitepapers/clear-attention.pdf",
-  },
-  {
-    id: "clear-behaviour-free-design",
-    title: "Design So the Behaviour Never Has to Happen",
-    description:
-      "The most powerful behavioural solutions remove the need for behaviour altogether. Why defaults and structure beat persuasion, and how to use them.",
-    takeaways: [
-      "Reframe every brief from \u201cget people to act\u201d to \u201cget the outcome\u201d",
-      "A six-tier hierarchy of behavioural controls, from eliminate to persuade",
-      "The ethical tests that keep behaviour-free design honest",
-    ],
-    pdfUrl: "/whitepapers/clear-behaviour-free-design.pdf",
-  },
-  {
-    id: "clear-goldilocks",
-    title: "The Goldilocks Zone: Matching Goals to Interventions",
-    description:
-      "Big goals need most barriers solved; small goals need a few. What nudge meta-analyses really say about effect sizes, and how to split a budget between exploring and exploiting.",
-    takeaways: [
-      "Calibrate expectations: a light-touch nudge is worth about two percentage points",
-      "Let available resources set the size of the goal, not the other way round",
-      "Use exploration vs exploitation to allocate a limited intervention budget",
-    ],
-    pdfUrl: "/whitepapers/clear-goldilocks.pdf",
-  },
-  {
-    id: "clear-vs-oecd-logic",
-    title: "CLEAR and the OECD\u2019s LOGIC Framework",
-    description:
-      "The OECD\u2019s 2024 LOGIC principles tell institutions how to mainstream behavioural science. CLEAR tells a team how to run a change. How they compare, and where each needs the other.",
-    takeaways: [
-      "Understand LOGIC\u2019s five dimensions and how it relates to BASIC",
-      "A step-by-step mapping of CLEAR against the OECD\u2019s project cycle",
-      "Practical guidance for public bodies, companies and practitioners",
-    ],
-    pdfUrl: "/whitepapers/clear-vs-oecd-logic.pdf",
-  },
-];
+import { whitepapers, whitepaperPath, type Whitepaper } from "@/content/whitepapers";
 
 const Resources = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -180,8 +62,8 @@ const Resources = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="CLEAR Framework Resources | Whitepapers & Guides"
-        description="Download free whitepapers and guides on the CLEAR Change Framework, systems thinking, and organizational transformation."
+        title="Behaviour Change & CLEAR Framework Whitepapers | Erik Bohjort"
+        description="Free whitepapers by licensed psychologist Erik Bohjort on behaviour change, behavioural design, nudge effect sizes, the OECD LOGIC framework, and the CLEAR Change Framework. Read the overview, then download the PDF."
         path="/resources"
       />
       {/* Hero Section */}
@@ -273,7 +155,14 @@ const Resources = () => {
                       <FileText className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold mb-2">{wp.title}</h3>
+                      <div className="text-xs uppercase tracking-wider text-foreground/50 mb-1">
+                        {wp.category}
+                      </div>
+                      <h3 className="text-lg font-bold mb-2">
+                        <Link to={whitepaperPath(wp.id)} className="hover:text-primary transition-colors">
+                          {wp.title}
+                        </Link>
+                      </h3>
                       <p className="text-foreground/70 mb-4">
                         {wp.description}
                       </p>
@@ -289,13 +178,22 @@ const Resources = () => {
                     ))}
                   </ul>
 
-                  <button
-                    onClick={() => setActiveWhitepaper(wp)}
-                    className="btn-primary w-full justify-center"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Free
-                  </button>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      onClick={() => setActiveWhitepaper(wp)}
+                      className="btn-primary flex-1 justify-center"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Free
+                    </button>
+                    <Link
+                      to={whitepaperPath(wp.id)}
+                      className="btn-secondary flex-1 justify-center"
+                    >
+                      Read the overview
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
