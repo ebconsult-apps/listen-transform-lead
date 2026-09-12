@@ -20,10 +20,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # v3 installs a pinned npm release; v1 with `latest` resolved the version via
+      # the unauthenticated GitHub releases API, which rate-limits on shared runners
+      # (seen on the integration workflow). Keep in step with integration.yml.
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
-          version: latest
+          version: 2.117.0
 
       - name: Deploy edge functions
         run: supabase functions deploy project-run project-research invite-respondents respondent auth-email stripe-checkout stripe-webhook --project-ref "$SUPABASE_PROJECT_REF"
