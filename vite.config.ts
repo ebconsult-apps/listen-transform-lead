@@ -39,6 +39,7 @@ const routes = [
   "/consulting/healthcare-change-management",
   "/consulting/sustainability-change-management",
   "/consulting/merger-integration-consulting",
+  "/consulting/behaviour-change-consultant-sweden",
   "/thank-you",
   "/services/change-management",
   "/services/leadership-development",

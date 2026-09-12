@@ -29,17 +29,46 @@ const About = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="About Erik Bohjort | Licensed Psychologist & Change Consultant"
-        description="Erik Bohjort is a licensed psychologist, behavioral design specialist, and creator of the CLEAR Change Framework. International keynote speaker and EU Parliament advisor."
+        title="About Erik Bohjort | Licensed Psychologist & Behaviour Change Consultant, Stockholm"
+        description="Erik Bohjort is a licensed psychologist and behavioural design specialist based in Stockholm, Sweden, and the creator of the CLEAR Change Framework. International keynote speaker and EU Parliament advisor."
         path="/about"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Person",
+          "@id": "https://clear-framework.com/about#person",
           "name": "Erik Bohjort",
-          "jobTitle": "Licensed Psychologist & Change Consultant",
-          "description": "Creator of the CLEAR Change Framework. Licensed psychologist specializing in organizational transformation.",
+          "jobTitle": "Licensed Psychologist & Behaviour Change Consultant",
+          "description": "Licensed psychologist (legitimerad psykolog) and behavioural design specialist based in Stockholm, Sweden. Founder of EB Consulting and creator of the CLEAR Change Framework for behaviour change and organizational transformation.",
           "url": "https://clear-framework.com/about",
-          "knowsAbout": ["Organizational Change", "Behavioral Design", "Systems Thinking", "Psychometric Assessment"]
+          "image": "https://clear-framework.com/erik-portrait.jpg",
+          "email": "erik@eb-consulting.se",
+          "sameAs": ["https://twitter.com/erikbohjort"],
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "Licensed Psychologist",
+            "occupationLocation": { "@type": "Country", "name": "Sweden" }
+          },
+          "worksFor": {
+            "@type": "ProfessionalService",
+            "@id": "https://clear-framework.com/#organization",
+            "name": "EB Consulting",
+            "url": "https://clear-framework.com"
+          },
+          "workLocation": {
+            "@type": "Place",
+            "address": { "@type": "PostalAddress", "addressLocality": "Stockholm", "addressCountry": "SE" }
+          },
+          "knowsLanguage": ["sv", "en"],
+          "knowsAbout": [
+            "Behaviour change",
+            "Behavioral science",
+            "Behavioral design and nudging",
+            "COM-B model",
+            "Organizational change",
+            "Organizational psychology",
+            "Systems thinking",
+            "Psychometric assessment"
+          ]
         }}
       />
       {/* Hero Section — two-column: copy left, portrait right */}
@@ -50,8 +79,9 @@ const About = () => {
               <div className="tag mb-4">About</div>
               <h1 className="heading-xl mb-6">Erik Bohjort</h1>
               <p className="body-lg max-w-2xl">
-                Licensed psychologist, founder of EB Consulting, and creator of the CLEAR Change Framework.
-                Leading a team of consultants who help organizations turn insight into lasting transformation.
+                Licensed psychologist and behaviour change specialist based in Stockholm, Sweden. Founder of
+                EB Consulting and creator of the CLEAR Change Framework, leading a team of consultants who help
+                organizations across Sweden, the Nordics and Europe turn insight into lasting transformation.
               </p>
             </div>
             <div className="lg:col-span-5">

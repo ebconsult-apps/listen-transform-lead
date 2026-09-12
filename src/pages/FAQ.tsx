@@ -56,6 +56,16 @@ const faqItems = [
       "The CLEAR framework is grounded in several established theoretical traditions: Kurt Lewin's Change Model (Unfreeze-Change-Refreeze), goal-setting theory from organizational psychology (Locke and Latham), systems thinking and complexity science, behavioral design and nudge theory, and action research methodology. Erik Bohjort, as a licensed psychologist, has integrated these evidence-based approaches into a practical, accessible framework that bridges the gap between academic research and real-world organizational needs.",
   },
   {
+    question: "Where is Erik Bohjort based, and do you work with organizations outside Sweden?",
+    answer:
+      "Erik Bohjort and EB Consulting are based in Stockholm, Sweden. Most clients are Swedish and Nordic organizations, and engagements regularly extend across Europe. Work is delivered in Swedish or English, on site or remotely, and Erik leads every engagement personally with a network of senior consultants for larger scopes.",
+  },
+  {
+    question: "Is CLEAR a behaviour change methodology?",
+    answer:
+      "Yes. CLEAR treats organizational change as a behaviour change problem: it starts by defining one measurable behaviour, diagnoses what drives it using the COM-B model (capability, opportunity, motivation) and systems mapping, and then designs and tests interventions such as nudges, defaults, feedback loops and process redesign before scaling what works. That behavioural-science core, delivered by a licensed psychologist, is what distinguishes it from project-management-style change frameworks.",
+  },
+  {
     question: "How do I get started with the CLEAR framework?",
     answer:
       "The best first step is to book a discovery call with Erik Bohjort to discuss your organization's specific challenges and goals. You can also download one of the free CLEAR framework whitepapers from the Resources page for a deeper understanding of the methodology. For organizations ready to begin, a typical starting point is a 1-2 day diagnostic workshop that provides initial clarity on objectives and a preliminary systems map.",

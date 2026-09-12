@@ -22,8 +22,12 @@ const SEO = ({
   const canonicalUrl = `${siteUrl}${path}`;
   const ogImage = `${siteUrl}/og-image.jpg`;
 
+  // `defer={false}` applies head changes synchronously instead of on the next
+  // animation frame. The build-time prerenderer renders routes in background
+  // tabs where rAF never fires, so with the default every page except the first
+  // was captured with index.html's generic title, no description, and no JSON-LD.
   return (
-    <Helmet>
+    <Helmet defer={false}>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />

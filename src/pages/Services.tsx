@@ -22,10 +22,17 @@ const Services = () => {
           "description": "Organizational transformation consulting using the CLEAR Change Framework",
           "provider": {
             "@type": "ProfessionalService",
+            "@id": "https://clear-framework.com/#organization",
             "name": "EB Consulting",
-            "founder": { "@type": "Person", "name": "Erik Bohjort" }
+            "address": { "@type": "PostalAddress", "addressLocality": "Stockholm", "addressCountry": "SE" },
+            "founder": { "@type": "Person", "name": "Erik Bohjort", "jobTitle": "Licensed Psychologist" }
           },
-          "serviceType": ["Organizational Change Management", "Leadership Development", "Systems Thinking Consulting"],
+          "areaServed": [
+            { "@type": "Country", "name": "Sweden" },
+            { "@type": "Place", "name": "Nordic countries" },
+            { "@type": "Place", "name": "Europe" }
+          ],
+          "serviceType": ["Behaviour Change Consulting", "Organizational Change Management", "Leadership Development", "Systems Thinking Consulting"],
           "url": "https://clear-framework.com/services"
         }}
       />
