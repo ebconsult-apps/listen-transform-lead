@@ -62,7 +62,6 @@ const Layout = () => {
                     <NavLink to="/methodology" className="nav-link">Methodology</NavLink>
                     <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
                     <NavLink to="/contact" className="nav-link">Contact</NavLink>
-                    <Link to="/product" className="btn-primary justify-center mt-2">Try CLEAR</Link>
                   </nav>
                 </div>
               )}
@@ -76,7 +75,6 @@ const Layout = () => {
               <NavLink to="/methodology" className="nav-link">Methodology</NavLink>
               <NavLink to="/get-the-book" className="nav-link">Get the Book</NavLink>
               <NavLink to="/contact" className="nav-link">Contact</NavLink>
-              <Link to="/product" className="btn-primary ml-3 px-5 py-2">Try CLEAR</Link>
             </nav>
           )}
         </div>
@@ -112,16 +110,6 @@ const Layout = () => {
                   <li><Link to="/methodology" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Methodology</Link></li>
                   <li><Link to="/get-the-book" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Get the Book</Link></li>
                   <li><Link to="/contact" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Contact</Link></li>
-                </ul>
-              </div>
-              
-              {/* Product column — CLEAR self-serve app (D1 funnel wiring, additive) */}
-              <div>
-                <h3 className="font-medium text-sm uppercase tracking-wider text-foreground/70 mb-3">CLEAR App</h3>
-                <ul className="space-y-2">
-                  <li><Link to="/product" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Try CLEAR</Link></li>
-                  <li><Link to="/product/sample" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Sample report</Link></li>
-                  <li><Link to="/pricing" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Pricing</Link></li>
                 </ul>
               </div>
 

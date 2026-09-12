@@ -64,21 +64,6 @@ const dimensionKeys = [
   "refinement",
 ] as const;
 
-/**
- * Map the quiz's "most pressing challenge" answer onto the closest sample-report
- * segment, so "See a sample report" opens the version nearest to the visitor's
- * situation. Unmapped challenges fall through to the default sample (no param).
- */
-const CHALLENGE_TO_SEGMENT: Record<string, string> = {
-  "Culture & Collaboration": "people-culture",
-  "Growth & Scaling": "product-growth",
-};
-
-function sampleHrefForChallenge(challenge: string | undefined): string {
-  const segment = challenge ? CHALLENGE_TO_SEGMENT[challenge] : undefined;
-  return segment ? `/product/sample?segment=${segment}` : "/product/sample";
-}
-
 const inputClasses =
   "w-full p-3 rounded-lg border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow";
 
@@ -383,25 +368,6 @@ const AssessmentResults = ({ data }: AssessmentResultsProps) => {
           Book a Free Discovery Call
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
-      </div>
-
-      {/* Self-serve on-ramp — run a specific challenge through the CLEAR app */}
-      <div className="glass-card p-6 sm:p-8 md:p-10 text-center bg-primary/5">
-        <h3 className="text-xl font-bold mb-3">Run Your Challenge Through CLEAR</h3>
-        <p className="text-foreground/70 mb-6 max-w-xl mx-auto">
-          Want to go deeper on one specific behavior? Bring your challenge to the CLEAR
-          app and get a measurable objective, a systems map, and the COM-B barriers
-          holding it back, in minutes. The teaser is always free.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link to="/product" className="btn-primary">
-            Try CLEAR free
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-          <Link to={sampleHrefForChallenge(data.challenge)} className="btn-secondary">
-            See a sample report
-          </Link>
-        </div>
       </div>
     </div>
   );
