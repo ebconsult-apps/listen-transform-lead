@@ -17,6 +17,17 @@ const routes = [
   "/methodology",
   "/faq",
   "/resources",
+  // One public overview page per whitepaper (src/content/whitepapers.ts). The
+  // test in src/content/whitepapers.test.ts fails if this list drifts.
+  "/resources/clear-attention",
+  "/resources/clear-behaviour-free-design",
+  "/resources/clear-goldilocks",
+  "/resources/clear-vs-oecd-logic",
+  "/resources/clear-change-framework",
+  "/resources/clear-comparison",
+  "/resources/clear-sustainability",
+  "/resources/clear-clarity",
+  "/resources/clear-case-studies",
   "/contact",
   "/get-the-book",
   "/book-call",

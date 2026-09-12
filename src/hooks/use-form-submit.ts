@@ -14,6 +14,12 @@ interface UseFormSubmitOptions {
   formName: string;
   /** Google Ads conversion label from CONVERSION_LABELS in config/site.ts */
   conversionLabel: string;
+  /**
+   * Extra GA4 event parameters attached to the form_submission and lead_*
+   * events, e.g. `{ whitepaper_id }` so a lead can be attributed to a specific
+   * asset. Keys must be registered as custom dimensions in GA4 to be reportable.
+   */
+  eventParams?: Record<string, string>;
 }
 
 /**
@@ -22,7 +28,12 @@ interface UseFormSubmitOptions {
  * on success. Returns true from submit() when the submission succeeded so
  * callers can run their own success behavior (toast, redirect, reset).
  */
-export function useFormSubmit({ endpoint, formName, conversionLabel }: UseFormSubmitOptions) {
+export function useFormSubmit({
+  endpoint,
+  formName,
+  conversionLabel,
+  eventParams,
+}: UseFormSubmitOptions) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,8 +74,8 @@ export function useFormSubmit({ endpoint, formName, conversionLabel }: UseFormSu
       }
 
       setSubmitted(true);
-      trackFormSubmission(formName);
-      trackLead(formName);
+      trackFormSubmission(formName, eventParams);
+      trackLead(formName, eventParams);
       if (payload.email) {
         setEnhancedConversionData(payload.email);
       }
