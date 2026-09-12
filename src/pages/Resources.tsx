@@ -74,6 +74,54 @@ const whitepapers: Whitepaper[] = [
     ],
     pdfUrl: "/whitepapers/clear-case-studies.pdf",
   },
+  {
+    id: "clear-attention",
+    title: "Attention Is the Scarce Resource",
+    description:
+      "What shoppers who touch and look at products teach us about every behaviour we try to change, from checkout pages to shop floors.",
+    takeaways: [
+      "Why touch and gaze predict purchases, and what the real mechanism is",
+      "Treat attention as the gating resource in digital and physical conversion",
+      "Four design moves that win and hold attention before you add a single cue",
+    ],
+    pdfUrl: "/whitepapers/clear-attention.pdf",
+  },
+  {
+    id: "clear-behaviour-free-design",
+    title: "Design So the Behaviour Never Has to Happen",
+    description:
+      "The most powerful behavioural solutions remove the need for behaviour altogether. Why defaults and structure beat persuasion, and how to use them.",
+    takeaways: [
+      "Reframe every brief from \u201cget people to act\u201d to \u201cget the outcome\u201d",
+      "A six-tier hierarchy of behavioural controls, from eliminate to persuade",
+      "The ethical tests that keep behaviour-free design honest",
+    ],
+    pdfUrl: "/whitepapers/clear-behaviour-free-design.pdf",
+  },
+  {
+    id: "clear-goldilocks",
+    title: "The Goldilocks Zone: Matching Goals to Interventions",
+    description:
+      "Big goals need most barriers solved; small goals need a few. What nudge meta-analyses really say about effect sizes, and how to split a budget between exploring and exploiting.",
+    takeaways: [
+      "Calibrate expectations: a light-touch nudge is worth about two percentage points",
+      "Let available resources set the size of the goal, not the other way round",
+      "Use exploration vs exploitation to allocate a limited intervention budget",
+    ],
+    pdfUrl: "/whitepapers/clear-goldilocks.pdf",
+  },
+  {
+    id: "clear-vs-oecd-logic",
+    title: "CLEAR and the OECD\u2019s LOGIC Framework",
+    description:
+      "The OECD\u2019s 2024 LOGIC principles tell institutions how to mainstream behavioural science. CLEAR tells a team how to run a change. How they compare, and where each needs the other.",
+    takeaways: [
+      "Understand LOGIC\u2019s five dimensions and how it relates to BASIC",
+      "A step-by-step mapping of CLEAR against the OECD\u2019s project cycle",
+      "Practical guidance for public bodies, companies and practitioners",
+    ],
+    pdfUrl: "/whitepapers/clear-vs-oecd-logic.pdf",
+  },
 ];
 
 const Resources = () => {
