@@ -53,6 +53,10 @@ $whitepaper_map = [
     "clear-sustainability" => "/whitepapers/clear-sustainability.pdf",
     "clear-clarity" => "/whitepapers/clear-clarity.pdf",
     "clear-case-studies" => "/whitepapers/clear-case-studies.pdf",
+    "clear-attention" => "/whitepapers/clear-attention.pdf",
+    "clear-behaviour-free-design" => "/whitepapers/clear-behaviour-free-design.pdf",
+    "clear-goldilocks" => "/whitepapers/clear-goldilocks.pdf",
+    "clear-vs-oecd-logic" => "/whitepapers/clear-vs-oecd-logic.pdf",
 ];
 
 // Validate whitepaper ID
@@ -79,6 +83,10 @@ $whitepaper_titles = [
     "clear-sustainability" => "Driving Sustainable Change Inside and Out",
     "clear-clarity" => "Frameworks for Clarifying Purpose and Setting Goals",
     "clear-case-studies" => "Iterative Change: Real-World Success Stories",
+    "clear-attention" => "Attention Is the Scarce Resource",
+    "clear-behaviour-free-design" => "Design So the Behaviour Never Has to Happen",
+    "clear-goldilocks" => "The Goldilocks Zone: Matching Goals to Interventions",
+    "clear-vs-oecd-logic" => "CLEAR and the OECD's LOGIC Framework",
 ];
 
 $whitepaper_title = isset($whitepaper_titles[$whitepaper_id]) ? $whitepaper_titles[$whitepaper_id] : $whitepaper_id;
