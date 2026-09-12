@@ -1,33 +1,63 @@
 Sitemap: https://clear-framework.com/sitemap.xml
 
+# A plain-text summary of this site for LLM agents lives at /llms.txt
+
+# OpenAI — GPTBot (training), OAI-SearchBot (ChatGPT search index),
+# ChatGPT-User (live fetches on a user's behalf)
 User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
+# Anthropic — ClaudeBot (training), Claude-SearchBot (search index),
+# Claude-User (live fetches on a user's behalf)
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 User-agent: anthropic-ai
 Allow: /
 
+# Other AI answer engines
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
 Allow: /
 
 User-agent: Google-Extended
 Allow: /
 
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+# Classic search
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
+# Social previews
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
 Allow: /
 
 User-agent: *

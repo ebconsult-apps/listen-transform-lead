@@ -53,8 +53,20 @@ const HERO_VARIANTS: HeroVariant[] = [
 
 const STORAGE_KEY = "hero_ab_variant";
 
+/**
+ * The variant baked into the prerendered HTML. The build's headless browser
+ * (and any crawler running one) reports `navigator.webdriver`, so it always
+ * gets this variant instead of a random one. That keeps the H1 that search
+ * and AI crawlers index stable across builds and on-message for
+ * "behaviour change" queries; real visitors are still randomised.
+ */
+const CRAWLER_VARIANT_ID = "behavior_change";
+
 function getOrAssignVariant(): HeroVariant {
   if (typeof window === "undefined") return HERO_VARIANTS[0];
+  if (navigator.webdriver) {
+    return HERO_VARIANTS.find((v) => v.id === CRAWLER_VARIANT_ID) ?? HERO_VARIANTS[0];
+  }
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     const found = HERO_VARIANTS.find((v) => v.id === stored);

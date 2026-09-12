@@ -19,26 +19,51 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <SEO
-        title="Change Management Built on Clinical Psychology | CLEAR Framework - Erik Bohjort"
-        description="Licensed psychologist Erik Bohjort helps organizations beat the 70% failure rate of change initiatives. The CLEAR framework applies behavioral science and systems thinking for lasting transformation."
+        title="Behaviour Change Consultant, Stockholm, Sweden | CLEAR Framework - Erik Bohjort"
+        description="Licensed psychologist Erik Bohjort, based in Stockholm, Sweden, helps organizations beat the 70% failure rate of change initiatives. The CLEAR framework applies behavioral science, nudging and systems thinking to change what people actually do."
         path="/"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
+          "@id": "https://clear-framework.com/#organization",
           "name": "EB Consulting - CLEAR Change Framework",
-          "description": "Change management consulting built on clinical psychology. Licensed psychologist Erik Bohjort helps organizations drive lasting transformation through behavioral science and systems thinking.",
+          "alternateName": "CLEAR Change Framework",
+          "description": "Behaviour change and change management consulting built on clinical and organizational psychology. Licensed psychologist Erik Bohjort, based in Stockholm, Sweden, helps organizations drive lasting transformation through behavioral science, nudging and systems thinking.",
           "founder": {
             "@type": "Person",
+            "@id": "https://clear-framework.com/about#person",
             "name": "Erik Bohjort",
-            "jobTitle": "Licensed Psychologist & Organizational Change Consultant",
+            "jobTitle": "Licensed Psychologist & Behaviour Change Consultant",
             "url": "https://clear-framework.com/about",
             "sameAs": ["https://twitter.com/erikbohjort"]
           },
           "url": "https://clear-framework.com",
+          "email": "erik@eb-consulting.se",
           "logo": "https://clear-framework.com/logo-square.png",
           "image": "https://clear-framework.com/og-image.jpg",
-          "areaServed": ["Europe", "Scandinavia"],
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Stockholm",
+            "addressCountry": "SE"
+          },
+          "areaServed": [
+            { "@type": "Country", "name": "Sweden" },
+            { "@type": "Place", "name": "Nordic countries" },
+            { "@type": "Place", "name": "Europe" }
+          ],
+          "availableLanguage": ["sv", "en"],
+          "knowsAbout": [
+            "Behaviour change",
+            "Behavioral science",
+            "Behavioral design and nudging",
+            "COM-B model",
+            "Organizational psychology",
+            "Change management",
+            "Systems thinking",
+            "Psychometric assessment"
+          ],
           "serviceType": [
+            "Behaviour Change Consulting",
             "Change Management Consulting",
             "Leadership Development",
             "Psychometric Assessments",

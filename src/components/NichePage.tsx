@@ -20,6 +20,11 @@ interface CaseStudy {
   result: string;
 }
 
+interface Faq {
+  question: string;
+  answer: string;
+}
+
 interface NichePageProps {
   seoTitle: string;
   seoDescription: string;
@@ -32,6 +37,13 @@ interface NichePageProps {
   solutionTitle: string;
   solutions: Solution[];
   caseStudy?: CaseStudy;
+  /**
+   * Plain question/answer pairs rendered as always-visible HTML (no accordion),
+   * so search and AI crawlers that don't run JS can read them. Pair with a
+   * FAQPage entry in `structuredData` for the machine-readable version.
+   */
+  faqs?: Faq[];
+  faqTitle?: string;
   ctaPrimary: { text: string; href: string };
   ctaSecondary: { text: string; href: string };
   structuredData?: object;
@@ -49,6 +61,8 @@ const NichePage = ({
   solutionTitle,
   solutions,
   caseStudy,
+  faqs,
+  faqTitle = "Frequently Asked Questions",
   ctaPrimary,
   ctaSecondary,
   structuredData,
@@ -221,6 +235,23 @@ const NichePage = ({
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ Section — static markup on purpose (see `faqs` prop) */}
+      {faqs && faqs.length > 0 && (
+        <section className="pb-20">
+          <div className="section-container max-w-4xl mx-auto">
+            <h2 className="heading-md text-center mb-10">{faqTitle}</h2>
+            <dl className="space-y-6">
+              {faqs.map((faq) => (
+                <div key={faq.question} className="glass-card p-6 md:p-8">
+                  <dt className="text-lg font-bold mb-2">{faq.question}</dt>
+                  <dd className="text-foreground/70 leading-relaxed">{faq.answer}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
       )}

@@ -95,7 +95,7 @@ const Layout = () => {
                 <span className="text-primary">C</span>LEAR
               </Link>
               <p className="mt-2 text-sm text-foreground/60 max-w-md">
-                Founded by licensed psychologist Erik Bohjort. Our team of consultants helps organizations drive lasting transformation through the CLEAR Change Framework.
+                Behaviour change and change management consulting from Stockholm, Sweden. Founded by licensed psychologist Erik Bohjort, our team helps organizations across the Nordics and Europe drive lasting transformation through the CLEAR Change Framework.
               </p>
             </div>
             
@@ -108,6 +108,7 @@ const Layout = () => {
                   <li><Link to="/resources" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Resources</Link></li>
                   <li><Link to="/services" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Services</Link></li>
                   <li><Link to="/methodology" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Methodology</Link></li>
+                  <li><Link to="/consulting/behaviour-change-consultant-sweden" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Behaviour Change Consulting</Link></li>
                   <li><Link to="/get-the-book" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Get the Book</Link></li>
                   <li><Link to="/contact" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Contact</Link></li>
                 </ul>
