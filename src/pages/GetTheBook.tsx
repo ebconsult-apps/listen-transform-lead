@@ -219,10 +219,11 @@ const GetTheBook = () => {
                   </div>
                   <h2 className="heading-md mb-4">Erik Bohjort</h2>
                   <p className="body-md mb-4">
-                    Erik Bohjort is a licensed psychologist and organizational change consultant with
-                    extensive experience advising EU Parliament policies, global corporations, state agencies,
-                    and innovative startups. His work sits at the intersection of psychology, systems thinking,
-                    and practical leadership.
+                    Erik Bohjort is a licensed psychologist (Uppsala University) and behavioural design
+                    specialist who has worked with energy companies, pension and finance providers, news
+                    media, digital product teams, public agencies and startups. He sits on the Swedish
+                    Energy Agency's expert board on behavioural design and teaches the subject at specialist
+                    level for psychologists.
                   </p>
                   <Link
                     to="/about"

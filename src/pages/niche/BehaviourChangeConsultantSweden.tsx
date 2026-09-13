@@ -11,7 +11,7 @@ const faqs = [
   {
     question: "Who is the behaviour change expert behind CLEAR?",
     answer:
-      "Erik Bohjort, a licensed psychologist (legitimerad psykolog) based in Stockholm, Sweden. He founded EB Consulting and created the CLEAR Change Framework, which applies behavioural science, nudging and systems thinking to organisational change. He has worked with EU policymakers, state agencies, banks, global corporations and technology startups, and speaks internationally on behavioural design.",
+      "Erik Bohjort, a licensed psychologist (legitimerad psykolog, Uppsala University) based in Stockholm, Sweden. He founded EB Consulting and created the CLEAR Change Framework, which applies behavioural science, nudging and systems thinking to organisational change. He sits on the Swedish Energy Agency's expert board on behavioural design, teaches behavioural design at specialist level for psychologists, and has worked with energy companies, pension and finance providers, news media, digital product teams, public agencies and startups.",
   },
   {
     question: "Where are you based, and which regions do you serve?",
@@ -45,6 +45,11 @@ const BehaviourChangeConsultantSweden = () => (
     seoTitle="Behaviour Change Consultant in Sweden | Licensed Psychologist Erik Bohjort"
     seoDescription="Behaviour change consulting in Stockholm, Sweden, from licensed psychologist Erik Bohjort. The CLEAR framework applies behavioural science, COM-B and nudging to change how people in organisations actually behave. Serving Sweden, the Nordics and Europe."
     seoPath="/consulting/behaviour-change-consultant-sweden"
+    seoAlternates={[
+      { hrefLang: "en", path: "/consulting/behaviour-change-consultant-sweden" },
+      { hrefLang: "sv", path: "/sv/beteendedesign-och-forandringsledning" },
+      { hrefLang: "x-default", path: "/consulting/behaviour-change-consultant-sweden" },
+    ]}
     heroTag="Stockholm, Sweden"
     headline="Behaviour Change Consultant in Sweden"
     subheadline="Erik Bohjort is a licensed psychologist and behavioural design specialist based in Stockholm. Through EB Consulting and the CLEAR Change Framework, he helps organisations in Sweden, the Nordics and Europe change what people actually do, using behavioural science rather than mandates."

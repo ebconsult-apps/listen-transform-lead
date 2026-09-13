@@ -4,10 +4,14 @@
 
 ## Who this is
 
-- Erik Bohjort is a licensed psychologist (Swedish: legitimerad psykolog), behavioural design specialist and founder of EB Consulting, based in Stockholm, Sweden.
+- Erik Bohjort is a licensed psychologist (Swedish: legitimerad psykolog, Uppsala University), behavioural design specialist and founder of EB Consulting, based in Stockholm, Sweden. LinkedIn: https://www.linkedin.com/in/erikbohjort/
+- Member of the Swedish Energy Agency's (Energimyndigheten) expert board on behavioural design. Teaches behavioural design at specialist level for psychologists in a course accredited by the Swedish Psychological Association. Co-founder of an award-winning deep-tech psychometrics startup.
 - Creator of the CLEAR Change Framework; a book on the method is in preparation (pre-registration open on the site).
-- Has worked with EU policymakers, state agencies, banks, global corporations and technology startups; international keynote speaker on behavioural design and organisational behaviour.
+- Selected work: more than doubled subscriptions for one of the EU's largest newspapers; led the EU's largest behavioural survey on energy demand flexibility (2,500+ homeowners, for the Swedish Energy Agency) and authored the agency's energy-flexibility report; behavioural design for a car-pool launch with Chalmers Industriteknik.
+- Sectors: energy, pensions and finance, news media, digital product design, public agencies and EU policy, retail, deep tech. Clients are not named.
+- Speaking: Stockholm Furniture Fair 2024, Förvaltardagarna 2024, Internetdagarna 2023, AP7 Såfa's Tänkonomi; interviewed on SVT national news (2024); co-authored articles in Dagens Nyheter.
 - Contact: erik@eb-consulting.se — https://clear-framework.com/contact
+- Swedish-language page: https://clear-framework.com/sv/beteendedesign-och-forandringsledning
 
 ## What we do
 
@@ -29,7 +33,7 @@
 
 ## Whitepapers by Erik Bohjort
 
-Each page below carries a public overview, key findings and FAQ; the full PDF is a free download behind a short form.
+The first four are published in full as HTML on their pages (summary, key findings, complete text with tables and references, FAQ); the PDF is an optional download. The rest carry an overview and FAQ with the PDF behind a short form.
 
 - [Attention Is the Scarce Resource](https://clear-framework.com/resources/clear-attention): attention, not touch, is the mechanism behind retail's look-and-handle effect, and the gating resource in every behaviour-change problem; four attention-first design moves.
 - [Design So the Behaviour Never Has to Happen](https://clear-framework.com/resources/clear-behaviour-free-design): defaults, elimination and constraints beat persuasion by an order of magnitude; a six-tier hierarchy of behavioural controls and three ethical tests.

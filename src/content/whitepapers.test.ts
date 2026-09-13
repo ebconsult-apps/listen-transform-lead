@@ -46,6 +46,23 @@ describe("whitepaper catalogue", () => {
     }
   });
 
+  it("publishes the short argument papers in full as HTML", () => {
+    const argumentPapers = whitepapers.filter((w) => w.datePublished);
+    expect(argumentPapers.length).toBeGreaterThanOrEqual(4);
+    for (const w of argumentPapers) {
+      expect(w.body, `${w.id} body`).toBeDefined();
+      expect(w.body!.length, `${w.id} body blocks`).toBeGreaterThanOrEqual(10);
+      expect(w.body!.some((b) => b.type === "references"), `${w.id} references`).toBe(true);
+      for (const b of w.body!) {
+        if (b.type === "table") {
+          for (const row of b.rows) {
+            expect(row.length, `${w.id} table row width`).toBe(b.headers.length);
+          }
+        }
+      }
+    }
+  });
+
   it("has enough public overview content for crawlers to quote", () => {
     for (const w of whitepapers) {
       expect(w.summary.length, `${w.id} summary`).toBeGreaterThanOrEqual(2);

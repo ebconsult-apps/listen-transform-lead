@@ -109,6 +109,7 @@ const Layout = () => {
                   <li><Link to="/services" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Services</Link></li>
                   <li><Link to="/methodology" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Methodology</Link></li>
                   <li><Link to="/consulting/behaviour-change-consultant-sweden" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Behaviour Change Consulting</Link></li>
+                  <li><Link to="/sv/beteendedesign-och-forandringsledning" lang="sv" className="text-sm text-foreground/60 hover:text-foreground transition-colors">På svenska</Link></li>
                   <li><Link to="/get-the-book" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Get the Book</Link></li>
                   <li><Link to="/contact" className="text-sm text-foreground/60 hover:text-foreground transition-colors">Contact</Link></li>
                 </ul>

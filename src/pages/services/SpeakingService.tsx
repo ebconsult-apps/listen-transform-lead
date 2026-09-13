@@ -71,9 +71,11 @@ const SpeakingService = () => {
                 </p>
                 <p className="text-foreground/70 mb-4">
                   Erik is a licensed psychologist who has spent his career at the intersection
-                  of behavioral science and organizational change. He works with corporations,
-                  state agencies, and international institutions to drive transformation that
-                  accounts for how people actually behave, not how we wish they would.
+                  of behavioral science and organizational change. He has spoken at Stockholm
+                  Furniture Fair (2024), Förvaltardagarna (2024) and Internetdagarna (2023), on AP7's
+                  Tänkonomi, and at internal conferences in the energy, pension and digital design
+                  sectors since 2020. SVT's national news has interviewed him on behavioural design
+                  for societal benefit.
                 </p>
                 <p className="text-foreground/70 mb-4">
                   He is the creator of the CLEAR Change Framework, a structured methodology for

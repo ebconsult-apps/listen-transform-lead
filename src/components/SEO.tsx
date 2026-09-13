@@ -1,5 +1,12 @@
 import { Helmet } from "react-helmet-async";
 
+export interface SEOAlternate {
+  /** BCP 47 code, e.g. "en", "sv", or "x-default". */
+  hrefLang: string;
+  /** Site-relative path, e.g. "/sv/beteendedesign". */
+  path: string;
+}
+
 interface SEOProps {
   title: string;
   description: string;
@@ -8,6 +15,13 @@ interface SEOProps {
   structuredData?: Record<string, unknown>;
   /** Keep utility pages (thank-you, booking confirmations) out of search/AI results */
   noindex?: boolean;
+  /** Page language, set on <html lang>. Defaults to "en". */
+  lang?: string;
+  /**
+   * Translations of this page. Each becomes a `<link rel="alternate" hreflang>`;
+   * include the page itself so every language version lists the full set.
+   */
+  alternates?: SEOAlternate[];
 }
 
 const SEO = ({
@@ -17,6 +31,8 @@ const SEO = ({
   type = "website",
   structuredData,
   noindex = false,
+  lang = "en",
+  alternates,
 }: SEOProps) => {
   const siteUrl = "https://clear-framework.com";
   const canonicalUrl = `${siteUrl}${path}`;
@@ -27,11 +43,14 @@ const SEO = ({
   // tabs where rAF never fires, so with the default every page except the first
   // was captured with index.html's generic title, no description, and no JSON-LD.
   return (
-    <Helmet defer={false}>
+    <Helmet defer={false} htmlAttributes={{ lang }}>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonicalUrl} />
       {noindex && <meta name="robots" content="noindex" />}
+      {alternates?.map((alt) => (
+        <link key={alt.hrefLang} rel="alternate" hrefLang={alt.hrefLang} href={`${siteUrl}${alt.path}`} />
+      ))}
 
       {/* Open Graph */}
       <meta property="og:title" content={title} />
@@ -39,6 +58,7 @@ const SEO = ({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:locale" content={lang === "sv" ? "sv_SE" : "en_GB"} />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />

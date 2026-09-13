@@ -42,6 +42,7 @@ import HealthcareChangeManagement from "./pages/niche/HealthcareChangeManagement
 import SustainabilityChangeManagement from "./pages/niche/SustainabilityChangeManagement";
 import MergerIntegrationConsulting from "./pages/niche/MergerIntegrationConsulting";
 import BehaviourChangeConsultantSweden from "./pages/niche/BehaviourChangeConsultantSweden";
+import BeteendedesignForandringsledning from "./pages/sv/BeteendedesignForandringsledning";
 import ChangeManagementService from "./pages/services/ChangeManagementService";
 import LeadershipDevelopmentService from "./pages/services/LeadershipDevelopmentService";
 import ExecutiveCoachingService from "./pages/services/ExecutiveCoachingService";
@@ -163,6 +164,7 @@ const App = () => (
               <Route path="consulting/sustainability-change-management" element={<SustainabilityChangeManagement />} />
               <Route path="consulting/merger-integration-consulting" element={<MergerIntegrationConsulting />} />
               <Route path="consulting/behaviour-change-consultant-sweden" element={<BehaviourChangeConsultantSweden />} />
+              <Route path="sv/beteendedesign-och-forandringsledning" element={<BeteendedesignForandringsledning />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

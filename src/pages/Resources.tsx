@@ -190,7 +190,7 @@ const Resources = () => {
                       to={whitepaperPath(wp.id)}
                       className="btn-secondary flex-1 justify-center"
                     >
-                      Read the overview
+                      {wp.body ? "Read online" : "Read the overview"}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </div>
