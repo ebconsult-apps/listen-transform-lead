@@ -53,16 +53,67 @@ export function revokeAnalyticsConsent(): void {
   }
 }
 
+// ---------------------------------------------------------------------------
+// First-party, cookieless event mirror (Supabase `track` edge function)
+// ---------------------------------------------------------------------------
+
 /**
- * Send a custom event to GA4.
+ * Every event sent to GA4 is also POSTed to our own `track` edge function, which
+ * writes it to the `analytics_events` table (see
+ * supabase/migrations/20260913120000_analytics_events.sql). That gives us the
+ * per-whitepaper funnel and AI-assistant referral traffic as plain SQL, without
+ * depending on GA4 custom dimensions or its UI.
+ *
+ * It is cookieless and sends no identifiers: event name, the props the caller
+ * attached (ids and labels only, never names or emails), the path, and the
+ * document referrer. The function derives a daily pseudonymous visitor key
+ * server-side and never stores the IP. Because nothing is set on the device,
+ * it is not gated on the cookie-consent choice (privacy policy §3, §8).
+ *
+ * Skipped when there is no Supabase URL (fresh clone), outside a browser
+ * (tests), in dev/QA mock mode (would pollute real data), and inside the
+ * headless prerender browser (`navigator.webdriver`).
+ */
+const FIRST_PARTY_TRACK_URL: string | null = (() => {
+  const base = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+  return base ? `${base.replace(/\/$/, "")}/functions/v1/track` : null;
+})();
+
+function sendFirstParty(eventName: string, params?: Record<string, string>): void {
+  if (!FIRST_PARTY_TRACK_URL || typeof window === "undefined") return;
+  if (devActive() || navigator.webdriver) return;
+  try {
+    const body = JSON.stringify({
+      event: eventName,
+      props: params ?? {},
+      path: window.location.pathname,
+      referrer: document.referrer || null,
+    });
+    // keepalive lets the request complete when the click navigates away.
+    void fetch(FIRST_PARTY_TRACK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      /* analytics is best-effort */
+    });
+  } catch {
+    /* never let analytics throw into UI code */
+  }
+}
+
+/**
+ * Send a custom event to GA4 and to the first-party event log.
  */
 export function trackEvent(
   eventName: string,
   params?: Record<string, string>,
 ): void {
-  if (typeof window.gtag === "function") {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
     window.gtag("event", eventName, params);
   }
+  sendFirstParty(eventName, params);
 }
 
 // ---------------------------------------------------------------------------

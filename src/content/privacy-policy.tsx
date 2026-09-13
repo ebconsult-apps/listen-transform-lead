@@ -15,10 +15,10 @@
  * accepts, so we can detect (in future) that an older version was accepted.
  * Bump this string whenever the copy in <PrivacyPolicyContent/> changes.
  */
-export const PRIVACY_POLICY_VERSION = "2026-06-26";
+export const PRIVACY_POLICY_VERSION = "2026-09-13";
 
 /** Human-readable effective date, shown at the top of the policy body. */
-export const PRIVACY_POLICY_EFFECTIVE_DATE = "26 June 2026";
+export const PRIVACY_POLICY_EFFECTIVE_DATE = "13 September 2026";
 
 const CONTACT_EMAIL = "erik@eb-consulting.se";
 
@@ -101,8 +101,13 @@ export function PrivacyPolicyContent() {
             typically name, email, organisation, role, and message.
           </li>
           <li>
-            <strong>Website analytics.</strong> Where you consent, pseudonymous usage
-            events, page views, and a transient (truncated) IP address.
+            <strong>Website analytics.</strong> Two kinds. <em>Our own first-party
+            measurement</em>, which is cookieless: the event (such as a page view or a
+            whitepaper download), the page path, the referring site, a coarse device type,
+            and a pseudonymous visitor key derived from your IP address and browser that
+            changes every day and cannot be reversed; the IP address itself is not stored.
+            And, <em>where you consent</em>, Google Analytics usage events, page views, and a
+            transient (truncated) IP address.
           </li>
         </ul>
         <p>We do not buy personal data about you, and we do not sell your personal data.</p>
@@ -129,7 +134,13 @@ export function PrivacyPolicyContent() {
             basis: <em>legitimate interests</em>, balanced against your rights.
           </li>
           <li>
-            <strong>Website analytics and advertising measurement.</strong> Legal basis:{" "}
+            <strong>First-party website analytics.</strong> Understanding which pages and
+            resources are useful, and where visitors come from, without identifying anyone.
+            Legal basis: <em>legitimate interests</em> — no cookie or device identifier is
+            used, so no consent is required under the ePrivacy rules.
+          </li>
+          <li>
+            <strong>Google analytics and advertising measurement.</strong> Legal basis:{" "}
             <em>consent</em> — no non-essential tracker loads until you opt in.
           </li>
         </ul>
@@ -182,7 +193,7 @@ export function PrivacyPolicyContent() {
           data-processing terms, and where required by law:
         </p>
         <ul className="list-disc space-y-1 pl-5">
-          <li><strong>Supabase</strong> — database, authentication, and document storage hosting.</li>
+          <li><strong>Supabase</strong> — database, authentication, document storage hosting, and our first-party website analytics (EU region).</li>
           <li><strong>Anthropic</strong> — AI inference that generates your analysis (see section 5).</li>
           <li><strong>Stripe</strong> — payment processing for paid plans.</li>
           <li><strong>Brevo</strong> — transactional and requested email.</li>
@@ -213,6 +224,15 @@ export function PrivacyPolicyContent() {
           use Google Consent Mode v2, which defaults all analytics and advertising signals
           to &ldquo;denied&rdquo; until you opt in; you can change or withdraw consent at
           any time.
+        </p>
+        <p>
+          Separately, we measure site usage with our own <strong>cookieless, first-party
+          analytics</strong>. It sets no cookies, stores nothing on your device, does not
+          store your IP address, and runs on our EU-hosted database. It records the event,
+          the page, the referring site, a coarse device type, and a pseudonymous visitor key
+          that rotates daily so that we can count distinct visitors without recognising
+          anyone across days. Because no identifier is placed on or read from your device,
+          it does not require consent and is not affected by the cookie banner.
         </p>
       </Section>
 

@@ -147,6 +147,16 @@ cross-phase `assumption_gaps` log (all project-member read+write under RLS), and
 extends the `runs.phase` / `projects.status` enums. `project-run` is edited in
 place, so no change to the deploy workflow is required.
 
+## 3e. First-party analytics (`track`)
+
+`track` (public, `verify_jwt = false`) is a cookieless analytics sink: the marketing site
+mirrors every GA4 event into the `analytics_events` table through it, so whitepaper funnels
+and AI-assistant referral traffic are plain SQL (`analytics_whitepaper_funnel`,
+`analytics_daily_sources`, `analytics_ai_referrals` views). It stores no IP and sets no
+cookie; see `docs/analytics-first-party.md`. The `20260913120000_analytics_events.sql`
+migration creates the table (RLS on, no policies: service-role only). Optional secret
+`ANALYTICS_SALT` salts the daily visitor key.
+
 ## 4. Stripe — go-live runbook
 
 The `stripe-checkout` (creates Checkout / Billing-Portal sessions) and

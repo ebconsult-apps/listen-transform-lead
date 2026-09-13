@@ -33,10 +33,15 @@ Every whitepaper event now carries `whitepaper_id` (and `placement`: `modal` on 
 | `form_submission` / `lead_whitepaper_download` | the form is submitted successfully (existing events, now with the id) |
 | `whitepaper_download` | the unlocked "Download PDF" link is clicked |
 
-**One-time GA4 setup:** Admin → Custom definitions → create event-scoped custom dimensions
-`whitepaper_id` and `placement`. Until they exist GA4 stores the parameter but cannot report on
-it. Then an Exploration with `whitepaper_id` as the row and the three events as columns gives a
-per-paper funnel, and `lead_whitepaper_download` can stay the key event imported to Google Ads.
+**You do not need GA4 to read these.** Every event is also mirrored, cookieless, into the
+project's own `analytics_events` table; `select * from analytics_whitepaper_funnel` gives the
+per-paper funnel and `analytics_ai_referrals` shows visits arriving from ChatGPT, Claude,
+Perplexity and friends. See `docs/analytics-first-party.md`.
+
+**Optional GA4 setup** (only if you also want the funnel inside GA4): Admin → Custom
+definitions → create event-scoped custom dimensions `whitepaper_id` and `placement`. GA4 stores
+the parameters regardless but cannot report on them until then. `lead_whitepaper_download` stays
+the key event imported to Google Ads either way.
 
 **Adding a paper:** add the PDF to `public/whitepapers/`, an entry to `src/content/whitepapers.ts`,
 the id to `public/whitepaper-handler.php`, the route to `vite.config.ts` and `public/sitemap.xml`.
