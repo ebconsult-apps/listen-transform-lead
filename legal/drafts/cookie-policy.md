@@ -84,6 +84,13 @@ analytics**.
 GA4 data retention in the Google Analytics property is set to **`[14 months]`**. `[Confirm GA4
 retention setting.]`
 
+**Not a cookie: first-party analytics.** Independently of the consent choice above, the site sends
+anonymous usage events (page path, referring site, event name, coarse device type) to our own
+EU-hosted database. This sets **no cookie** and reads **nothing from your device**; the only
+visitor key is computed server-side from IP address and browser, truncated, and rotated daily, and
+the IP address itself is not stored. It is therefore outside the scope of the ePrivacy cookie rules
+and is described in the Privacy Policy (Sections 3, 4 and 9) rather than here.
+
 ### 3.3 Advertising (non-essential — consent required)
 
 Used to measure the effectiveness of our advertising (e.g. which ad led to a sign-up or enquiry).

@@ -30,3 +30,8 @@ verify_jwt = false
 # them through Brevo. Supabase signs the request (hook secret), so there's no JWT.
 [functions.auth-email]
 verify_jwt = false
+
+# Public, anonymous site analytics sink (cookieless). Nothing to authenticate:
+# it accepts an event name + short props and stores no identifiers.
+[functions.track]
+verify_jwt = false

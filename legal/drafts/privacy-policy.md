@@ -95,7 +95,7 @@ for who is responsible.
   - **Account & identity data** — the people who sign up and use CLEAR;
   - **Authentication data** — log-in and session security;
   - **Billing data** — subscriptions and one-off purchases;
-  - **Website analytics** — consent-based measurement of how our site is used.
+  - **Website analytics** — our own cookieless first-party measurement of how our site is used, and consent-based Google measurement.
 
   For this data, **this Privacy Policy is the controlling notice** and you can exercise your
   rights directly against us (Section 11).
@@ -131,7 +131,8 @@ the data they _bring into their projects_, and we just process it for them.**
 | **Voice dictation (transcript only)** | If you use the optional in-browser dictation on input fields, **only the resulting transcript text** is captured into the field. The Web Speech API runs in your browser; **no audio file is recorded or sent to CLEAR servers.** | Same role as the field being filled |
 | **Billing** | Stripe customer ID, subscription ID, plan tier and status, billing contact. *Card/payment details are handled by Stripe and never reach CLEAR servers.* | Controller |
 | **Enquiry / marketing** | When you submit a contact, consultation, assessment, booking or whitepaper form on our website: the details you provide — typically name, email, organisation, role and message. | Controller |
-| **Website analytics** | Pseudonymous usage events and page views, transient IP address. *If/when Google Ads goes live, a hashed email may be sent for "enhanced conversions" — **not active today** (the Google Ads tag is not yet configured; see the Cookie Policy).* **All consent-gated.** | Controller |
+| **Website analytics (first-party, cookieless)** | Event name (e.g. page view, whitepaper download), page path, referring site, coarse device type, and a pseudonymous daily visitor key derived server-side from IP address + browser (`sha256`, truncated, rotates every day; **the IP address is not stored**). No cookie or device storage. Hosted in our EU Supabase database. | Controller |
+| **Website analytics (Google)** | Pseudonymous usage events and page views, transient IP address. *If/when Google Ads goes live, a hashed email may be sent for "enhanced conversions" — **not active today** (the Google Ads tag is not yet configured; see the Cookie Policy).* **All consent-gated.** | Controller |
 
 We do not buy personal data about you, and we do not sell your personal data.
 
@@ -149,6 +150,7 @@ We do not buy personal data about you, and we do not sell your personal data.
 | Service emails (account, respondent invitations sent on the customer's behalf) | Operate the service and deliver transactional messages | **(b) Contract** and/or **(f) legitimate interests** |
 | Responding to website enquiries / sending updates you request | Answer your contact, consultation, assessment, booking or whitepaper request | **(a) Consent** and/or **(f) legitimate interests** in responding to you |
 | Security, abuse prevention, service improvement, defending legal claims | Protect users and the platform; run the business | **(f) Legitimate interests** (balanced against your rights) |
+| **First-party website analytics** (cookieless) | Understand which pages and resources are useful and where visitors come from, without identifying anyone | **(f) Legitimate interests** — no cookie or device identifier is used, so ePrivacy consent is not required; the visitor key is pseudonymous and rotates daily. `[Confirm the balancing assessment; Swedish IMY guidance treats cookieless, IP-hashing analytics as consent-free when no identifier is stored on the device.]` |
 | **Website analytics and advertising measurement** (GA4, Google Ads) | Understand site usage and measure ad effectiveness | **(a) Consent** — see Section 9 of this policy and the **Cookie Policy**. No non-essential cookie or tracker loads until you consent. |
 
 Where we rely on **legitimate interests (f)**, you can ask for our balancing assessment and you
@@ -279,6 +281,14 @@ We use **Google Consent Mode v2**, which **defaults all analytics and advertisin
 easy as giving it** — using the **"Cookie settings"** control in the site/app footer, which reopens
 the consent banner.
 
+Separately, we measure site usage with our own **cookieless, first-party analytics**. It sets no
+cookies, stores nothing on your device, does not store your IP address, and runs on our EU-hosted
+database. It records the event, the page, the referring site, a coarse device type, and a
+pseudonymous visitor key that rotates daily, so we can count distinct visitors without recognising
+anyone across days. Because no identifier is placed on or read from your device, it does not
+require consent and is not affected by the cookie banner (legal basis: legitimate interests,
+Section 4).
+
 Full details — categories, the specific trackers, durations, and how to change your choice — are in
 the separate **[Cookie Policy](./cookie-policy.md)**.
 
@@ -293,6 +303,7 @@ The periods below are **proposed defaults** and are subject to confirmation.
 | Account + project data | Kept for the life of the account; deleted within **30 days** of account closure | Backups purged within **90 days** |
 | Uploaded documents + AI outputs | Same lifecycle as their project | Deletable per-project by the project owner at any time |
 | Respondent invitations | **Invite token expires after 30 days** | Contributions are retained with the project and are deletable by the project owner |
+| Website analytics (first-party, cookieless) | **14 months** | Pruned automatically by the `analytics_prune()` database function |
 | Website analytics (GA4) | **14 months** | See the Cookie Policy |
 | Billing / accounting records | **7 years** | Required by the Swedish Bookkeeping Act (*Bokföringslagen*) — applies even after account closure |
 
