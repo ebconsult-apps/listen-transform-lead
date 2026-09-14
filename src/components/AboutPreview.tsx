@@ -24,7 +24,7 @@ const AboutPreview = () => {
                 imageRef.current?.classList.add('animate-fade-in-right');
               }, 100);
             }
-            
+
             if (contentRef.current) {
               contentRef.current.style.opacity = '1';
               setTimeout(() => {
@@ -38,7 +38,7 @@ const AboutPreview = () => {
     };
 
     const observer = new IntersectionObserver(animateElements, observerOptions);
-    
+
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
@@ -53,7 +53,6 @@ const AboutPreview = () => {
           {/* Image Section (Left side) */}
           <div ref={imageRef} className="opacity-0 order-2 lg:order-1">
             <div className="relative">
-              {/* Main image replaced with bw.png */}
               <div className="aspect-[4/5] rounded-2xl overflow-hidden relative">
                 <img
                   src="/erik-interview.jpg"
@@ -61,47 +60,49 @@ const AboutPreview = () => {
                   className="object-cover w-full h-full"
                 />
               </div>
-              
+
               {/* Decorative elements */}
               <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-primary/5 rounded-full blur-2xl"></div>
               <div className="absolute -top-4 -right-4 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
             </div>
           </div>
-          
+
           {/* Content (Right side) */}
           <div ref={contentRef} className="opacity-0 order-1 lg:order-2">
             <div className="tag mb-4">About</div>
             <h2 className="heading-lg mb-6">Erik Bohjort</h2>
             <p className="body-md mb-6">
-              As a licensed psychologist with extensive experience working with EU Parliament 
-              policies, global corporations, state agencies, banks, and innovative startups, 
-              I bring a unique perspective to solving complex challenges.
+              Licensed psychologist (Uppsala University) and behavioural design specialist based in
+              Stockholm. I work with energy companies, pension and finance providers, news media,
+              digital product teams and public agencies on one question: how do we get people to
+              actually do the thing the strategy depends on?
             </p>
             <p className="body-md mb-8">
-              My passion lies in guiding clients through transformative processes using a 
-              human-centered approach that turns listening into a powerful catalyst for change.
+              I sit on the Swedish Energy Agency's expert board on behavioural design and teach the
+              subject at specialist level for psychologists. The CLEAR Change Framework is that
+              practice written down.
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mb-10">
               <div className="glass p-4 rounded-xl">
-                <h3 className="font-medium text-foreground mb-2">Global Experience</h3>
+                <h3 className="font-medium text-foreground mb-2">Subscriptions more than doubled</h3>
                 <p className="text-sm text-foreground/70">
-                  Working with organizations across continents and industries
+                  For one of the largest newspapers in the EU, by redesigning how readers decide
                 </p>
               </div>
               <div className="glass p-4 rounded-xl">
-                <h3 className="font-medium text-foreground mb-2">Licensed Psychologist</h3>
+                <h3 className="font-medium text-foreground mb-2">2,500 households studied</h3>
                 <p className="text-sm text-foreground/70">
-                  Bringing scientific insight to human-centered solutions
+                  The EU's largest behavioural survey on energy demand flexibility, for the Swedish Energy Agency
                 </p>
               </div>
             </div>
-            
-            <Link 
-              to="/about" 
+
+            <Link
+              to="/about"
               className="inline-flex items-center text-primary hover:text-primary/80 font-medium transition-colors"
             >
-              Learn more about my journey
+              More about Erik
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>

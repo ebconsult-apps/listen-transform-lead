@@ -51,6 +51,7 @@ const routes = [
   "/consulting/sustainability-change-management",
   "/consulting/merger-integration-consulting",
   "/consulting/behaviour-change-consultant-sweden",
+  "/sv/beteendedesign-och-forandringsledning",
   "/thank-you",
   "/services/change-management",
   "/services/leadership-development",

@@ -4,7 +4,90 @@ import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
 import SEO from "@/components/SEO";
 import WhitepaperGate from "@/components/WhitepaperGate";
 import NotFound from "@/pages/NotFound";
-import { getWhitepaper, whitepaperPath, whitepapers } from "@/content/whitepapers";
+import {
+  getWhitepaper,
+  whitepaperPath,
+  whitepapers,
+  type WhitepaperBlock,
+} from "@/content/whitepapers";
+
+/** Render one full-text block as semantic HTML. */
+function Block({ block }: { block: WhitepaperBlock }) {
+  switch (block.type) {
+    case "h2":
+      return <h2 className="heading-md mt-10 mb-4">{block.text}</h2>;
+    case "h3":
+      return <h3 className="text-lg font-bold mt-6 mb-2">{block.text}</h3>;
+    case "p":
+      return <p className="body-md mb-4">{block.text}</p>;
+    case "callout":
+      return (
+        <aside className="border-l-4 border-primary bg-primary/5 rounded-r-lg p-5 my-6">
+          {block.label && (
+            <div className="text-xs uppercase tracking-wider text-primary font-semibold mb-2">{block.label}</div>
+          )}
+          <p className="body-md font-medium">{block.text}</p>
+        </aside>
+      );
+    case "ul":
+      return (
+        <ul className="space-y-3 mb-4 body-md">
+          {block.items.map((item) => (
+            <li key={item.slice(0, 40)} className="flex items-start gap-3">
+              <div className="h-1.5 w-1.5 rounded-full bg-primary mt-3 flex-shrink-0" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    case "ol":
+      return (
+        <ol className="list-decimal pl-6 space-y-2 mb-4 body-md">
+          {block.items.map((item) => (
+            <li key={item.slice(0, 40)}>{item}</li>
+          ))}
+        </ol>
+      );
+    case "table":
+      return (
+        <div className="overflow-x-auto my-6">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr>
+                {block.headers.map((h, i) => (
+                  <th key={i} className="text-left font-semibold p-3 border-b-2 border-foreground/20 align-bottom">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, r) => (
+                <tr key={r} className="align-top">
+                  {row.map((cell, c) => (
+                    <td key={c} className="p-3 border-b border-foreground/10 text-foreground/80">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    case "references":
+      return (
+        <section className="mt-10">
+          <h2 className="heading-md mb-4">References</h2>
+          <ol className="space-y-2 text-sm text-foreground/70 list-none">
+            {block.items.map((item) => (
+              <li key={item.slice(0, 40)}>{item}</li>
+            ))}
+          </ol>
+        </section>
+      );
+  }
+}
 
 const SITE = "https://clear-framework.com";
 
@@ -158,6 +241,21 @@ const WhitepaperPage = () => {
                 </ul>
               </div>
 
+              {/* Full text, when the paper is published as HTML */}
+              {paper.body && (
+                <article className="glass-card p-8 md:p-10" id="full-text">
+                  <div className="text-xs uppercase tracking-wider text-foreground/50 mb-2">Full paper</div>
+                  <h2 className="heading-lg mb-2">{paper.title}</h2>
+                  {paper.subtitle && <p className="body-md text-foreground/70 mb-6">{paper.subtitle}</p>}
+                  {paper.body.map((block, i) => (
+                    <Block key={i} block={block} />
+                  ))}
+                  <p className="text-sm text-foreground/50 mt-10">
+                    © {paper.datePublished?.slice(0, 4) ?? "2026"} Erik Bohjort · clear-framework.com
+                  </p>
+                </article>
+              )}
+
               {/* Plain <dl>, not an accordion: crawlers read it without JS */}
               <div>
                 <h2 className="heading-md mb-6">Questions this paper answers</h2>
@@ -180,11 +278,12 @@ const WhitepaperPage = () => {
                     <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
                       <FileText className="h-5 w-5" />
                     </div>
-                    <h2 className="text-lg font-bold">Get the full paper</h2>
+                    <h2 className="text-lg font-bold">{paper.body ? "Get the PDF" : "Get the full paper"}</h2>
                   </div>
                   <p className="text-sm text-foreground/70">
-                    The complete PDF with the full argument, tables and references is free.
-                    Fill in the short form below.
+                    {paper.body
+                      ? "The full text is on this page. If you'd like the typeset PDF to keep or share, fill in the short form below."
+                      : "The complete PDF with the full argument, tables and references is free. Fill in the short form below."}
                   </p>
                 </div>
                 <div id="download">

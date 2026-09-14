@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, AlertTriangle, Quote } from "lucide-react";
-import SEO from "@/components/SEO";
+import SEO, { type SEOAlternate } from "@/components/SEO";
 
 interface Challenge {
   title: string;
@@ -29,6 +29,8 @@ interface NichePageProps {
   seoTitle: string;
   seoDescription: string;
   seoPath: string;
+  /** hreflang alternates when the page has a translation. */
+  seoAlternates?: SEOAlternate[];
   headline: string;
   subheadline: string;
   heroTag: string;
@@ -53,6 +55,7 @@ const NichePage = ({
   seoTitle,
   seoDescription,
   seoPath,
+  seoAlternates,
   headline,
   subheadline,
   heroTag,
@@ -122,6 +125,7 @@ const NichePage = ({
         title={seoTitle}
         description={seoDescription}
         path={seoPath}
+        alternates={seoAlternates}
         structuredData={structuredData as Record<string, unknown>}
       />
 
