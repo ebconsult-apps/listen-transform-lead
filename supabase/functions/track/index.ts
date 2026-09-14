@@ -38,6 +38,10 @@ function empty(status: number): Response {
   return new Response(null, { status, headers: corsHeaders });
 }
 
+function isClockSkew(error: { code?: string; message?: string }): boolean {
+  return error.code === "PGRST303" || /issued at future/i.test(error.message ?? "");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return empty(405);
@@ -61,7 +65,7 @@ Deno.serve(async (req) => {
     const device = deviceType(userAgent);
     const visitor = await visitorHash(clientIp(req.headers), userAgent, SALT);
 
-    const { error } = await admin.from("analytics_events").insert({
+    const row = {
       event: payload.event,
       props: payload.props,
       path: payload.path,
@@ -69,7 +73,16 @@ Deno.serve(async (req) => {
       source,
       device,
       visitor_hash: visitor,
-    });
+    };
+    let { error } = await admin.from("analytics_events").insert(row);
+    if (error && isClockSkew(error)) {
+      // On a cold boot PostgREST occasionally rejects the freshly minted
+      // service token with PGRST303 "JWT issued at future" (sub-second clock
+      // skew between the edge runtime and the database). Seen on ~10% of bot
+      // cold starts in September 2026. One short retry clears it.
+      await new Promise((resolve) => setTimeout(resolve, 750));
+      ({ error } = await admin.from("analytics_events").insert(row));
+    }
     if (error) throw error;
 
     // Cheap, scheduler-free retention: prune on a small fraction of requests.

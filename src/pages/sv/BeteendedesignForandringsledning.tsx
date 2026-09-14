@@ -32,7 +32,7 @@ const faqs = [
   {
     question: "Vilka organisationer arbetar du med?",
     answer:
-      "Energibolag, pensions- och finansaktörer, mediehus, digitala produkt- och tjänsteorganisationer, myndigheter och EU-institutioner, handelsföretag och deep tech-startups. Uppdragsgivarna finns i Sverige, Norden och internationellt. Kunder namnges inte på den här sidan.",
+      "Energibolag, pensions- och finansaktörer, mediehus, digitala produkt- och tjänsteorganisationer, myndigheter och EU-institutioner, handelsföretag och deep tech-startups. Bland uppdragsgivare i offentlig sektor finns Arbetsförmedlingen, Försäkringskassan och Energimyndigheten. Uppdragsgivarna finns i Sverige, Norden och internationellt; privata kunder namnges inte på den här sidan.",
   },
   {
     question: "Var finns du och på vilka språk arbetar du?",
@@ -204,7 +204,7 @@ const BeteendedesignForandringsledning = () => {
                 ))}
               </ul>
               <p className="text-sm text-foreground/60 mt-4">
-                Branscher: {PROFILE.sectors.sv.join(", ").toLowerCase()}. Kunder namnges inte här.
+                {PROFILE.clientsNote.sv} Branscher: {PROFILE.sectors.sv.join(", ").toLowerCase()}.
               </p>
             </div>
           </div>

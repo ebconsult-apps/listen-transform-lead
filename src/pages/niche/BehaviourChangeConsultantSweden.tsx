@@ -11,7 +11,7 @@ const faqs = [
   {
     question: "Who is the behaviour change expert behind CLEAR?",
     answer:
-      "Erik Bohjort, a licensed psychologist (legitimerad psykolog, Uppsala University) based in Stockholm, Sweden. He founded EB Consulting and created the CLEAR Change Framework, which applies behavioural science, nudging and systems thinking to organisational change. He sits on the Swedish Energy Agency's expert board on behavioural design, teaches behavioural design at specialist level for psychologists, and has worked with energy companies, pension and finance providers, news media, digital product teams, public agencies and startups.",
+      "Erik Bohjort, a licensed psychologist (legitimerad psykolog, Uppsala University) based in Stockholm, Sweden. He founded EB Consulting and created the CLEAR Change Framework, which applies behavioural science, nudging and systems thinking to organisational change. He sits on the Swedish Energy Agency's expert board on behavioural design, teaches behavioural design at specialist level for psychologists, and has worked with energy companies, pension and finance providers, news media, digital product teams, public agencies such as Arbetsförmedlingen and Försäkringskassan, and startups.",
   },
   {
     question: "Where are you based, and which regions do you serve?",
@@ -31,7 +31,7 @@ const faqs = [
   {
     question: "Which kinds of organisations do you work with?",
     answer:
-      "Public agencies and policymakers, banks and financial services, manufacturing and healthcare organisations, scale-ups in the Stockholm tech ecosystem, and international corporations with Nordic operations. Typical briefs include adoption of new ways of working, safety and compliance behaviour, sustainability behaviour, cross-team collaboration and leadership behaviour.",
+      "Public agencies and policymakers (including Arbetsförmedlingen, Försäkringskassan and the Swedish Energy Agency), banks and financial services, manufacturing and healthcare organisations, scale-ups in the Stockholm tech ecosystem, and international corporations with Nordic operations. Typical briefs include adoption of new ways of working, safety and compliance behaviour, sustainability behaviour, cross-team collaboration and leadership behaviour.",
   },
   {
     question: "How does an engagement start and how long does it take?",
