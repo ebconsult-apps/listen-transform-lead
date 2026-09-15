@@ -88,7 +88,7 @@ const About = () => {
                   ))}
                 </ul>
                 <p className="text-sm text-foreground/60 mt-6">
-                  Clients are not named here. Sectors: {PROFILE.sectors.en.join(", ").toLowerCase()}.
+                  {PROFILE.clientsNote.en} Sectors: {PROFILE.sectors.en.join(", ").toLowerCase()}.
                 </p>
               </div>
 

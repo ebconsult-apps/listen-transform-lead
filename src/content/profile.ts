@@ -88,7 +88,18 @@ export const PROFILE = {
     },
   ],
 
-  /** Sectors Erik works in (clients are not named). */
+  /** Public-sector clients Erik has agreed to name. Private-sector clients stay unnamed. */
+  publicClients: [
+    { name: "Arbetsförmedlingen", en: "the Swedish Public Employment Service" },
+    { name: "Försäkringskassan", en: "the Swedish Social Insurance Agency" },
+    { name: "Energimyndigheten", en: "the Swedish Energy Agency" },
+  ],
+  clientsNote: {
+    en: "Public-sector clients include Arbetsförmedlingen (the Swedish Public Employment Service), Försäkringskassan (the Swedish Social Insurance Agency) and the Swedish Energy Agency. Private-sector clients are not named here.",
+    sv: "Bland uppdragsgivare i offentlig sektor finns Arbetsförmedlingen, Försäkringskassan och Energimyndigheten. Privata kunder namnges inte här.",
+  },
+
+  /** Sectors Erik works in (private-sector clients are not named). */
   sectors: {
     en: [
       "Energy and utilities",
@@ -124,6 +135,14 @@ export const PROFILE = {
     {
       en: "Dagens Nyheter: co-authored opinion articles",
       sv: "Dagens Nyheter: medförfattare till debattartiklar",
+    },
+    {
+      en: "Aftonbladet: featured as a psychologist and behavioural expert",
+      sv: "Aftonbladet: medverkat som psykolog och beteendeexpert",
+    },
+    {
+      en: "The Sun (UK): featured as a psychologist and behavioural expert",
+      sv: "The Sun (Storbritannien): medverkat som psykolog och beteendeexpert",
     },
     {
       en: "Swedish Energy Agency: author of the report on energy flexibility",
