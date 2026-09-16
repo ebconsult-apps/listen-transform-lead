@@ -18,6 +18,12 @@ interface CaseStudy {
   context: string;
   approach: string;
   result: string;
+  /**
+   * True when the excerpt is a worked example of how an engagement runs rather
+   * than an account of a named client. Renders a disclaimer that points to the
+   * verified work on the About page, so no reader mistakes it for a result.
+   */
+  illustrative?: boolean;
 }
 
 interface Faq {
@@ -212,6 +218,16 @@ const NichePage = ({
                 </div>
                 <h2 className="heading-md">{caseStudy.title}</h2>
               </div>
+              {caseStudy.illustrative && (
+                <p className="text-sm text-foreground/60 mb-6">
+                  An illustrative scenario showing how a CLEAR engagement runs, not an account of a
+                  named client. Verified engagements are listed on the{" "}
+                  <Link to="/about" className="text-primary hover:underline">
+                    About page
+                  </Link>
+                  .
+                </p>
+              )}
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-foreground/90 mb-1">

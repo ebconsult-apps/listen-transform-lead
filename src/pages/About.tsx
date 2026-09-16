@@ -83,7 +83,23 @@ const About = () => {
                   {PROFILE.selectedWork.map((item) => (
                     <li key={item.en} className="flex items-start">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2.5 mr-3 flex-shrink-0"></div>
-                      <span>{item.en}</span>
+                      <span>
+                        {item.en}
+                        {item.url && (
+                          <>
+                            {" "}
+                            <a
+                              href={item.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+                            >
+                              {item.urlLabel?.en ?? "Source"}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>

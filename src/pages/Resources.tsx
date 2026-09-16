@@ -209,8 +209,8 @@ const Resources = () => {
               Need Personalized Guidance?
             </h2>
             <p className="body-md mb-8 text-center">
-              Our team can help you apply these frameworks to your specific
-              organizational challenges.
+              Erik can help you apply these frameworks to your specific
+              organisational challenge. Start with a free discovery call.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
