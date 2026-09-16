@@ -44,9 +44,9 @@ const Services = () => {
           <h1 className="heading-xl mb-6">How We Work Together</h1>
           <p className="body-lg max-w-3xl">
             Every engagement is built on the <Link to="/methodology" className="text-primary hover:text-primary/80 font-medium">CLEAR Change Framework</Link> and
-            led by founder Erik Bohjort. Depending on scope, our team of senior consultants
-            can scale to match your organization's needs, from a focused diagnostic to a
-            multi-country transformation program.
+            led personally by Erik Bohjort. When the scope calls for it, he brings in senior
+            consultants from his network as subcontractors, so an engagement can scale from a
+            focused diagnostic to a multi-country transformation programme.
           </p>
         </div>
       </section>

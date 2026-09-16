@@ -50,13 +50,14 @@ const ManufacturingChangeManagement = () => (
       },
     ]}
     caseStudy={{
-      title: "Case Excerpt: Manufacturing SME Reducing Downtime",
+      illustrative: true,
+      title: "Worked example: a system rollout the factory floor has already rejected",
       context:
-        "A mid-sized manufacturing company producing precision components was implementing a new MES (Manufacturing Execution System) that had already failed one rollout attempt. Production supervisors were openly resistant, and the factory floor had developed workarounds that bypassed the system entirely.",
+        "A mid-sized manufacturer introducing a new manufacturing execution system after a first rollout failed. Supervisors are openly resistant and operators have built workarounds that bypass the system entirely. The plan on the table is more training and a firmer mandate.",
       approach:
-        "Using CLEAR, we began with systems mapping sessions that included line supervisors and operators\u2014not just management and IT. This revealed that the MES implementation had ignored three critical workflow dependencies that made the system impractical for second-shift operations. The Experimentation phase tested a redesigned implementation on a single production line with operator-designed modifications.",
+        "Clarify defines the target behaviour precisely: operators logging each production step in the system, on every shift, without a paper shadow copy. Leverage maps the workflow with line supervisors and operators, not only management and IT; that is where the dependencies the first rollout ignored show up, typically around shift hand-overs and exceptions. Experiment tests a redesigned rollout on one line, with the operators' own modifications, before anything else changes.",
       result:
-        "The modified MES implementation achieved 92% operator compliance within six weeks on the pilot line, compared to 35% in the original rollout. Downtime during the transition was reduced by 60%. The approach was then scaled across all production lines with local adaptations for each shift pattern.",
+        "Analyse compares the pilot line with the others on system use, workaround frequency and downtime during the transition, using the system's own logs rather than self-report. Refine scales what worked and adapts it to each shift pattern. Resistance falls not because people were persuaded but because the new process became easier than the workaround.",
     }}
     ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{

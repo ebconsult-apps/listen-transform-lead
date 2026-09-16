@@ -29,7 +29,7 @@ const HERO_VARIANTS: HeroVariant[] = [
     id: "behavioral_design",
     tag: "The CLEAR Change Framework",
     headline: <>Organizational Change Through <span className="text-primary">Behavioral Design</span></>,
-    subtitle: "70% of change initiatives fail because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real, not just on paper.",
+    subtitle: "Most change initiatives stall because they ignore how people actually behave. Erik Bohjort applies behavioral design and nudging to help organizations change for real, not just on paper.",
   },
   {
     id: "psychological_design",

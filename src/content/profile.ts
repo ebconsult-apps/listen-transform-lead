@@ -33,6 +33,14 @@ export const SPEAKING: Talk[] = [
   },
 ];
 
+export interface WorkItem {
+  en: string;
+  sv: string;
+  /** Public page that corroborates the item, when one exists. */
+  url?: string;
+  urlLabel?: { en: string; sv: string };
+}
+
 export const PROFILE = {
   name: "Erik Bohjort",
   firstName: "Erik",
@@ -43,6 +51,8 @@ export const PROFILE = {
   company: "EB Consulting",
   linkedin: "https://www.linkedin.com/in/erikbohjort/",
   twitter: "https://twitter.com/erikbohjort",
+  /** Erik's other public sites, for entity linking (sameAs). */
+  websites: ["https://bohjort.com/", "https://www.simplelistening.com/"],
 
   education: {
     degree: "Licensed psychologist (legitimerad psykolog)",
@@ -73,7 +83,7 @@ export const PROFILE = {
   ],
 
   /** Engagements Erik is proudest of, described without naming the client. */
-  selectedWork: [
+  selectedWork: <WorkItem[]>[
     {
       en: "More than doubled subscriptions for one of the largest newspapers in the EU by redesigning the subscription journey around how readers actually decide.",
       sv: "Mer än fördubblade prenumerationerna för en av EU:s största dagstidningar genom att designa om prenumerationsresan utifrån hur läsare faktiskt fattar beslut.",
@@ -81,6 +91,8 @@ export const PROFILE = {
     {
       en: "Led the largest behavioural survey on energy demand flexibility in the EU: a study of more than 2,500 single-family homeowners' electricity use for the Swedish Energy Agency, and authored the agency's report on energy flexibility.",
       sv: "Ledde EU:s största beteendestudie om efterfrågeflexibilitet på el: en undersökning av mer än 2 500 villaägares elanvändning för Energimyndigheten, och författade myndighetens rapport om energiflexibilitet.",
+      url: "https://designforenergi.se/portfolio/kunskapslyft-beteendemassiga-barriarer-och-framjare-for-efterfrageflexibilitet-bland-smahusagare/",
+      urlLabel: { en: "Project page (Design för energieffektiv vardag)", sv: "Projektsida (Design för energieffektiv vardag)" },
     },
     {
       en: "Designed the behavioural side of a car-pool launch together with Chalmers Industriteknik.",
@@ -129,8 +141,8 @@ export const PROFILE = {
 
   media: [
     {
-      en: "SVT national news: interviewed on behavioural design for societal benefit (2024)",
-      sv: "SVT Nyheter: intervjuad om samhällsnyttig beteendedesign (2024)",
+      en: "SVT: interviewed on behavioural design for societal benefit (2024), and on Ekonomibyrån about why so few households switch mortgage provider",
+      sv: "SVT: intervjuad om samhällsnyttig beteendedesign (2024), och i Ekonomibyrån om varför så få hushåll byter bolånebank",
     },
     {
       en: "Dagens Nyheter: co-authored opinion articles",
@@ -191,7 +203,7 @@ export function personJsonLd(lang: "en" | "sv" = "en") {
     url: "https://clear-framework.com/about",
     image: "https://clear-framework.com/erik-portrait.jpg",
     email: PROFILE.email,
-    sameAs: [PROFILE.linkedin, PROFILE.twitter],
+    sameAs: [PROFILE.linkedin, PROFILE.twitter, ...PROFILE.websites],
     alumniOf: {
       "@type": "CollegeOrUniversity",
       name: sv ? PROFILE.education.schoolSv : PROFILE.education.school,

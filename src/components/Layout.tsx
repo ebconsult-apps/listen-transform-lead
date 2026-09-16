@@ -95,7 +95,7 @@ const Layout = () => {
                 <span className="text-primary">C</span>LEAR
               </Link>
               <p className="mt-2 text-sm text-foreground/60 max-w-md">
-                Behaviour change and change management consulting from Stockholm, Sweden. Founded by licensed psychologist Erik Bohjort, our team helps organizations across the Nordics and Europe drive lasting transformation through the CLEAR Change Framework.
+                Behaviour change and change management consulting from Stockholm, Sweden. Licensed psychologist Erik Bohjort helps organisations across Sweden, the Nordics and Europe change what people actually do, using the CLEAR Change Framework.
               </p>
             </div>
             

@@ -50,13 +50,14 @@ const ChangeManagementStockholm = () => (
       },
     ]}
     caseStudy={{
-      title: "Case Excerpt: Stockholm SaaS Scaleup",
+      illustrative: true,
+      title: "Worked example: a Stockholm scale-up losing its collaboration",
       context:
-        "A Stockholm-based B2B SaaS company had grown from 40 to 180 employees in 18 months. Cross-team collaboration had broken down, engineering and product teams operated in silos, and the founding culture of openness was being replaced by departmental politics.",
+        "A B2B software company that has quadrupled its headcount in under two years. Cross-team collaboration has broken down, engineering and product operate in silos, and the founding culture of openness is giving way to departmental politics. Leadership's instinct is a new org chart and a values workshop.",
       approach:
-        "Using CLEAR, we facilitated a systems-mapping exercise with representatives from every team, making the invisible communication patterns visible. The Experimentation phase tested three structural interventions simultaneously: cross-functional squads, shared OKRs, and weekly demo sessions.",
+        "Clarify turns the ambition into one observable behaviour with a baseline: how often a feature decision involves both product and engineering before it is made. Leverage maps the system with representatives from every team, so the invisible hand-offs and incentives become visible. Experiment tests a small number of structural changes on two squads first, for example shared objectives and a weekly cross-team demo, rather than rolling everything out at once.",
       result:
-        "Within one quarter, cross-team collaboration scores improved by 40%, and the cycle time from idea to shipped feature dropped by 30%. The approach succeeded because it was co-designed by the people affected, not imposed from leadership.",
+        "Analyse measures the behaviour itself, not survey sentiment: decision involvement, idea-to-release cycle time and the number of escalations to leadership, compared with the squads that did not change. Refine scales only what moved the numbers. The changes hold because the people affected designed them, and because the measurement makes it obvious when a change stops working.",
     }}
     ctaPrimary={{ text: "Book a Free Discovery Call", href: "/book-call" }}
     ctaSecondary={{
